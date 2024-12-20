@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
+    <title>Reviewer Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@2.8.2/dist/alpine.min.js" defer></script>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <style>
@@ -25,7 +25,7 @@
                         </svg>
                     </button>
                     <h2 class="ml-4 text-2xl font-bold text-black-600 flex items-center">
-                        Admin Dashboard
+                        Reviewer Dashboard
                     </h2>
                 </div>
 
@@ -147,7 +147,7 @@
                 </div>  
             <nav class="mt-10">
                 <a class="hover:bg-green-800 flex items-center px-4 py-3 text-white text-lg font-medium rounded-lg transition-colors duration-150"
-                   href="{{ route('admin.dashboard') }}">
+                   href="{{ route('reviewer.partials.dashboard') }}">
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
                     </svg>
@@ -155,11 +155,11 @@
                 </a>
 
                 <a class="hover:bg-green-800 flex items-center px-4 py-3 text-white text-lg font-medium rounded-lg transition-colors duration-150"
-                   href="{{ route('admin.documents') }}">
+                   href="{{ route('reviewer.partials.documents') }}">
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
                     </svg>
-                    <span class="mx-3">Documents</span>
+                    <span class="mx-3">Review Documents</span>
                 </a>
 
                 <a class="hover:bg-green-800 flex items-center px-4 py-3 text-white text-lg font-medium rounded-lg transition-colors duration-150"
@@ -196,7 +196,7 @@
                 <div class="bg-white rounded-lg shadow-sm mb-8">
                     <!-- Content Based on Route -->
                     <div class="p-6">
-                        @yield('admin-content')
+                        @yield('reviewer-content')
                     </div>                    
                 </div>
             </div>
