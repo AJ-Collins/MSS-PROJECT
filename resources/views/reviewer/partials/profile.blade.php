@@ -1,6 +1,6 @@
-@extends('admin.layouts.admin')
+@extends('reviewer.layouts.reviewer')
 
-@section('admin-content')
+@section('reviewer-content')
 <div class="container mx-auto p-6 space-y-6">
     <!-- Profile Header -->
     <div class="flex justify-between items-center mb-6">

@@ -28,9 +28,9 @@ Route::prefix('reviewer')->middleware(['auth'])->group(function () {
     //Route::get('/submissions', [AdminController::class, 'submissions'])->name('admin.submissions');
     //Route::get('/reports', [AdminController::class, 'reports'])->name('admin.reports');
     Route::get('/documents', [ReviewerController::class, 'documentsReview'])->name('reviewer.partials.documents');
-    //Route::get('/profile', [AdminController::class, 'profile'])->name('admin.profile');
+    Route::get('/assessment', [ReviewerController::class, 'assessment'])->name('reviewer.partials.assessment');
     //Route::get('/settings', [AdminController::class, 'settings'])->name('admin.settings');
-    //Route::get('/profile', [AdminController::class, 'profile'])->name('admin.partials.profile');
+    Route::get('/profile', [ReviewerController::class, 'profile'])->name('reviewer.partials.profile');
 });
 
 Route::view('profile', 'profile')

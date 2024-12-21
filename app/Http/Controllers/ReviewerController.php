@@ -14,4 +14,12 @@ class ReviewerController extends Controller
     {
         return view('reviewer.partials.documents');
     }
+    public function assessment()
+    {
+        return view('reviewer.partials.assessment');
+    }
+    public function profile()
+    {
+        return view('reviewer.partials.profile');
+    }
 }
