@@ -99,18 +99,21 @@
                 :class="{ 'border-indigo-500 text-indigo-600': activeTab === 'abstracts', 'border-transparent': activeTab !== 'abstracts' }"
                 @click="activeTab = 'abstracts'">
                 Abstracts
+                <span class="bg-indigo-100 text-indigo-600 px-2 py-0.5 rounded-full text-xs">3</span>
             </button>
             <button 
                 class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800 border-b-2 transition-colors duration-150"
                 :class="{ 'border-indigo-500 text-indigo-600': activeTab === 'articles', 'border-transparent': activeTab !== 'articles' }"
                 @click="activeTab = 'articles'">
                 Articles
+                <span class="bg-indigo-100 text-indigo-600 px-2 py-0.5 rounded-full text-xs">5</span>
             </button>
             <button 
                 class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800 border-b-2 transition-colors duration-150"
                 :class="{ 'border-indigo-500 text-indigo-600': activeTab === 'proposals', 'border-transparent': activeTab !== 'proposals' }"
                 @click="activeTab = 'proposals'">
                 Research Proposals
+                <span class="bg-indigo-100 text-indigo-600 px-2 py-0.5 rounded-full text-xs">2</span>
             </button>
         </div>
     </div>
@@ -123,8 +126,8 @@
                 <thead class="bg-gray-100">
                     <tr>
                         <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600">Document Name</th>
-                        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600">Uploaded By</th>
-                        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600">Uploaded On</th>
+                        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600">Category</th>
+                        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600">Title</th>
                         <th class="px-4 py-2 text-center text-sm font-semibold text-gray-600">Status</th>
                         <th class="px-4 py-2 text-center text-sm font-semibold text-gray-600">Actions</th>
                     </tr>
@@ -133,8 +136,8 @@
                     <!-- Example Submission -->
                     <tr class="border-b hover:bg-gray-50">
                         <td class="px-4 py-3 text-sm text-gray-700">Abstract 1.pdf</td>
-                        <td class="px-4 py-3 text-sm text-gray-700">Jane Smith</td>
-                        <td class="px-4 py-3 text-sm text-gray-500">2024-12-20</td>
+                        <td class="px-4 py-3 text-sm text-gray-700">Healthcare</td>
+                        <td class="px-4 py-3 text-sm text-gray-500">Medical Innovation Quarterly</td>
                         <td class="px-4 py-3 text-center">
                             <span class="px-2 py-1 text-xs font-medium text-yellow-800 bg-yellow-100 rounded-full">To Review</span>
                         </td>

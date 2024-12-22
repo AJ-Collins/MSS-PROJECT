@@ -6,6 +6,8 @@
     <title>Admin Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@2.8.2/dist/alpine.min.js" defer></script>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/alpinejs" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/lucide.min.js"></script>
     <style>
         [x-cloak] { display: none !important; }
     </style>
@@ -25,7 +27,7 @@
                         </svg>
                     </button>
                     <h2 class="ml-4 text-2xl font-bold text-black-600 flex items-center">
-                        Admin Dashboard
+                        Manuscript Submission
                     </h2>
                 </div>
 
@@ -147,43 +149,25 @@
                 </div>  
             <nav class="mt-10">
                 <a class="hover:bg-green-800 flex items-center px-4 py-3 text-white text-lg font-medium rounded-lg transition-colors duration-150"
-                   href="{{ route('admin.dashboard') }}">
+                   href="{{route('user.dashboard')}}">
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
                     </svg>
                     <span class="mx-3">Dashboard</span>
                 </a>
-
                 <a class="hover:bg-green-800 flex items-center px-4 py-3 text-white text-lg font-medium rounded-lg transition-colors duration-150"
-                   href="{{ route('admin.documents') }}">
+                   href="{{route('user.submit')}}">
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
                     </svg>
-                    <span class="mx-3">Documents</span>
+                    <span class="mx-3">Submit</span>
                 </a>
-
                 <a class="hover:bg-green-800 flex items-center px-4 py-3 text-white text-lg font-medium rounded-lg transition-colors duration-150"
-                   href="{{ route('admin.reports') }}">
+                   href="">
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
                     </svg>
-                    <span class="mx-3">Reports</span>
-                </a>
-
-                <a class="hover:bg-green-800 flex items-center px-4 py-3 text-white text-lg font-medium rounded-lg transition-colors duration-150"
-                   href="{{ route('admin.users') }}">
-                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
-                    </svg>
-                    <span class="mx-3">Users</span>
-                </a>
-
-                <a class="hover:bg-green-800 flex items-center px-4 py-3 text-white text-lg font-medium rounded-lg transition-colors duration-150"
-                   href="{{ route('admin.submissions') }}">
-                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
-                    </svg>
-                    <span class="mx-3">Final Submissions</span>
+                    <span class="mx-3">All Submissions</span>
                 </a>
             </nav>
         </div>
@@ -196,7 +180,7 @@
                 <div class="bg-white rounded-lg shadow-sm mb-8">
                     <!-- Content Based on Route -->
                     <div class="p-6">
-                        @yield('admin-content')
+                        @yield('user-content')
                     </div>                    
                 </div>
             </div>

@@ -6,6 +6,10 @@ use Illuminate\Http\Request;
 
 class ReviewerController extends Controller
 {
+    public function profile()
+    {
+        return view('reviewer.partials.profile');
+    }
     public function dashboard()
     {
         return view('reviewer.partials.dashboard');
@@ -18,8 +22,8 @@ class ReviewerController extends Controller
     {
         return view('reviewer.partials.assessment');
     }
-    public function profile()
+    public function revieweddocuments()
     {
-        return view('reviewer.partials.profile');
+        return view('reviewer.partials.revieweddocuments');
     }
 }
