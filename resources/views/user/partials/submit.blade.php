@@ -37,7 +37,7 @@
                 International Participants
             </li>
         </ul>
-        <a href="/conference-submission"
+        <a href="{{route('user.step1')}}"
             class="block w-full py-3 text-center text-white font-medium rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700">
             Submit Conference Paper
         </a>
@@ -72,7 +72,7 @@
                 Multiple Grants Available
             </li>
         </ul>
-        <a href="/funding-submission"
+        <a href=""
             class="block w-full py-3 text-center text-white font-medium rounded-lg bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700">
             Submit Funding Proposal
         </a>

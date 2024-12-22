@@ -18,4 +18,12 @@ class UserController extends Controller
     {
         return view('user.partials.submit');
     }
+    public function step1()
+    {
+        return view('user.partials.step1');
+    }
+    public function step2()
+    {
+        return view('user.partials.step2');
+    }
 }

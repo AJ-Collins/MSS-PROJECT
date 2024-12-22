@@ -35,14 +35,15 @@ Route::prefix('reviewer')->middleware(['auth'])->group(function () {
 });
 //User routes
 Route::prefix('user')->middleware(['auth'])->group(function () {
+    Route::get('/profile', [UserController::class, 'profile'])->name('reviewer.profile');
     Route::get('/dashboard', [UserController::class, 'dashboard'])->name('user.dashboard');
     Route::get('/submit', [UserController::class, 'submit'])->name('user.submit');
-    //Route::get('/submissions', [AdminController::class, 'submissions'])->name('admin.submissions');
-    //Route::get('/reports', [AdminController::class, 'reports'])->name('admin.reports');
+    Route::get('/submit/step1', [UserController::class, 'step1'])->name('user.step1');
+    Route::get('/submit/step2', [UserController::class, 'step2'])->name('user.step2');
     //Route::get('/documents', [ReviewerController::class, 'documentsReview'])->name('reviewer.partials.documents');
     //Route::get('/assessment', [ReviewerController::class, 'assessment'])->name('reviewer.partials.assessment');
     //Route::get('/reviewed', [ReviewerController::class, 'revieweddocuments'])->name('reviewer.partials.reviewed');
-    Route::get('/profile', [UserController::class, 'profile'])->name('reviewer.profile');
+    
 });
 
 Route::view('profile', 'profile')
