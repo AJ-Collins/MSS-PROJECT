@@ -71,7 +71,7 @@
             </div>
         @endif
 
-        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+        <div class="bg-white shadow-lg overflow-hidden">
             <!-- Header -->
             <div class="bg-gradient-to-r from-green-600 to-green-700 px-8 py-6">
                 <h2 class="text-2xl font-bold text-white">Abstract Submission</h2>
@@ -82,12 +82,12 @@
             <form id="step2Form" method="POST" action="" enctype="multipart/form-data" class="p-8">
                 @csrf
                 <input type="hidden" name="submission_type" value="abstract">
-
+            <div class="bg-gray-50 p-6 border border-gray-800">
                 <!-- Title Input -->
                 <div class="mb-6">
                     <label for="article-title" class="block text-sm font-medium text-gray-700 mb-1">Title</label>
                     <input type="text" id="article-title" name="article_title" 
-                           class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                           class="w-full px-4 py-2 border border-gray-800 rounded-md focus:ring-green-500 focus:border-green-500"
                            placeholder="Enter the title of your article"
                            value="{{ old('article_title') }}" required>
                 </div>
@@ -96,7 +96,7 @@
                 <div class="mb-6">
                     <label for="sub-theme" class="block text-sm font-medium text-gray-700 mb-1">Sub-Theme</label>
                     <select id="sub-theme" name="sub_theme" 
-                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500" required>
+                            class="w-full px-4 py-2 border border-gray-800 rounded-md focus:ring-green-500 focus:border-green-500" required>
                         <option value="">Select a sub-theme</option>
                         <option value="Transformative Education">Transformative Education</option>
                         <option value="Business and Entrepreneurship">Business and Entrepreneurship</option>
@@ -111,7 +111,7 @@
                 <div class="mb-6">
                     <label for="abstract" class="block text-sm font-medium text-gray-700 mb-1">Abstract (maximum 500 words)</label>
                     <div id="abstract" contenteditable="true" 
-                         class="w-full px-4 py-2 border border-gray-300 rounded-md min-h-[200px] focus:ring-green-500 focus:border-green-500 bg-white"
+                         class="w-full px-4 py-2 border border-gray-800 rounded-md min-h-[200px] focus:ring-green-500 focus:border-green-500 bg-white"
                          placeholder="Enter your abstract"></div>
                     <input type="hidden" name="abstract" id="hiddenAbstract">
                     <p id="wordCount" class="text-sm text-gray-500 mt-2">Word Count: 0/500</p>
@@ -123,15 +123,15 @@
     <div id="keywords-container" class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div class="relative">
             <input type="text" name="keywords[]" placeholder="Keyword 1" 
-                   class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500">
+                   class="w-full px-4 py-2 border border-gray-800 rounded-md focus:ring-green-500 focus:border-green-500">
         </div>
         <div class="relative">
             <input type="text" name="keywords[]" placeholder="Keyword 2" 
-                   class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500">
+                   class="w-full px-4 py-2 border border-gray-800 rounded-md focus:ring-green-500 focus:border-green-500">
         </div>
         <div class="relative">
             <input type="text" name="keywords[]" placeholder="Keyword 3" 
-                   class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500">
+                   class="w-full px-4 py-2 border border-gray-800 rounded-md focus:ring-green-500 focus:border-green-500">
         </div>
     </div>
     <button type="button" id="add-keyword" 
@@ -168,12 +168,13 @@
                             class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-400">
                         Previous
                     </button>
-                    <button type="" 
+                    <a href="{{route('user.preview_research')}}" 
                             class="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500">
                         Save and Continue
-                    </button>
+                    </a>
                 </div>
             </form>
+        </div>
         </div>
     </div>
 </div>
@@ -212,7 +213,7 @@ addKeywordBtn.addEventListener('click', function () {
         input.type = 'text';
         input.name = 'keywords[]';
         input.placeholder = `Keyword ${keywordCount + 1}`;
-        input.className = 'w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500';
+        input.className = 'w-full px-4 py-2 border border-gray-800 rounded-md focus:ring-green-500 focus:border-green-500';
 
         const deleteIcon = document.createElement('button');
         deleteIcon.type = 'button';

@@ -78,7 +78,7 @@
                             </svg>
                         </div>
                         <h3 class="text-xl font-semibold text-gray-800 mb-2">Ready for Submission</h3>
-                        <p class="text-gray-600">Your abstract has been prepared and is ready for final submission</p>
+                        <p class="text-gray-600">Your abstract and proposal has been prepared and is ready for final submission</p>
                     </div>
 
                     <!-- Important Notes -->
@@ -91,7 +91,7 @@
                             </div>
                             <div class="ml-3">
                                 <h4 class="text-sm font-medium text-gray-800">Review Process</h4>
-                                <p class="text-sm text-gray-600">Your abstract will be reviewed. You will be notified of the decision via email.</p>
+                                <p class="text-sm text-gray-600">Your abstract and proposal will be reviewed. You will be notified of the decision via email.</p>
                             </div>
                         </div>
 
@@ -103,11 +103,11 @@
                             </div>
                             <div class="ml-3">
                                 <h4 class="text-sm font-medium text-gray-800">Important Notice</h4>
-                                <p class="text-sm text-gray-600">Once submitted, you cannot make changes to your abstract. Please ensure all details are correct.</p>
+                                <p class="text-sm text-gray-600">Once submitted, you cannot make changes to your abstract or uploaded document. Please ensure all details are correct.</p>
                             </div>
                         </div>
 
-                        <div class="flex items-start">
+                        <!--<div class="flex items-start">
                             <div class="flex-shrink-0">
                                 <svg class="w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path>
@@ -117,7 +117,7 @@
                                 <h4 class="text-sm font-medium text-gray-800">Next Steps</h4>
                                 <p class="text-sm text-gray-600">After acceptance, you will be invited to submit your full article through the system.</p>
                             </div>
-                        </div>
+                        </div>-->
                     </div>
                 </div>
             </div>

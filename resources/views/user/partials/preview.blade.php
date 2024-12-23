@@ -99,6 +99,15 @@
             </svg>
             Previous
         </button>
+        <!-- Dropdown for "Go to Step" -->
+        <div class="relative">
+                    <select id="stepNavigation" class="block w-full px-4 py-2 pr-8 text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                        <option value="1">Go to Step 1: Authors</option>
+                        <option value="2">Go to Step 2: Abstract</option>
+                        <option value="3">Go to Step 3: Preview</option>
+                        <option value="4" selected>Step 4: Confirm</option>
+                    </select>
+                </div>
 
         <div class="flex space-x-4">
             <!-- PDF Button -->

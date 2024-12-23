@@ -42,6 +42,14 @@ class UserController extends Controller
     {
         return view('user.partials.step2_research');
     }
+    public function preview_research()
+    {
+        return view('user.partials.preview_research');
+    }
+    public function confirm_research()
+    {
+        return view('user.partials.confirm_research');
+    }
     public function confirmSubmission(Request $request)
     {
         // Handle your form submission logic

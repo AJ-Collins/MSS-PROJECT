@@ -53,7 +53,6 @@
             <h2 class="text-2xl font-bold text-white">Author Information</h2>
             <p class="text-green-100 text-sm mt-2">Please provide details for all authors. The primary author will be listed as the main contact.</p>
         </div>
-
         <form id="authorForm" method="POST" action="" class="p-8" novalidate>
             @csrf
 
