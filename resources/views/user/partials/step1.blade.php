@@ -214,26 +214,25 @@ document.addEventListener('DOMContentLoaded', function() {
     // Function to create new author section
     function createAuthorSection(index) {
         const template = document.querySelector('.author-section').cloneNode(true);
-        template.dataset.authorIndex = index;
-        
-        // Update title
-        const title = template.querySelector('h3');
-        title.innerText = `${index }`;
 
         // Update all input names and clear values
         
         template.querySelectorAll('input').forEach(input => {
-            input.name = input.name.replace(/\[\d+\]/, `[${index}]`);
+            const newName = input.name.replace(/\[\d+\]/, `[${index}]`);
+            input.name = newName;
             input.value = '';
             input.checked = false;
         });
+
+        const numberBadge = template.querySelector('.bg-green-500');
+        numberBadge.innerText = index + 1;
 
         // Add remove button if not present
         if (!template.querySelector('.remove-author-btn')) {
             const removeBtn = document.createElement('button');
             removeBtn.type = 'button';
             removeBtn.className = 'remove-author-btn text-red-500 hover:text-red-700 focus:outline-none';
-            removeBtn.innerHTML = `<svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+            removeBtn.innerHTML = `<svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
                 </svg>`;
             
@@ -246,7 +245,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 }, 200);
             });
 
-            template.querySelector('.flex.items-center.justify-between').appendChild(removeBtn);
+            const titleContainer = template.querySelector('.flex.items-center.justify-between');
+            titleContainer.appendChild(removeBtn);
         }
 
         return template;
@@ -256,23 +256,26 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateAuthorNumbers() {
         const sections = document.querySelectorAll('.author-section');
         sections.forEach((section, index) => {
-            const title = section.querySelector('h3');
+            // Update the number badge
             const numberBadge = section.querySelector('.bg-green-500');
-            title.innerText = `Author ${index + 1}`;
             numberBadge.innerText = index + 1;
+
+            // Update input names
+            section.querySelectorAll('input').forEach(input => {
+                const newName = input.name.replace(/\[\d+\]/, `[${index}]`);
+                input.name = newName;
+            });
         });
     }
 
     // Function to check authors limit
     function checkAuthorsLimit() {
         const authorCount = document.querySelectorAll('.author-section').length;
+        addAuthorBtn.disabled = authorCount >= MAX_AUTHORS;
+        addAuthorBtn.classList.toggle('opacity-50', authorCount >= MAX_AUTHORS);
+        
         if (authorCount >= MAX_AUTHORS) {
-            addAuthorBtn.disabled = true;
-            addAuthorBtn.classList.add('opacity-50');
             showNotification('Maximum number of authors reached (5)', 'warning');
-        } else {
-            addAuthorBtn.disabled = false;
-            addAuthorBtn.classList.remove('opacity-50');
         }
     }
 
@@ -280,19 +283,20 @@ document.addEventListener('DOMContentLoaded', function() {
     addAuthorBtn.addEventListener('click', function() {
         const currentCount = document.querySelectorAll('.author-section').length;
         if (currentCount < MAX_AUTHORS) {
-            const newSection = createAuthorSection(currentCount + 1);
+            const newSection = createAuthorSection(currentCount);
             newSection.classList.add('scale-95', 'opacity-0');
             authorsContainer.appendChild(newSection);
         
             // Animate entrance
-            setTimeout(() => {
+            requestAnimationFrame(() => {
                 newSection.classList.remove('scale-95', 'opacity-0');
-            }, 50);
+            });
         
-            checkAuthorsLimit();  // Ensure the "Add Author" button is correctly enabled/disabled
+            checkAuthorsLimit();
         }
     });
-    checkAuthorsLimit();
+
+   
 
     // Form validation
     const form = document.getElementById('authorForm');

@@ -11,9 +11,6 @@
     <!-- Conference Card -->
     <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-400 transition-transform transform hover:scale-[1.02]">
         <div class="flex items-center justify-between mb-6">
-            <div class="p-3 rounded-full bg-blue-100">
-                <i data-lucide="book-open" class="h-8 w-8 text-blue-500"></i>
-            </div>
             <span class="px-4 py-2 rounded-full text-sm font-medium bg-blue-50 text-blue-600">
                 Open for Submissions
             </span>
@@ -46,9 +43,6 @@
     <!-- Research Funding Card -->
     <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-400 transition-transform transform hover:scale-[1.02]">
         <div class="flex items-center justify-between mb-6">
-            <div class="p-3 rounded-full bg-green-100">
-                <i data-lucide="file-check" class="h-8 w-8 text-green-500"></i>
-            </div>
             <span class="px-4 py-2 rounded-full text-sm font-medium bg-green-50 text-green-600">
                 2024 Funding Cycle
             </span>

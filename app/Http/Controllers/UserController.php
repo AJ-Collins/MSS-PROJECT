@@ -26,4 +26,8 @@ class UserController extends Controller
     {
         return view('user.partials.step2');
     }
+    public function preview()
+    {
+        return view('user.partials.preview');
+    }
 }

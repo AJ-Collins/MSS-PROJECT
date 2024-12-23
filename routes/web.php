@@ -40,7 +40,7 @@ Route::prefix('user')->middleware(['auth'])->group(function () {
     Route::get('/submit', [UserController::class, 'submit'])->name('user.submit');
     Route::get('/submit/step1', [UserController::class, 'step1'])->name('user.step1');
     Route::get('/submit/step2', [UserController::class, 'step2'])->name('user.step2');
-    //Route::get('/documents', [ReviewerController::class, 'documentsReview'])->name('reviewer.partials.documents');
+    Route::get('/submit/preview', [UserController::class, 'preview'])->name('user.preview');
     //Route::get('/assessment', [ReviewerController::class, 'assessment'])->name('reviewer.partials.assessment');
     //Route::get('/reviewed', [ReviewerController::class, 'revieweddocuments'])->name('reviewer.partials.reviewed');
     
