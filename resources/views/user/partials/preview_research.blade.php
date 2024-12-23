@@ -13,19 +13,23 @@
             <div class="relative flex justify-between">
                 <!-- Step 1: Complete -->
                 <div class="flex flex-col items-center">
-                    <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white font-semibold mb-2">
-                        1
-                    </div>
-                    <span class="text-sm font-medium text-green-600">Authors</span>
+                <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white font-semibold mb-2 shadow-lg">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
                 </div>
+                <span class="text-sm font-medium text-green-600">Authors</span>
+            </div>
 
                 <!-- Step 2: Complete -->
                 <div class="flex flex-col items-center">
-                    <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white font-semibold mb-2">
-                        2
-                    </div>
-                    <span class="text-sm font-medium text-green-600">Abstract</span>
+                <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white font-semibold mb-2 shadow-lg">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
                 </div>
+                <span class="text-sm font-medium text-green-600">Authors</span>
+            </div>
 
                 <!-- Step 3: Active -->
                 <div class="flex flex-col items-center">

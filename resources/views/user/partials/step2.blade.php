@@ -6,7 +6,7 @@
     <div class="relative">
         <!-- Progress Line -->
         <div class="absolute top-1/2 left-0 w-full h-1 bg-gray-200 -translate-y-1/2"></div>
-        <div class="absolute top-1/2 left-0 w-1/4 h-1 bg-green-500 -translate-y-1/2 transition-all duration-500"></div>
+        <div class="absolute top-1/2 left-0 w-1/2 h-1 bg-green-500 -translate-y-1/2 transition-all duration-500"></div>
 
         <!-- Steps -->
         <div class="relative flex justify-between">

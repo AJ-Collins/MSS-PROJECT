@@ -12,7 +12,7 @@
         <div class="relative flex justify-between">
             <!-- Step 1: Complete -->
             <div class="flex flex-col items-center">
-                <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white font-semibold mb-2 shadow-lg">
+                <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white font-semibold mb-2 shadow-lg ring-4 ring-green-100">
                     1
                 </div>
                 <span class="text-sm font-medium text-green-600">Authors</span>
@@ -20,7 +20,7 @@
 
             <!-- Step 2: Active -->
             <div class="flex flex-col items-center">
-                <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white font-semibold mb-2 shadow-lg ring-4 ring-green-100">
+                <div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-semibold mb-2">
                     2
                 </div>
                 <span class="text-sm font-medium text-green-600">Abstract</span>
