@@ -14,6 +14,10 @@ class UserController extends Controller
     {
         return view('user.partials.dashboard');
     }
+    public function documents()
+    {
+        return view('user.partials.documents');
+    }
     public function submit()
     {
         return view('user.partials.submit');
