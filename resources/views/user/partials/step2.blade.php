@@ -54,7 +54,7 @@
     <div class="bg-gradient-to-r from-green-600 to-green-700 px-8 py-6">
             <h2 class="text-2xl font-bold text-white">Abstract Submission</h2>
             <p class="text-green-100 text-sm mt-2">Please fill in the details of your abstract submission</p>
-        </div>
+    </div>
     <form class="p-8" id="step2Form" method="POST" 
         action="" enctype="multipart/form-data">
         @csrf
@@ -145,34 +145,28 @@
             </div>
 
             <!-- Keywords Input -->
-            <div class="form-group">
-                <label class="block text-lg font-medium text-gray-700 mb-2">
-                    Keywords <span class="text-red-500">*</span>
-                    <span class="text-sm text-gray-500 ml-2">(3-5 keywords)</span>
-                </label>
-                <div id="keywords-container" class="space-y-3">
-                    <div class="grid grid-cols-3 gap-4">
-                        <input type="text" name="keywords[]" placeholder="Keyword 1" 
-                            class="w-full h-10 px-3 border border-gray-800 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500" required>
-                        <input type="text" name="keywords[]" placeholder="Keyword 2" 
-                            class="w-full h-10 px-3 border border-gray-800 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500" required>
-                        <input type="text" name="keywords[]" placeholder="Keyword 3" 
-                            class="w-full h-10 px-3 border border-gray-800 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500" required>
-                    </div>
-                </div>
-                <div class="mt-4">
-                    <button type="button" id="add-keyword" 
-                        class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
-                        <svg class="-ml-1 mr-2 h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
-                        </svg>
-                        Add Keyword
-                    </button>
-                </div>
-                <p id="max-keyword-message" class="mt-2 text-sm text-red-500 hidden">
-                    Maximum number of keywords (5) reached
-                </p>
-            </div>
+            <div class="mb-6">
+    <label class="block text-sm font-medium text-gray-700 mb-1">Keywords (3-5 keywords)</label>
+    <div id="keywords-container" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="relative">
+            <input type="text" name="keywords[]" placeholder="Keyword 1" 
+                   class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500">
+        </div>
+        <div class="relative">
+            <input type="text" name="keywords[]" placeholder="Keyword 2" 
+                   class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500">
+        </div>
+        <div class="relative">
+            <input type="text" name="keywords[]" placeholder="Keyword 3" 
+                   class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500">
+        </div>
+    </div>
+    <button type="button" id="add-keyword" 
+            class="mt-4 px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-400">
+        Add Keyword
+    </button>
+    <p id="max-keyword-message" class="text-sm text-red-500 mt-2 hidden">You have reached the maximum of 5 keywords.</p>
+</div>
         
 
         <!-- Action Buttons -->
@@ -247,53 +241,48 @@ document.addEventListener('DOMContentLoaded', function() {
     updateWordCount();
 
     // Keywords Management
-    const MAX_KEYWORDS = 5;
     const keywordsContainer = document.getElementById('keywords-container');
-    const addKeywordButton = document.getElementById('add-keyword');
-    const maxKeywordMessage = document.getElementById('max-keyword-message');
+const addKeywordBtn = document.getElementById('add-keyword');
+const maxKeywordMessage = document.getElementById('max-keyword-message');
+let keywordCount = 3;
 
-    addKeywordButton.addEventListener('click', function() {
-        const currentKeywords = keywordsContainer.querySelectorAll('input').length;
+addKeywordBtn.addEventListener('click', function () {
+    if (keywordCount < 5) {
+        const keywordWrapper = document.createElement('div');
+        keywordWrapper.className = 'relative';
 
-        if (currentKeywords < MAX_KEYWORDS) {
-            const newKeywordDiv = document.createElement('div');
-            newKeywordDiv.className = 'flex items-center space-x-2 mt-3';
-            
-            newKeywordDiv.innerHTML = `
-                <input type="text" name="keywords[]" placeholder="Keyword ${currentKeywords + 1}" 
-                    class="w-full h-10 px-3 border border-gray-800 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
-                <button type="button" class="flex-shrink-0 ml-2 text-red-500 hover:text-red-700" onclick="removeKeyword(this)">
-                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-                    </svg>
-                </button>`;
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.name = 'keywords[]';
+        input.placeholder = `Keyword ${keywordCount + 1}`;
+        input.className = 'w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500';
 
-            keywordsContainer.appendChild(newKeywordDiv);
-        }
-
-        // Update UI based on keyword count
-        const newCount = keywordsContainer.querySelectorAll('input').length;
-        maxKeywordMessage.classList.toggle('hidden', newCount < MAX_KEYWORDS);
-        addKeywordButton.classList.toggle('opacity-50', newCount >= MAX_KEYWORDS);
-        addKeywordButton.disabled = newCount >= MAX_KEYWORDS;
-    });
-
-    // Function to remove keyword input
-    window.removeKeyword = function(button) {
-        const keywordDiv = button.parentElement;
-        keywordDiv.remove();
-
-        const currentKeywords = keywordsContainer.querySelectorAll('input').length;
-        maxKeywordMessage.classList.add('hidden');
-        addKeywordButton.classList.remove('opacity-50');
-        addKeywordButton.disabled = false;
-
-        // Update placeholder numbers
-        const inputs = keywordsContainer.querySelectorAll('input');
-        inputs.forEach((input, index) => {
-            input.placeholder = `Keyword ${index + 1}`;
+        const deleteIcon = document.createElement('button');
+        deleteIcon.type = 'button';
+        deleteIcon.innerHTML = '&#10005;'; // "X" icon
+        deleteIcon.className = 'absolute top-2 right-2 text-red-500 hover:text-red-700 focus:outline-none';
+        deleteIcon.addEventListener('click', function () {
+            keywordWrapper.remove();
+            keywordCount--;
+            if (keywordCount < 5) {
+                addKeywordBtn.disabled = false;
+                addKeywordBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                maxKeywordMessage.classList.add('hidden');
+            }
         });
-    };
+
+        keywordWrapper.appendChild(input);
+        keywordWrapper.appendChild(deleteIcon);
+        keywordsContainer.appendChild(keywordWrapper);
+        keywordCount++;
+
+        if (keywordCount >= 5) {
+            addKeywordBtn.disabled = true;
+            addKeywordBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            maxKeywordMessage.classList.remove('hidden');
+        }
+    }
+});
 
     // Form validation
     const form = document.getElementById('step2Form');

@@ -1,8 +1,60 @@
 @extends('user.layouts.user')
 
 @section('user-content')
-<div class="container mx-auto px-4 py-8">
-    <div class="max-w-4xl mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
+<!-- Progress Tracker -->
+<div class="max-w-4xl mx-auto mb-8">
+    <div class="relative">
+        <!-- Progress Line -->
+        <div class="absolute top-1/2 left-0 w-full h-1 bg-gray-200 -translate-y-1/2"></div>
+        <div class="absolute top-1/2 left-0 w-1/4 h-1 bg-green-500 -translate-y-1/2 transition-all duration-500"></div>
+
+        <!-- Steps -->
+        <div class="relative flex justify-between">
+            <!-- Step 1: Complete -->
+            <div class="flex flex-col items-center">
+                <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white font-semibold mb-2 shadow-lg">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                </div>
+                <span class="text-sm font-medium text-green-600">Authors</span>
+            </div>
+
+            <!-- Step 2: Active -->
+            <div class="flex flex-col items-center">
+                <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white font-semibold mb-2 shadow-lg ring-4 ring-green-100">
+                    2
+                </div>
+                <span class="text-sm font-medium text-green-600">Abstract</span>
+            </div>
+
+            <!-- Step 3: Pending -->
+            <div class="flex flex-col items-center">
+                <div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-semibold mb-2">
+                    3
+                </div>
+                <span class="text-sm font-medium text-gray-500">Preview</span>
+            </div>
+
+            <!-- Step 4: Pending -->
+            <div class="flex flex-col items-center">
+                <div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-semibold mb-2">
+                    4
+                </div>
+                <span class="text-sm font-medium text-gray-500">Confirm</span>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Main Content -->
+<div class="max-w-4xl mx-auto">
+    <div class="bg-white shadow-lg overflow-hidden">
+    <!-- Form Header -->
+    <div class="bg-gradient-to-r from-green-600 to-green-700 px-8 py-6">
+        <h2 class="text-2xl font-bold text-white">Abstract Preview</h2>
+        <p class="text-green-100 text-sm mt-2">Please preview the details of your abstract submission</p>
+    </div>
+    <div class="bg-gray-50 p-6 border border-gray-800">
         <!-- Header -->
         <div class="p-8">
             <h1 class="text-3xl font-bold text-gray-900 text-center mb-2">System Testing Analysis</h1>
@@ -36,6 +88,7 @@
             <p class="text-gray-700 leading-relaxed">Business and Entrepreneurship</p>
         </div>
     </div>
+    </div>
 
     <!-- Action Buttons -->
     <div class="mt-8 flex justify-between items-center">
@@ -67,13 +120,13 @@
             </a>
         </div>
 
-        <button type="submit" form="previewForm" name="submit_type" value="save"
+        <a href="{{route('reviewer.confirm')}}"
             class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-200 flex items-center">
             Continue
             <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
             </svg>
-        </button>
+        </a>
     </div>
 </div>
 

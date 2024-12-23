@@ -66,7 +66,7 @@
                 Multiple Grants Available
             </li>
         </ul>
-        <a href=""
+        <a href="{{route('user.step1_research')}}"
             class="block w-full py-3 text-center text-white font-medium rounded-lg bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700">
             Submit Funding Proposal
         </a>

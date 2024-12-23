@@ -41,7 +41,9 @@ Route::prefix('user')->middleware(['auth'])->group(function () {
     Route::get('/submit/step1', [UserController::class, 'step1'])->name('user.step1');
     Route::get('/submit/step2', [UserController::class, 'step2'])->name('user.step2');
     Route::get('/submit/preview', [UserController::class, 'preview'])->name('user.preview');
-    //Route::get('/assessment', [ReviewerController::class, 'assessment'])->name('reviewer.partials.assessment');
+    Route::get('/submit/confirm', [UserController::class, 'confirm'])->name('reviewer.confirm');
+    Route::get('/submit/step1_research', [UserController::class, 'step1_research'])->name('user.step1_research');
+    Route::get('/submit/step2_research', [UserController::class, 'step2_research'])->name('user.step2_research');
     //Route::get('/reviewed', [ReviewerController::class, 'revieweddocuments'])->name('reviewer.partials.reviewed');
     
 });
