@@ -108,7 +108,7 @@
                         <!-- Enhanced Profile Dropdown Menu -->
                         <div x-show="open" @click.away="open = false"
                              class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-1 z-50 transform origin-top-right transition-all duration-200">
-                            <a href="{{ route('admin.partials.profile') }}" 
+                            <a href="{{ route('user.profile') }}" 
                                class="flex items-center px-4 py-2 text-sm text-gray-900 hover:bg-gray-200 transition duration-150">
                                 <svg class="mr-3 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
@@ -170,6 +170,13 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
                     </svg>
                     <span class="mx-3">My Submissions</span>
+                </a>
+                <a class="hover:bg-green-800 flex items-center px-4 py-3 text-white text-lg font-medium rounded-lg transition-colors duration-150"
+                   href="{{route('user.profile')}}">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                    </svg>
+                    <span class="mx-3">My Profile</span>
                 </a>
             </nav>
         </div>

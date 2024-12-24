@@ -1,6 +1,6 @@
-@extends('admin.layouts.admin')
+@extends('user.layouts.user')
 
-@section('admin-content')
+@section('user-content')
 <div class="container mx-auto p-6 space-y-6">
     <!-- Profile Header -->
     <div class="flex justify-between items-center mb-6">

@@ -35,7 +35,7 @@ Route::prefix('reviewer')->middleware(['auth'])->group(function () {
 });
 //User routes
 Route::prefix('user')->middleware(['auth'])->group(function () {
-    Route::get('/profile', [UserController::class, 'profile'])->name('reviewer.profile');
+    Route::get('/profile', [UserController::class, 'profile'])->name('user.profile');
     Route::get('/dashboard', [UserController::class, 'dashboard'])->name('user.dashboard');
     Route::get('/documents', [UserController::class, 'documents'])->name('user.documents');
     Route::get('/submit', [UserController::class, 'submit'])->name('user.submit');
