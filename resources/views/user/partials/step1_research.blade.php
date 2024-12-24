@@ -53,9 +53,23 @@
             <h2 class="text-2xl font-bold text-white">Author Information</h2>
             <p class="text-green-100 text-sm mt-2">Please provide details for all authors. The primary author will be listed as the main contact.</p>
         </div>
-        <form id="authorForm" method="POST" action="" class="p-8" novalidate>
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+        <form 
+            id="authorForm" 
+            method="POST" 
+            action="{{route('submit.step1_research')}}" 
+            class="p-8" 
+            novalidate>
             @csrf
-
+            <input type="hidden" name="submission_type" value="abstract">
             <!-- Authors Container -->
             <div id="authorsContainer" class="space-y-8">
                 <!-- Primary Author Section -->
@@ -73,7 +87,10 @@
                         
                         <div class="flex items-center space-x-4">
                             <label class="flex items-center space-x-2 text-sm text-gray-600 hover:text-gray-800 cursor-pointer">
-                                <input type="checkbox" name="authors[0][is_correspondent]" value="1" 
+                                <input 
+                                    type="checkbox" 
+                                    name="authors[0][is_correspondent]" 
+                                    value="1" 
                                     class="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500">
                                 <span>Corresponding Author</span>
                             </label>
@@ -88,33 +105,46 @@
                                 <label class="block text-sm font-medium text-gray-700 mb-1">
                                     First Name <span class="text-red-500">*</span>
                                 </label>
-                                <input type="text" name="authors[0][first_name]" 
+                                <input 
+                                    type="text" 
+                                    name="authors[0][first_name]" 
+                                    value=""
                                     class="form-input block w-full rounded-md border border-gray-800 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 transition px-4 py-3 text-lg"
                                     placeholder="Enter first name"
+                                    pattern="^(?=.{3,}$)([A-Za-z]{3,})(?:\s[A-Za-z]{3,})*$"
                                     required>
                                 <div class="error-message text-red-500 text-xs mt-1 hidden"></div>
                             </div>
 
-                            <!-- Last Name -->
+                            <!-- Middle Name -->
                             <div class="form-group">
                                 <label class="block text-sm font-medium text-gray-700 mb-1">
-                                    Last Name <span class="text-red-500">*</span>
+                                    Middle Name <span class="text-red-500">*</span>
                                 </label>
-                                <input type="text" name="authors[0][last_name]" 
+                                <input 
+                                    type="text" 
+                                    name="authors[0][middle_name]"
+                                    value=""
                                     class="form-input block w-full rounded-md border border-gray-800 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 transition px-4 py-3 text-lg"
-                                    placeholder="Enter last name"
+                                    placeholder="Enter middle name"
+                                    pattern="[A-Za-z\s]{3,}" 
+                                    value=""
                                     required>
                                 <div class="error-message text-red-500 text-xs mt-1 hidden"></div>
                             </div>
 
-                            <!-- Title/Position -->
+                            <!-- Surname -->
                             <div class="form-group">
                                 <label class="block text-sm font-medium text-gray-700 mb-1">
-                                    Title/Position <span class="text-red-500">*</span>
+                                    Surname <span class="text-red-500">*</span>
                                 </label>
-                                <input type="text" name="authors[0][position]" 
+                                <input 
+                                    type="text" 
+                                    name="authors[0][surname]"
+                                    value=""
                                     class="form-input block w-full rounded-md border border-gray-800 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 transition px-4 py-3 text-lg"
-                                    placeholder="e.g., Professor, Research Associate"
+                                    placeholder="Enter Surname"
+                                    pattern="[A-Za-z\s]{3,}"
                                     required>
                                 <div class="error-message text-red-500 text-xs mt-1 hidden"></div>
                             </div>
@@ -127,7 +157,10 @@
                                 <label class="block text-sm font-medium text-gray-700 mb-1">
                                     Email Address <span class="text-red-500">*</span>
                                 </label>
-                                <input type="email" name="authors[0][email]" 
+                                <input 
+                                    type="email" 
+                                    name="authors[0][email]"
+                                    value="" 
                                     class="form-input block w-full rounded-md border border-gray-800 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 transition px-4 py-3 text-lg"
                                     placeholder="email@institution.edu"
                                     required>
@@ -139,9 +172,12 @@
                                 <label class="block text-sm font-medium text-gray-700 mb-1">
                                     Institution/Organization <span class="text-red-500">*</span>
                                 </label>
-                                <input type="text" name="authors[0][institution]" 
+                                <input 
+                                    type="text" 
+                                    name="authors[0][university]" 
                                     class="form-input block w-full rounded-md border border-gray-800 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 transition px-4 py-3 text-lg"
                                     placeholder="Enter institution name"
+                                    pattern="[A-Za-z0-9\s,.]+"
                                     required>
                                 <div class="error-message text-red-500 text-xs mt-1 hidden"></div>
                             </div>
@@ -149,11 +185,13 @@
                             <!-- Department -->
                             <div class="form-group">
                                 <label class="block text-sm font-medium text-gray-700 mb-1">
-                                    Department
+                                    Department <span class="text-red-500">*</span>
                                 </label>
                                 <input type="text" name="authors[0][department]" 
                                     class="form-input block w-full rounded-md border border-gray-800 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 transition px-4 py-3 text-lg"
-                                    placeholder="Enter department name">
+                                    placeholder="Enter department name"
+                                    required>
+                                <div class="error-message text-red-500 text-xs mt-1 hidden"></div>
                             </div>
                         </div>
                     </div>
@@ -183,14 +221,15 @@
                     Previous
                 </button>
 
-                <a href="{{route('user.step2_research')}}"
+                <button 
+                    type="submit"
                     class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium 
                     text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
                     Next
                     <svg class="ml-2 -mr-1 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
                     </svg>
-                </a>
+                </button>
             </div>
         </form>
     </div>
@@ -199,7 +238,7 @@
     <div class="mt-6 text-center">
         <p class="text-sm text-gray-500">
             Need assistance? Contact our support team at 
-            <a href="mailto:support@example.com" class="text-green-600 hover:text-green-700">support@example.com</a>
+            <a href="mailto:support@example.com" class="text-green-600 hover:text-green-700">support@tum.ac.ke.com</a>
         </p>
     </div>
 </div>
@@ -215,7 +254,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const template = document.querySelector('.author-section').cloneNode(true);
 
         // Update all input names and clear values
-        
         template.querySelectorAll('input').forEach(input => {
             const newName = input.name.replace(/\[\d+\]/, `[${index}]`);
             input.name = newName;
@@ -295,42 +333,29 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-   
-
-    // Form validation
+    // Form validation before submitting
     const form = document.getElementById('authorForm');
-    form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        if (validateForm()) {
-            // Show loading state
-            const submitBtn = form.querySelector('button[type="submit"]');
-            const originalText = submitBtn.innerHTML;
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = `
-                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                Saving...
-            `;
-            
-            // Submit the form
-            saveFormData(this);
+
+    // Function to validate form
+    form.addEventListener('submit', function(event) {
+        const isValid = validateForm();
+        if (!isValid) {
+            event.preventDefault();  // Prevent form submission if validation fails
         }
     });
 
-    // Function to validate form
+    // Function to validate the form
     function validateForm() {
         let isValid = true;
         const requiredFields = form.querySelectorAll('input[required]');
-        
+
         requiredFields.forEach(field => {
             const errorDiv = field.nextElementSibling;
-            
+
             // Clear previous errors
             field.classList.remove('border-red-500');
             errorDiv.classList.add('hidden');
-            
+
             if (!field.value.trim()) {
                 isValid = false;
                 field.classList.add('border-red-500');
@@ -347,7 +372,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Check for at least one corresponding author
         const hasCorrespondingAuthor = Array.from(form.querySelectorAll('input[name$="[is_correspondent]"]'))
             .some(checkbox => checkbox.checked);
-        
+
         if (!hasCorrespondingAuthor) {
             isValid = false;
             showNotification('Please designate at least one corresponding author', 'error');
@@ -366,7 +391,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function showNotification(message, type = 'info') {
         const notification = document.createElement('div');
         notification.className = `fixed bottom-4 right-4 px-6 py-3 rounded-lg shadow-lg transform transition-all duration-300 ease-in-out translate-y-full`;
-        
+
         switch (type) {
             case 'error':
                 notification.classList.add('bg-red-500', 'text-white');
@@ -380,15 +405,15 @@ document.addEventListener('DOMContentLoaded', function() {
             default:
                 notification.classList.add('bg-blue-500', 'text-white');
         }
-        
+
         notification.textContent = message;
         document.body.appendChild(notification);
-        
+
         // Animate in
         setTimeout(() => {
             notification.classList.remove('translate-y-full');
         }, 100);
-        
+
         // Animate out and remove
         setTimeout(() => {
             notification.classList.add('translate-y-full');
@@ -398,44 +423,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 3000);
     }
 
-    // Function to save form data
-    async function saveFormData(form) {
-        try {
-            const response = await fetch(form.action, {
-                method: 'POST',
-                body: new FormData(form),
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                }
-            });
-
-            const data = await response.json();
-            
-            if (response.ok) {
-                showNotification('Authors information saved successfully!', 'success');
-                setTimeout(() => {
-                    window.location.href = data.redirect || '/next-step';
-                }, 1000);
-            } else {
-                throw new Error(data.message || 'Something went wrong');
-            }
-        } catch (error) {
-            showNotification(error.message, 'error');
-            // Reset submit button
-            const submitBtn = form.querySelector('button[type="submit"]');
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = `
-                Next
-                <svg class="ml-2 -mr-1 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
-                </svg>
-            `;
-        }
-    }
-
     // Initialize form state
     checkAuthorsLimit();
 });
+
 </script>
 
 <style>

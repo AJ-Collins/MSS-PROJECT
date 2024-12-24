@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\AbstractSubmission;
+use App\Models\ResearchSubmission;
 
 class UserController extends Controller
 {
@@ -12,6 +14,7 @@ class UserController extends Controller
     }
     public function dashboard()
     {
+        
         return view('user.partials.dashboard');
     }
     public function documents()
@@ -21,10 +24,6 @@ class UserController extends Controller
     public function submit()
     {
         return view('user.partials.submit');
-    }
-    public function step1()
-    {
-        return view('user.partials.step1');
     }
     public function step2()
     {

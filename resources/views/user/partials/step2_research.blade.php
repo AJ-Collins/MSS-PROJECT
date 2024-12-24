@@ -81,7 +81,12 @@
             </div>
 
             <!-- Form Section -->
-            <form id="step2Form" method="POST" action="" enctype="multipart/form-data" class="p-8">
+            <form 
+                id="step2Form" 
+                method="POST" 
+                action="{{route('submit.step2_research')}}" 
+                enctype="multipart/form-data" 
+                class="p-8">
                 @csrf
                 <input type="hidden" name="submission_type" value="abstract">
             <div class="bg-gray-50 p-6 border border-gray-800">
@@ -150,7 +155,8 @@
                     </label>
                     <div class="mt-2">
                         <input type="file" id="file-upload" name="pdf_document" 
-                            accept=".pdf,.doc,.docx" 
+                            accept=".pdf,.doc,.docx"
+                            required 
                             onchange="handleFileUpload(event)"
                             class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500">
                     </div>
@@ -170,10 +176,10 @@
                             class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-400">
                         Previous
                     </button>
-                    <a href="{{route('user.preview_research')}}" 
+                    <button type="submit" 
                             class="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500">
-                        Save and Continue
-                    </a>
+                        Next
+                    </button>
                 </div>
             </form>
         </div>

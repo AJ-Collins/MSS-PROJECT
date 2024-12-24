@@ -55,8 +55,21 @@
             <h2 class="text-2xl font-bold text-white">Abstract Submission</h2>
             <p class="text-green-100 text-sm mt-2">Please fill in the details of your abstract submission</p>
     </div>
-    <form class="p-8" id="step2Form" method="POST" 
-        action="" enctype="multipart/form-data">
+    @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+    <form 
+        class="p-8" 
+        id="step2Form" 
+        method="POST" 
+        action="{{route('submit.step2')}}" 
+        enctype="multipart/form-data">
         @csrf
         <input type="hidden" name="submission_type" value="abstract">
         <div id="authorsContainer" class="space-y-8">
@@ -178,13 +191,14 @@
                 </svg>
                 Previous
             </button>
-            <a href="{{route('user.preview')}}" 
+            <button 
+                type="submit" 
                 class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
                 Next
                 <svg class="ml-2 -mr-1 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
                 </svg>
-            </a>
+            </button>
         </div>
         </div>
 </div>
@@ -362,16 +376,6 @@ addKeywordBtn.addEventListener('click', function () {
     });
 });
 
-// Navigation confirmation
-window.onbeforeunload = function() {
-    const form = document.getElementById('step2Form');
-    if (form.querySelector('input[name="article_title"]').value ||
-        form.querySelector('select[name="sub_theme"]').value ||
-        document.getElementById('hiddenAbstract').value ||
-        Array.from(form.querySelectorAll('input[name="keywords[]"]')).some(input => input.value.trim())) {
-        return "You have unsaved changes. Are you sure you want to leave?";
-    }
-};
 
 function goBack() {
     if (confirm('Are you sure you want to go back? Any unsaved changes will be lost.')) {
