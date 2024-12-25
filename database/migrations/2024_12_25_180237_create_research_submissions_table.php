@@ -18,6 +18,8 @@ return new class extends Migration
             $table->text('abstract');
             $table->json('keywords');
             $table->string('pdf_document_path');
+            $table->string('user_reg_no',500);
+            $table->string('reviewer_reg_no')->nullable();
             $table->timestamps();
         });
     }

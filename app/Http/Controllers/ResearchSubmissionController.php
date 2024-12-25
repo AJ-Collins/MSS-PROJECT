@@ -164,6 +164,8 @@ public function postPreview_research(Request $request)
     $serialCode = mb_strtoupper(Str::random(mt_rand(4, 5)) . Str::random(mt_rand(3, 5)));
     $serialNumber = "{$acronym}-{$serialCode}-" . date('y');
 
+    $user = auth()->user();
+
     // Save research abstract submission data
     $researchSubmission = new ResearchSubmission();
     $researchSubmission->serial_number = $serialNumber;
@@ -172,6 +174,7 @@ public function postPreview_research(Request $request)
     $researchSubmission->abstract = $submissionData['abstract'];
     $researchSubmission->keywords = json_encode($submissionData['keywords']);
     $researchSubmission->pdf_document_path = $submissionData['pdf_document_path'] ?? null;
+    $researchSubmission->user_reg_no = $user->reg_no;
     $researchSubmission->save();
 
     // Clear session data after submission
