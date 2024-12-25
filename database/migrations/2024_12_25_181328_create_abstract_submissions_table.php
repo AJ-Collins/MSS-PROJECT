@@ -18,6 +18,7 @@ return new class extends Migration
             $table->text('abstract')->nullable();
             $table->json('keywords')->nullable();
             $table->boolean('approved')->default(false);
+            $table->string('final_status')->nullable();
             $table->string('pdf_path')->nullable();
             $table->string('user_reg_no',500);
             $table->string('reviewer_reg_no')->nullable();   

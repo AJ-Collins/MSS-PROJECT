@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('sub_theme');
             $table->text('abstract');
             $table->json('keywords');
+            $table->string('final_status')->nullable();
             $table->string('pdf_document_path');
             $table->string('user_reg_no',500);
             $table->string('reviewer_reg_no')->nullable();
