@@ -2,13 +2,32 @@
 
 use App\Http\Controllers\ReviewerController;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
+
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AbstractSubmissionController;
 use App\Http\Controllers\ResearchSubmissionController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
 
-Auth::routes(['verify' => true]);
+Route::get('email/verify', [App\Http\Controllers\Auth\VerificationController::class, 'show'])->name('verification.notice');
+Route::get('email/verify/{id}/{hash}', [App\Http\Controllers\Auth\VerificationController::class, 'verify'])
+    ->middleware(['signed'])
+    ->name('verification.verify');
+Route::post('email/resend', [App\Http\Controllers\Auth\VerificationController::class, 'resend'])
+    ->name('verification.resend');
+
+Route::get('register', [RegisterController::class, 'showRegistrationForm'])->name('register');
+Route::post('register', [RegisterController::class, 'register']);
+
+Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
+Route::post('login', [LoginController::class, 'login']);
+Route::middleware('auth')->post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
+// Home Route
+Route::get('/home', [HomeController::class, 'index'])->name('home');
+
 
 Route::view('/', 'welcome');
 
@@ -71,7 +90,4 @@ Route::prefix('user')->middleware(['auth'])->group(function () {
 Route::view('profile', 'profile')
     ->middleware(['auth'])
     ->name('profile');
-
-// Additional routes for authentication (if any)
-require __DIR__.'/auth.php';
 

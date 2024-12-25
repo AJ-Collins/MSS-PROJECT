@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use App\Models\Role;
+use Illuminate\Http\Request;
 
 class LoginController extends Controller
 {
@@ -36,5 +38,26 @@ class LoginController extends Controller
     {
         $this->middleware('guest')->except('logout');
         $this->middleware('auth')->only('logout');
+    }
+    /**
+     * The user has been authenticated.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  mixed  $user
+     * @return mixed
+     */
+    protected function authenticated(Request $request, $user)
+    {
+        $roles = $user->roles->pluck('name');
+
+        if ($roles->contains('admin')) {
+            return redirect()->route('admin.dashboard');
+        } elseif ($roles->contains('reviewer')) {
+            return redirect()->route('reviewer.partials.dashboard');
+        } elseif ($roles->contains('user')) {
+            return redirect()->route('user.dashboard');
+        }
+
+        return redirect()->route('home'); // Default fallback
     }
 }
