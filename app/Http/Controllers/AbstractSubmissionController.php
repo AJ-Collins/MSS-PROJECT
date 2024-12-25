@@ -6,6 +6,7 @@ use App\Models\AbstractSubmission;
 use Illuminate\Http\Request;
 use App\Models\Author;
 use Illuminate\Support\Str;
+use App\Models\User; 
 
 class AbstractSubmissionController extends Controller
 {
@@ -109,6 +110,7 @@ public function postPreview(Request $request)
     $serialCode = mb_strtoupper(Str::random(mt_rand(4, 5)) . Str::random(mt_rand(3, 5)));
     $serialNumber = "{$acronym}-{$serialCode}-" . date('y');
 
+    $user = auth()->user();
     // Save abstract
     $abstractSubmission = new AbstractSubmission();
     $abstractSubmission->serial_number = $serialNumber;
@@ -116,6 +118,7 @@ public function postPreview(Request $request)
     $abstractSubmission->sub_theme = $abstractData['sub_theme'];
     $abstractSubmission->abstract = $abstractData['abstract'];
     $abstractSubmission->keywords = json_encode($abstractData['keywords']);
+    $abstractSubmission->user_reg_no = $user->reg_no;
     $abstractSubmission->save();
 
     $request->session()->forget(['author', 'abstract', 'all_authors']);
