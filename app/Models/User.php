@@ -16,11 +16,20 @@ class User extends Authenticatable implements MustVerifyEmail
     use Notifiable;
 
     /**
+     * The primary key associated with the table.
+     *
+     * @var string
+     */
+    protected $primaryKey = 'reg_no';
+    protected $keyType = 'string';
+    public $incrementing = false;
+    /**
      * The attributes that are mass assignable.
      *
      * @var list<string>
      */
     protected $fillable = [
+        'reg_no',
         'name',
         'email',
         'password',
@@ -50,7 +59,8 @@ class User extends Authenticatable implements MustVerifyEmail
     }
     public function roles(): BelongsToMany
     {
-        return $this->belongsToMany(Role::class);
+        return $this->belongsToMany(Role::class,'role_user', 'reg_no', 'role_id')
+                    ->withTimestamps();
     }
 
     public function hasRole(string $roleName): bool

@@ -13,11 +13,10 @@ return new class extends Migration
     {
         Schema::create('role_user', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('role_id')->constrained()->onDelete('cascade');
+            $table->string('reg_no');
+            $table->foreign('reg_no')->references('reg_no')->on('users')->onDelete('cascade');
             $table->timestamps();
-
-            $table->unique(['user_id', 'role_id']);
         });
     }
 
@@ -26,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('user_roles');
+        Schema::dropIfExists('role_user');
     }
 };

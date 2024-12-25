@@ -87,7 +87,4 @@ Route::prefix('user')->middleware(['auth'])->group(function () {
     
 });
 
-Route::view('profile', 'profile')
-    ->middleware(['auth'])
-    ->name('profile');
 

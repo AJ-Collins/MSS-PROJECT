@@ -87,6 +87,9 @@ return [
     */
 
     'table' => env('SESSION_TABLE', 'sessions'),
+    'user_id_name' => 'reg_no',
+
+    'store' => env('SESSION_STORE'),
 
     /*
     |--------------------------------------------------------------------------
@@ -100,8 +103,6 @@ return [
     | Affects: "apc", "dynamodb", "memcached", "redis"
     |
     */
-
-    'store' => env('SESSION_STORE'),
 
     /*
     |--------------------------------------------------------------------------

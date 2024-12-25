@@ -1,4 +1,3 @@
-
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
@@ -10,12 +9,12 @@
                         @csrf
 
                         <div class="row mb-3">
-                            <label for="email" class="col-md-4 col-form-label text-md-end">{{ __('Email Address') }}</label>
+                            <label for="reg_no" class="col-md-4 col-form-label text-md-end">{{ __('Registration Number') }}</label>
 
                             <div class="col-md-6">
-                                <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
+                                <input id="reg_no" type="text" class="form-control @error('reg_no') is-invalid @enderror" name="reg_no" value="{{ old('reg_no') }}" required autocomplete="reg_no" autofocus>
 
-                                @error('email')
+                                @error('reg_no')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>
@@ -68,4 +67,3 @@
         </div>
     </div>
 </div>
-

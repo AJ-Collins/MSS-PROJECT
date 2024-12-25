@@ -22,6 +22,11 @@ class LoginController extends Controller
 
     use AuthenticatesUsers;
 
+    public function username()
+    {
+        return 'reg_no';
+    }
+
     /**
      * Where to redirect users after login.
      *
@@ -48,6 +53,7 @@ class LoginController extends Controller
      */
     protected function authenticated(Request $request, $user)
     {
+        $user->load('roles');
         $roles = $user->roles->pluck('name');
 
         if ($roles->contains('admin')) {

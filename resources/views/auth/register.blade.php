@@ -10,6 +10,20 @@
                         @csrf
 
                         <div class="row mb-3">
+                            <label for="reg_no" class="col-md-4 col-form-label text-md-end">{{ __('Reg_No') }}</label>
+
+                            <div class="col-md-6">
+                                <input id="reg_no" type="text" class="form-control @error('reg_no') is-invalid @enderror" name="reg_no" value="{{ old('reg_no') }}" required autocomplete="reg_no" autofocus>
+
+                                @error('reg_no')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
                             <label for="name" class="col-md-4 col-form-label text-md-end">{{ __('Name') }}</label>
 
                             <div class="col-md-6">

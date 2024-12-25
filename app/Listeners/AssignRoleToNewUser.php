@@ -6,6 +6,9 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use App\Models\Role;
+use App\Models\User;
+use Illuminate\Support\Facades\DB;
+
 
 class AssignRoleToNewUser
 {
@@ -17,13 +20,15 @@ class AssignRoleToNewUser
      */
     public function handle(Registered $event)
     {
-        $user = $event->user;
-
-        // Assign the 'user' role to the newly registered user
         $role = Role::where('name', 'user')->first();
-
-        if ($role) {
-            $user->roles()->attach($role);
+    
+        if ($role && $event->user) {
+            DB::table('role_user')->insert([
+                'reg_no' => $event->user->reg_no,
+                'role_id' => $role->id,
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
         }
     }
 }
