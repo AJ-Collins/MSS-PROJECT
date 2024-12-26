@@ -35,9 +35,10 @@ class UserController extends Controller
     }
     public function documents()
     {
+        $user = auth()->user();
 
-        $submissions = AbstractSubmission::all();
-        $researchSubmissions = ResearchSubmission::all();
+        $submissions = AbstractSubmission::where('user_reg_no', $user->reg_no)->get();
+        $researchSubmissions = ResearchSubmission::where('user_reg_no', $user->reg_no)->get();
 
         return view('user.partials.documents', compact('submissions', 'researchSubmissions'));
     }
@@ -49,7 +50,11 @@ class UserController extends Controller
             ->where('user_reg_no', $userRegNo)
             ->firstOrFail();
 
-        return view('user.partials.document', compact('researchSubmission'));
+        $submission = AbstractSubmission::where('serial_number', $serial_number)
+            ->where('user_reg_no', $userRegNo)
+            ->firstOrFail();
+
+        return view('user.partials.document', compact('researchSubmission', 'submission'));
    
     }
     
