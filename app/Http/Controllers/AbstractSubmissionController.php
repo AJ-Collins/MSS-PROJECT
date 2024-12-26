@@ -119,6 +119,7 @@ public function postPreview(Request $request)
     $abstractSubmission->abstract = $abstractData['abstract'];
     $abstractSubmission->keywords = json_encode($abstractData['keywords']);
     $abstractSubmission->user_reg_no = $user->reg_no;
+    $abstractSubmission->final_status = "Pending";
     $abstractSubmission->save();
 
     $request->session()->forget(['author', 'abstract', 'all_authors']);

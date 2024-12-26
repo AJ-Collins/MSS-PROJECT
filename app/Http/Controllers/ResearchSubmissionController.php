@@ -175,6 +175,7 @@ public function postPreview_research(Request $request)
     $researchSubmission->keywords = json_encode($submissionData['keywords']);
     $researchSubmission->pdf_document_path = $submissionData['pdf_document_path'] ?? null;
     $researchSubmission->user_reg_no = $user->reg_no;
+    $researchSubmission->final_status = "Pending";
     $researchSubmission->save();
 
     // Clear session data after submission

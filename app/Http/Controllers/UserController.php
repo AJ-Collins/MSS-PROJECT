@@ -14,10 +14,24 @@ class UserController extends Controller
     }
     public function dashboard()
     {
-        $submissions = AbstractSubmission::all();
-        $researchSubmissions = ResearchSubmission::all();
+        $user = auth()->user();
         
-        return view('user.partials.dashboard', compact('submissions', 'researchSubmissions'));
+        // Count total abstracts 
+        $totalAbstracts = AbstractSubmission::where('user_reg_no', $user->reg_no)->count();
+        $abstractsPending = AbstractSubmission::where('user_reg_no', $user->reg_no)->where('final_status', 'Pending')->count();
+        
+
+        // Count total research submissions
+        $totalResearchSubmissions = ResearchSubmission::where('user_reg_no', $user->reg_no)->count();
+        $proposalPending = ResearchSubmission::where('user_reg_no', $user->reg_no)->where('final_status', 'Pending')->count();
+        
+        $totalPendingCount = $abstractsPending + $proposalPending;
+
+        $submissions = AbstractSubmission::where('user_reg_no', $user->reg_no)->get();
+        $researchSubmissions = ResearchSubmission::where('user_reg_no', $user->reg_no)->get();
+        
+        return view('user.partials.dashboard', compact('submissions', 'researchSubmissions', 'totalAbstracts',
+            'totalPendingCount', 'totalResearchSubmissions'));
     }
     public function documents()
     {

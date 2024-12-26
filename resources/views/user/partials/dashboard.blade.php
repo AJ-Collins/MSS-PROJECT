@@ -18,7 +18,7 @@
             </div>
             <div class="ml-4">
                 <p class="text-sm text-gray-500">My Abstracts</p>
-                <p class="text-2xl font-semibold text-gray-700">24</p>
+                <p class="text-2xl font-semibold text-gray-700">{{ $totalAbstracts }}</p>
             </div>
         </div>
     </div>
@@ -48,7 +48,7 @@
             </div>
             <div class="ml-4">
                 <p class="text-sm text-gray-500">Research Proposals</p>
-                <p class="text-2xl font-semibold text-gray-700">8</p>
+                <p class="text-2xl font-semibold text-gray-700">{{ $totalResearchSubmissions }}</p>
             </div>
         </div>
     </div>
@@ -63,7 +63,7 @@
             </div>
             <div class="ml-4">
                 <p class="text-sm text-gray-500">Pending Reviews</p>
-                <p class="text-2xl font-semibold text-gray-700">5</p>
+                <p class="text-2xl font-semibold text-gray-700">{{ $totalPendingCount }}</p>
             </div>
         </div>
     </div>
@@ -126,8 +126,16 @@
                                 {{ $submission->score }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                    {{ $submission->final_status ?? 'pending' }}
+                                @php
+                                    $AbstractStatus = [
+                                        'Pending' => 'bg-yellow-100 text-yellow-800',
+                                        'Approved' => 'bg-green-100 text-green-800',
+                                        'Rejected' => 'bg-red-100 text-red-800',
+                                    ];
+                                    $AbstractStatus = $AbstractStatus[$submission->final_status ?? 'Pending'] ?? 'bg-gray-100 text-gray-800';
+                                @endphp
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $AbstractStatus }}">
+                                    {{ $submission->final_status ?? 'Pending' }}
                                 </span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -169,8 +177,16 @@
                                 {{ $researchSubmission->score }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                    {{ $researchSubmission->final_status ?? 'pending' }}
+                                @php
+                                    $statusClasses = [
+                                        'Pending' => 'bg-yellow-100 text-yellow-800',
+                                        'Approved' => 'bg-green-100 text-green-800',
+                                        'Rejected' => 'bg-red-100 text-red-800',
+                                    ];
+                                    $statusClass = $statusClasses[$researchSubmission->final_status ?? 'Pending'] ?? 'bg-gray-100 text-gray-800';
+                                @endphp
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $statusClass }}">
+                                    {{ $researchSubmission->final_status ?? 'Pending' }}
                                 </span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
