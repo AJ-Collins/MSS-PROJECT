@@ -82,7 +82,8 @@ Route::prefix('user')->middleware(['auth'])->group(function () {
     Route::get('/submit/preview_research', [ResearchSubmissionController::class, 'preview_research'])->name('user.preview_research');
     Route::post('/submit/preview_research', [ResearchSubmissionController::class, 'postPreview_research'])->name('submit.preview_research');
     
-    //
+    Route::get('/user/documents/proposal/{serial_number}', [UserController::class, 'viewProposal'])
+                ->name('documents.proposal.view');
     //Route::get('/reviewed', [ReviewerController::class, 'revieweddocuments'])->name('reviewer.partials.reviewed');
     
 });

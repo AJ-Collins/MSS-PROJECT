@@ -14,13 +14,31 @@ class UserController extends Controller
     }
     public function dashboard()
     {
+        $submissions = AbstractSubmission::all();
+        $researchSubmissions = ResearchSubmission::all();
         
-        return view('user.partials.dashboard');
+        return view('user.partials.dashboard', compact('submissions', 'researchSubmissions'));
     }
     public function documents()
     {
-        return view('user.partials.documents');
+
+        $submissions = AbstractSubmission::all();
+        $researchSubmissions = ResearchSubmission::all();
+
+        return view('user.partials.documents', compact('submissions', 'researchSubmissions'));
     }
+    public function viewProposal($serial_number)
+    {
+        $userRegNo = auth()->user()->reg_no;
+
+        $researchSubmission = ResearchSubmission::where('serial_number', $serial_number)
+            ->where('user_reg_no', $userRegNo)
+            ->firstOrFail();
+
+        return view('user.partials.document', compact('researchSubmission'));
+   
+    }
+    
     public function submit()
     {
         return view('user.partials.submit');
