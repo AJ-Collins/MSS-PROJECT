@@ -55,7 +55,88 @@ class AdminController extends Controller
         $researchSubmissions = ResearchSubmission::all();
         return view('admin.partials.documents', compact('submissions', 'researchSubmissions'));
     }
+    public function approveAbstract(Request $request)
+    {
+        $user = auth()->user();
 
+        $request->validate([
+            'serial_number' => 'required|exists:abstract_submissions,serial_number',
+        ]);
+        // Find the abstract by serial number
+        $submission = AbstractSubmission::where('serial_number', $request->serial_number)->first();
+
+        if ($submission) {
+            // Approve the abstract by setting the 'approved' field to true
+            $submission->final_status = "Approved";
+            $submission->admin_comments = null;
+            $submission->save();
+    
+            return redirect()->back()->with('success', 'Abstract approved successfully.');
+        }
+        return redirect()->back()->with('error', 'Abstract not found.');
+    }
+    public function rejectAbstract(Request $request)
+    {
+        $user = auth()->user();
+
+        $request->validate([
+            'serial_number' => 'required|exists:abstract_submissions,serial_number',
+            'comments' => 'required|string|max:1000',
+        ]);
+        // Find the abstract by serial number
+        $submission = AbstractSubmission::where('serial_number', $request->serial_number)->first();
+
+        if ($submission) {
+            // Approve the abstract by setting the 'approved' field to true
+            $submission->final_status = "Rejected";
+            $submission->admin_comments = $request->comments;
+            $submission->save();
+    
+            return redirect()->back()->with('success', 'Abstract rejected successfully.');
+        }
+        return redirect()->back()->with('error', 'Abstract not found.');
+    }
+    public function approveProposal(Request $request)
+    {
+        $user = auth()->user();
+
+        $request->validate([
+            'serial_number' => 'required|exists:research_submissions,serial_number',
+        ]);
+        // Find the abstract by serial number
+        $researchSubmission = ResearchSubmission::where('serial_number', $request->serial_number)->first();
+
+        if ($researchSubmission) {
+            // Approve the abstract by setting the 'approved' field to true
+            $researchSubmission->final_status = "Approved";
+            $researchSubmission->admin_comments = null;
+            $researchSubmission->save();
+    
+            return redirect()->back()->with('success', 'Abstract approved successfully.');
+        }
+        return redirect()->back()->with('error', 'Abstract not found.');
+    }
+    public function rejectProposal(Request $request)
+    {
+        $user = auth()->user();
+
+        $request->validate([
+            'serial_number' => 'required|exists:research_submissions,serial_number',
+            'comments' => 'required|string|max:1000',
+        ]);
+        // Find the abstract by serial number
+        $researchSubmission = ResearchSubmission::where('serial_number', $request->serial_number)->first();
+
+        if ($researchSubmission) {
+            // Approve the abstract by setting the 'approved' field to true
+            $researchSubmission->final_status = "Rejected";
+            $researchSubmission->admin_comments = $request->comments;
+            $researchSubmission->save();
+    
+            return redirect()->back()->with('success', 'Abstract rejected successfully.');
+        }
+        return redirect()->back()->with('error', 'Abstract not found.');
+    }
     public function profile()
     {
         return view('admin.partials.profile');

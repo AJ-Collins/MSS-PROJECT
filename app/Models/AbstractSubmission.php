@@ -9,6 +9,9 @@ class AbstractSubmission extends Model
 {
     use HasFactory;
 
+    protected $primaryKey = 'serial_number';
+    public $incrementing = false; // Since serial_number is not auto-incrementing
+    protected $keyType = 'string';
     protected $fillable = [
         'serialNumber',
         'title', 

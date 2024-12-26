@@ -41,6 +41,10 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
     Route::get('/profile', [AdminController::class, 'profile'])->name('admin.profile');
     Route::get('/settings', [AdminController::class, 'settings'])->name('admin.settings');
     Route::get('/profile', [AdminController::class, 'profile'])->name('admin.partials.profile');
+    Route::post('/approve-abstract', [AdminController::class, 'approveAbstract'])->name('approve.abstract');
+    Route::post('/reject-abstract', [AdminController::class, 'rejectAbstract'])->name('reject.abstract');
+    Route::post('/approve-proposal', [AdminController::class, 'approveProposal'])->name('approve.proposal');
+    Route::post('/reject-proposal', [AdminController::class, 'rejectProposal'])->name('reject.proposal');
 });
 
 //Reviewer routes

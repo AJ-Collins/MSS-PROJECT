@@ -131,22 +131,70 @@
                     <td class="px-4 py-3">
                         <div class="flex flex-wrap gap-2 justify-center">
                             <div class="dropdown relative">
-                                <button onclick="toggleDropdown('actions-dropdown-1')" class="px-3 py-1 text-xs font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-full">
+                                <button onclick="toggleDropdown('actions-dropdown-{{ $submission->serial_number }}')" 
+                                        class="px-3 py-1 text-xs font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-full">
                                     Actions ▼
                                 </button>
-                                <div id="actions-dropdown-1" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-10">
+                                <div id="actions-dropdown-{{ $submission->serial_number }}" 
+                                    class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-10">
                                     <div class="py-1">
-                                        <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="openModal('assign-reviewer-modal')">Assign Reviewer</button>
-                                        <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="openModal('add-comments-modal')">Approve</button>
-                                        <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Download</button>
-                                        <button class="block w-full text-left px-4 py-2 text-sm text-green-900 hover:bg-gray-100">Return for Revision</button>
-                                        <button class="block w-full text-left px-4 py-2 text-sm text-red-700 hover:bg-gray-100">Reject</button>
+                                        <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" 
+                                                onclick="openModal('assign-reviewer-modal-{{ $submission->serial_number }}')">
+                                            Assign Reviewer
+                                        </button>
+                                        <form action="{{ route('approve.abstract') }}" method="POST" class="contents">
+                                            @csrf
+                                            <input type="hidden" name="serial_number" value="{{ $submission->serial_number }}">
+                                            <button type="submit" 
+                                                    class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                Approve
+                                            </button>
+                                        </form>
+                                        <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                            Download
+                                        </button>
+                                        <button class="block w-full text-left px-4 py-2 text-sm text-green-900 hover:bg-gray-100">
+                                            Return for Revision
+                                        </button>
+                                        <button class="block w-full text-left px-4 py-2 text-sm text-red-700 hover:bg-gray-100" 
+                                                onclick="openModal('add-comments-modal-{{ $submission->serial_number }}')">
+                                            Reject
+                                        </button>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </td>
                 </tr>
+
+                <!-- Rejection Modal -->
+                <div id="add-comments-modal-{{ $submission->serial_number }}" 
+                    class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
+                    <div class="bg-white rounded-lg shadow-md p-6 w-full max-w-lg">
+                        <h3 class="text-lg font-medium text-gray-800 mb-4">Add Comments for Rejecting</h3>
+                        <form action="{{ route('reject.abstract') }}" method="POST">
+                            @csrf
+                            <input type="hidden" name="serial_number" value="{{ $submission->serial_number }}">
+                            <textarea 
+                                name="comments"
+                                rows="4" 
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+                                placeholder="Write your comments here..."
+                                required></textarea>
+                            <div class="mt-4 flex justify-end">
+                                <button type="button" 
+                                        class="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg mr-2" 
+                                        onclick="closeModal('add-comments-modal-{{ $submission->serial_number }}')">
+                                    Cancel
+                                </button>
+                                <button type="submit" 
+                                        class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg">
+                                    Reject
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             @endforeach
             @foreach ($researchSubmissions as $researchSubmission)
                 <tr class="border-b hover:bg-gray-50">
@@ -156,7 +204,7 @@
                     </td>
                     <td class="px-4 py-3 text-sm text-gray-700">Research Proposal</td>
                     <td class="px-4 py-3 text-sm text-gray-700">{{ $researchSubmission->user_reg_no }}</td>
-                    <td class="px-4 py-3 text-sm text-gray-500">{{ \Carbon\Carbon::parse($submission->created_at)->format('d M Y') }}</td>
+                    <td class="px-4 py-3 text-sm text-gray-500">{{ \Carbon\Carbon::parse($researchSubmission->created_at)->format('d M Y') }}</td>
                     <td class="px-4 py-3 text-sm text-gray-700">
                         @if(!$researchSubmission->score)
                             Not reviewed
@@ -208,22 +256,62 @@
                     <td class="px-4 py-3">
                         <div class="flex flex-wrap gap-2 justify-center">
                             <div class="dropdown relative">
-                                <button onclick="toggleDropdown('actions-dropdown-2')" class="px-3 py-1 text-xs font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-full">
+                                <!-- Dropdown button -->
+                                <button onclick="toggleDropdown('actions-dropdown-{{ $researchSubmission->serial_number }}')" 
+                                        class="px-3 py-1 text-xs font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-full">
                                     Actions ▼
                                 </button>
-                                <div id="actions-dropdown-2" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-10">
+                                <div id="actions-dropdown-{{ $researchSubmission->serial_number }}" 
+                                    class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-10">
                                     <div class="py-1">
                                         <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Assign Reviewer</button>
-                                        <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Approve</button>
+                                        <form action="{{ route('approve.proposal') }}" method="POST" class="contents">
+                                            @csrf
+                                            <input type="hidden" name="serial_number" value="{{ $researchSubmission->serial_number }}">
+                                            <button type="submit" 
+                                                    class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                Approve
+                                            </button>
+                                        </form>
                                         <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Download</button>
                                         <button class="block w-full text-left px-4 py-2 text-sm text-green-900 hover:bg-gray-100">Return for Revision</button>
-                                        <button class="block w-full text-left px-4 py-2 text-sm text-red-700 hover:bg-gray-100">Reject</button>
+                                        <button class="block w-full text-left px-4 py-2 text-sm text-red-700 hover:bg-gray-100"
+                                                onclick="openModal('add-comments-modal-{{ $researchSubmission->serial_number }}')">
+                                                Reject</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </td>
                 </tr>
+                <!-- Rejection Modal -->
+                <div id="add-comments-modal-{{ $researchSubmission->serial_number }}" 
+                    class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
+                    <div class="bg-white rounded-lg shadow-md p-6 w-full max-w-lg">
+                        <h3 class="text-lg font-medium text-gray-800 mb-4">Add Comments for Rejecting</h3>
+                        <form action="{{ route('reject.proposal') }}" method="POST">
+                            @csrf
+                            <input type="hidden" name="serial_number" value="{{ $researchSubmission->serial_number }}">
+                            <textarea 
+                                name="comments"
+                                rows="4" 
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+                                placeholder="Write your comments here..."
+                                required></textarea>
+                            <div class="mt-4 flex justify-end">
+                                <button type="button" 
+                                        class="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg mr-2" 
+                                        onclick="closeModal('add-comments-modal-{{ $researchSubmission->serial_number }}')">
+                                    Cancel
+                                </button>
+                                <button type="submit" 
+                                        class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg">
+                                    Reject
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             @endforeach
             </tbody>
         </table>
@@ -261,20 +349,7 @@
     </div>
 </div>
 
-<!-- Modal for Adding Comments -->
-<div id="add-comments-modal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
-    <div class="bg-white rounded-lg shadow-md p-6 w-full max-w-lg">
-        <h3 class="text-lg font-medium text-gray-800 mb-4">Add Comments</h3>
-        <textarea 
-            rows="4" 
-            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:outline-none"
-            placeholder="Write your comments here..."></textarea>
-        <div class="mt-4 flex justify-end">
-            <button class="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg mr-2" onclick="closeModal('add-comments-modal')">Cancel</button>
-            <button class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg">Approve</button>
-        </div>
-    </div>
-</div>
+
 
 <script>
     function closeModal(modalId) {
