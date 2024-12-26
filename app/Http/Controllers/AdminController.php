@@ -3,12 +3,34 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use App\Models\AbstractSubmission;
+use App\Models\ResearchSubmission;
+use Illuminate\Support\Facades\DB;
+
 
 class AdminController extends Controller
 {
     public function dashboard()
     {
-        return view('admin.partials.dashboard');
+        $admin = Auth::user();
+
+        $totalReviewers = DB::table('role_user')
+            ->whereIn('role_id', [2])
+            ->count();
+        $totalUsers = DB::table('role_user')
+            ->whereIn('role_id', [3])
+            ->count();
+        
+        $totalAbstracts = AbstractSubmission::distinct('serial_number')->count();
+        $totalProposals = ResearchSubmission::distinct('serial_number')->count();
+
+        $submissions = AbstractSubmission::all();
+        $researchSubmissions = ResearchSubmission::all();
+
+        return view('admin.partials.dashboard', compact('totalUsers', 'totalAbstracts',
+                    'totalProposals', 'totalReviewers', 'submissions', 'researchSubmissions'));
     }
     public function users()
     {
@@ -26,8 +48,12 @@ class AdminController extends Controller
     }
 
     public function documents()
-    {
-        return view('admin.partials.documents');
+    {   
+        $admin = Auth::user();
+
+        $submissions = AbstractSubmission::all();
+        $researchSubmissions = ResearchSubmission::all();
+        return view('admin.partials.documents', compact('submissions', 'researchSubmissions'));
     }
 
     public function profile()

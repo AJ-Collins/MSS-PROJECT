@@ -2,178 +2,276 @@
 
 @section('admin-content')
 <div class="px-6 py-4 border-b border-gray-200 shadow-sm bg-white">
-    <h2 class="text-2xl font-semibold text-gray-800 tracking-tight">Manage Documents</h2>
+    <h2 class="text-2xl font-semibold text-gray-800 tracking-tight">Document Management</h2>
+    
+    <!-- Document Type Filter -->
+    <div class="mt-4 flex space-x-4">
+        <button class="px-4 py-2 text-sm font-medium text-indigo-600 bg-indigo-50 rounded-lg hover:bg-indigo-100">
+            Abstracts
+        </button>
+        <button class="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-50 rounded-lg hover:bg-gray-100">
+            Articles
+        </button>
+        <button class="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-50 rounded-lg hover:bg-gray-100">
+            Research Proposals
+        </button>
+    </div>
 </div>
 
 <div class="mt-6 px-6 py-4 bg-white rounded-lg shadow-md border border-gray-200">
-    <!-- Search Functionality -->
-    <div class="flex flex-col md:flex-row justify-between items-center mb-6 space-y-4 md:space-y-0">
-        <input 
-            type="text" 
-            placeholder="Search documents..." 
-            class="w-full md:w-2/3 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:outline-none"
-        >
+    <!-- Search and Filter Section -->
+    <div class="flex flex-col md:flex-row justify-between items-center mb-6 space-y-4 md:space-y-0 md:space-x-4">
+        <div class="w-full md:w-1/3">
+            <input 
+                type="text" 
+                placeholder="Search documents..." 
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+            >
+        </div>
+        <div class="w-full md:w-1/3">
+            <select class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:outline-none">
+                <option value="">Filter by Status</option>
+                <option value="pending">Pending Review</option>
+                <option value="under_review">Under Review</option>
+                <option value="revision">Needs Revision</option>
+                <option value="approved">Approved</option>
+                <option value="rejected">Rejected</option>
+            </select>
+        </div>
         <button class="w-full md:w-auto px-6 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700">
             Search
         </button>
     </div>
 
     <!-- Document Table -->
-    <div class="overflow-x-auto">
+    <div class="overflow-x-auto h-80 overflow-y-auto">
         <table class="min-w-full table-auto">
             <thead class="bg-gray-50">
                 <tr>
-                    <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600">Document Name</th>
-                    <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600">Uploaded By</th>
-                    <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600">Uploaded On</th>
+                    <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600">Title</th>
+                    <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600">Type</th>
+                    <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600">Submitted By</th>
+                    <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600">Submission Date</th>
+                    <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600">Score</th>
                     <th class="px-4 py-2 text-center text-sm font-semibold text-gray-600">Status</th>
+                    <th class="px-4 py-2 text-center text-sm font-semibold text-gray-600">Related Documents</th>
                     <th class="px-4 py-2 text-center text-sm font-semibold text-gray-600">Actions</th>
                 </tr>
             </thead>
-            <tbody>
-                <!-- Example Row -->
+            @foreach ($submissions as $submission)
                 <tr class="border-b hover:bg-gray-50">
-                    <td class="px-4 py-3 text-sm text-gray-700">Document1.pdf</td>
-                    <td class="px-4 py-3 text-sm text-gray-700">John Doe</td>
-                    <td class="px-4 py-3 text-sm text-gray-500">2024-12-20</td>
-                    <td class="px-4 py-3 text-center text-sm">
-                        <span class="px-3 py-1 text-xs font-medium text-yellow-800 bg-yellow-100 rounded-full">Under Review</span>
+                    <td class="px-4 py-3 text-sm text-gray-700">
+                        <div class="font-medium">{{ $submission->title }}</div>
+                        <div class="text-xs text-gray-500">{{ $submission->serial_number }}</div>
                     </td>
-                    <td class="px-4 py-3 text-center text-sm">
-                        <!-- Actions arranged in a flex column for responsiveness -->
+                    <td class="px-4 py-3 text-sm text-gray-700">Abstract</td>
+                    <td class="px-4 py-3 text-sm text-gray-700">{{ $submission->user_reg_no }}</td>
+                    <td class="px-4 py-3 text-sm text-gray-500">{{ \Carbon\Carbon::parse($submission->created_at)->format('d M Y') }}</td>
+                    <td class="px-4 py-3 text-sm text-gray-700">
+                        @if(!$submission->score)
+                            Not reviewed
+                        @elseif($submission->score < 30)
+                            <span class="text-orange-800 font-semibold">Need revision</span>
+                        @else
+                            {{ $submission->score }}
+                        @endif
+                    </td>
+                    <td class="px-4 py-3 text-center">
+                        @php
+                            $statusStyles = [
+                                'Pending' => [
+                                    'text' => 'text-yellow-800',
+                                    'bg' => 'bg-yellow-100'
+                                ],
+                                'Approved' => [
+                                    'text' => 'text-green-800',
+                                    'bg' => 'bg-green-100'
+                                ],
+                                'Under Review' => [
+                                    'text' => 'text-blue-800',
+                                    'bg' => 'bg-blue-100'
+                                ],
+                                'Rejected' => [
+                                    'text' => 'text-red-800',
+                                    'bg' => 'bg-red-100'
+                                ],
+                                'Needs Revision' => [
+                                    'text' => 'text-orange-800',
+                                    'bg' => 'bg-orange-100'
+                                ]
+                            ];
+                            $currentStatus = $submission->final_status;
+                            $style = $statusStyles[$currentStatus] ?? [
+                                'text' => 'text-gray-800',
+                                'bg' => 'bg-gray-100'
+                            ];
+                        @endphp
+                        <span class="px-3 py-1 text-xs font-medium {{ $style['text'] }} {{ $style['bg'] }} rounded-full">
+                            {{ $currentStatus ?: 'Unknown' }}
+                        </span>
+                    </td>
+                    <td class="px-4 py-3 text-center">
+                        @if($submission->final_status === 'Approved' && !$submission->article)
+                            <form action="" method="POST" class="inline">
+                                @csrf
+                                <button type="submit" 
+                                        class="inline-block px-3 py-1 text-xs font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-full">
+                                    Request Article Upload
+                                </button>
+                            </form>
+                        @elseif($submission->article)
+                            <a href="{{ route('article.view', $submission->article->id) }}" 
+                            class="text-xs text-blue-600 hover:text-blue-800 hover:underline">
+                                View Article
+                            </a>
+                        @else
+                            <span class="text-xs text-gray-500">No article submitted yet</span>
+                        @endif
+                    </td>
+                    <td class="px-4 py-3">
                         <div class="flex flex-wrap gap-2 justify-center">
-                            <button class="px-3 py-1 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-full">Assign Reviewer</button>
-                            <button class="px-3 py-1 text-xs font-medium text-white bg-orange-600 hover:bg-orange-700 rounded-full">Return for Revision</button>
-                            <button class="px-3 py-1 text-xs font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-full" onclick="openModal('add-comments-modal')">Add Comments</button>
-                            <button class="px-3 py-1 text-xs font-medium text-white bg-gray-600 hover:bg-gray-700 rounded-full">Show Remarks</button>
-                            <button class="px-3 py-1 text-xs font-medium text-white bg-green-600 hover:bg-green-700 rounded-full">Download</button>
-                    </td>
-                </tr>
-                <tr class="border-b hover:bg-gray-50">
-                    <td class="px-4 py-3 text-sm text-gray-700">Document1.pdf</td>
-                    <td class="px-4 py-3 text-sm text-gray-700">John Doe</td>
-                    <td class="px-4 py-3 text-sm text-gray-500">2024-12-20</td>
-                    <td class="px-4 py-3 text-center text-sm">
-                        <span class="px-3 py-1 text-xs font-medium text-yellow-800 bg-yellow-100 rounded-full">Under Review</span>
-                    </td>
-                    <td class="px-4 py-3 text-center text-sm">
-                        <!-- Actions arranged in a flex column for responsiveness -->
-                        <div class="flex flex-wrap gap-2 justify-center">
-                            <button class="px-3 py-1 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-full">Assign Reviewer</button>
-                            <button class="px-3 py-1 text-xs font-medium text-white bg-orange-600 hover:bg-orange-700 rounded-full">Return for Revision</button>
-                            <button class="px-3 py-1 text-xs font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-full" onclick="openModal('add-comments-modal')">Add Comments</button>
-                            <button class="px-3 py-1 text-xs font-medium text-white bg-gray-600 hover:bg-gray-700 rounded-full">Show Remarks</button>
-                            <button class="px-3 py-1 text-xs font-medium text-white bg-green-600 hover:bg-green-700 rounded-full">Download</button>
+                            <div class="dropdown relative">
+                                <button onclick="toggleDropdown('actions-dropdown-1')" class="px-3 py-1 text-xs font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-full">
+                                    Actions ▼
+                                </button>
+                                <div id="actions-dropdown-1" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-10">
+                                    <div class="py-1">
+                                        <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="openModal('assign-reviewer-modal')">Assign Reviewer</button>
+                                        <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="openModal('add-comments-modal')">Approve</button>
+                                        <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Download</button>
+                                        <button class="block w-full text-left px-4 py-2 text-sm text-green-900 hover:bg-gray-100">Return for Revision</button>
+                                        <button class="block w-full text-left px-4 py-2 text-sm text-red-700 hover:bg-gray-100">Reject</button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </td>
                 </tr>
+            @endforeach
+            @foreach ($researchSubmissions as $researchSubmission)
                 <tr class="border-b hover:bg-gray-50">
-                    <td class="px-4 py-3 text-sm text-gray-700">Document1.pdf</td>
-                    <td class="px-4 py-3 text-sm text-gray-700">John Doe</td>
-                    <td class="px-4 py-3 text-sm text-gray-500">2024-12-20</td>
-                    <td class="px-4 py-3 text-center text-sm">
-                        <span class="px-3 py-1 text-xs font-medium text-yellow-800 bg-yellow-100 rounded-full">Under Review</span>
+                    <td class="px-4 py-3 text-sm text-gray-700">
+                        <div class="font-medium">{{ $researchSubmission->article_title }}</div>
+                        <div class="text-xs text-gray-500">{{ $researchSubmission->serial_number }}</div>
                     </td>
-                    <td class="px-4 py-3 text-center text-sm">
-                        <!-- Actions arranged in a flex column for responsiveness -->
+                    <td class="px-4 py-3 text-sm text-gray-700">Research Proposal</td>
+                    <td class="px-4 py-3 text-sm text-gray-700">{{ $researchSubmission->user_reg_no }}</td>
+                    <td class="px-4 py-3 text-sm text-gray-500">{{ \Carbon\Carbon::parse($submission->created_at)->format('d M Y') }}</td>
+                    <td class="px-4 py-3 text-sm text-gray-700">
+                        @if(!$researchSubmission->score)
+                            Not reviewed
+                        @elseif($researchSubmission->score < 30)
+                            Below Average
+                        @else
+                            {{ $researchSubmission->score }}
+                        @endif
+                    </td>
+                    <td class="px-4 py-3 text-center">
+                        @php
+                            $statusStyles = [
+                                'Pending' => [
+                                    'text' => 'text-yellow-800',
+                                    'bg' => 'bg-yellow-100'
+                                ],
+                                'Approved' => [
+                                    'text' => 'text-green-800',
+                                    'bg' => 'bg-green-100'
+                                ],
+                                'Under Review' => [
+                                    'text' => 'text-blue-800',
+                                    'bg' => 'bg-blue-100'
+                                ],
+                                'Rejected' => [
+                                    'text' => 'text-red-800',
+                                    'bg' => 'bg-red-100'
+                                ],
+                                'Needs Revision' => [
+                                    'text' => 'text-orange-800',
+                                    'bg' => 'bg-orange-100'
+                                ]
+                            ];
+
+                            $currentStatus = $researchSubmission->final_status;
+                            $style = $statusStyles[$currentStatus] ?? [
+                                'text' => 'text-gray-800',
+                                'bg' => 'bg-gray-100'
+                            ];
+                        @endphp
+
+                        <span class="px-3 py-1 text-xs font-medium {{ $style['text'] }} {{ $style['bg'] }} rounded-full">
+                            {{ $currentStatus ?: 'Unknown' }}
+                        </span>
+                    </td>
+                    <td class="px-4 py-3 text-center">
+                        <button class="text-xs text-blue-600 hover:underline">View Abstract</button>
+                    </td>
+                    <td class="px-4 py-3">
                         <div class="flex flex-wrap gap-2 justify-center">
-                            <button class="px-3 py-1 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-full">Assign Reviewer</button>
-                            <button class="px-3 py-1 text-xs font-medium text-white bg-orange-600 hover:bg-orange-700 rounded-full">Return for Revision</button>
-                            <button class="px-3 py-1 text-xs font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-full" onclick="openModal('add-comments-modal')">Add Comments</button>
-                            <button class="px-3 py-1 text-xs font-medium text-white bg-gray-600 hover:bg-gray-700 rounded-full">Show Remarks</button>
-                            <button class="px-3 py-1 text-xs font-medium text-white bg-green-600 hover:bg-green-700 rounded-full">Download</button>
-                    </td>
-                </tr>
-                <tr class="border-b hover:bg-gray-50">
-                    <td class="px-4 py-3 text-sm text-gray-700">Document1.pdf</td>
-                    <td class="px-4 py-3 text-sm text-gray-700">John Doe</td>
-                    <td class="px-4 py-3 text-sm text-gray-500">2024-12-20</td>
-                    <td class="px-4 py-3 text-center text-sm">
-                        <span class="px-3 py-1 text-xs font-medium text-yellow-800 bg-yellow-100 rounded-full">Under Review</span>
-                    </td>
-                    <td class="px-4 py-3 text-center text-sm">
-                        <!-- Actions arranged in a flex column for responsiveness -->
-                        <div class="flex flex-wrap gap-2 justify-center">
-                            <button class="px-3 py-1 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-full">Assign Reviewer</button>
-                            <button class="px-3 py-1 text-xs font-medium text-white bg-orange-600 hover:bg-orange-700 rounded-full">Return for Revision</button>
-                            <button class="px-3 py-1 text-xs font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-full" onclick="openModal('add-comments-modal')">Add Comments</button>
-                            <button class="px-3 py-1 text-xs font-medium text-white bg-gray-600 hover:bg-gray-700 rounded-full">Show Remarks</button>
-                            <button class="px-3 py-1 text-xs font-medium text-white bg-green-600 hover:bg-green-700 rounded-full">Download</button>
+                            <div class="dropdown relative">
+                                <button onclick="toggleDropdown('actions-dropdown-2')" class="px-3 py-1 text-xs font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-full">
+                                    Actions ▼
+                                </button>
+                                <div id="actions-dropdown-2" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-10">
+                                    <div class="py-1">
+                                        <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Assign Reviewer</button>
+                                        <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Approve</button>
+                                        <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Download</button>
+                                        <button class="block w-full text-left px-4 py-2 text-sm text-green-900 hover:bg-gray-100">Return for Revision</button>
+                                        <button class="block w-full text-left px-4 py-2 text-sm text-red-700 hover:bg-gray-100">Reject</button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </td>
                 </tr>
-                <tr class="border-b hover:bg-gray-50">
-                    <td class="px-4 py-3 text-sm text-gray-700">Document1.pdf</td>
-                    <td class="px-4 py-3 text-sm text-gray-700">John Doe</td>
-                    <td class="px-4 py-3 text-sm text-gray-500">2024-12-20</td>
-                    <td class="px-4 py-3 text-center text-sm">
-                        <span class="px-3 py-1 text-xs font-medium text-yellow-800 bg-yellow-100 rounded-full">Under Review</span>
-                    </td>
-                    <td class="px-4 py-3 text-center text-sm">
-                        <!-- Actions arranged in a flex column for responsiveness -->
-                        <div class="flex flex-wrap gap-2 justify-center">
-                            <button class="px-3 py-1 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-full">Assign Reviewer</button>
-                            <button class="px-3 py-1 text-xs font-medium text-white bg-orange-600 hover:bg-orange-700 rounded-full">Return for Revision</button>
-                            <button class="px-3 py-1 text-xs font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-full" onclick="openModal('add-comments-modal')">Add Comments</button>
-                            <button class="px-3 py-1 text-xs font-medium text-white bg-gray-600 hover:bg-gray-700 rounded-full">Show Remarks</button>
-                            <button class="px-3 py-1 text-xs font-medium text-white bg-green-600 hover:bg-green-700 rounded-full">Download</button>
-                        </div>
-                    </td>
-                </tr>
-                <tr class="border-b hover:bg-gray-50">
-                    <td class="px-4 py-3 text-sm text-gray-700">Document1.pdf</td>
-                    <td class="px-4 py-3 text-sm text-gray-700">John Doe</td>
-                    <td class="px-4 py-3 text-sm text-gray-500">2024-12-20</td>
-                    <td class="px-4 py-3 text-center text-sm">
-                        <span class="px-3 py-1 text-xs font-medium text-yellow-800 bg-yellow-100 rounded-full">Under Review</span>
-                    </td>
-                    <td class="px-4 py-3 text-center text-sm">
-                        <!-- Actions arranged in a flex column for responsiveness -->
-                        <div class="flex flex-wrap gap-2 justify-center">
-                            <button class="px-3 py-1 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-full">Assign Reviewer</button>
-                            <button class="px-3 py-1 text-xs font-medium text-white bg-orange-600 hover:bg-orange-700 rounded-full">Return for Revision</button>
-                            <button class="px-3 py-1 text-xs font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-full" onclick="openModal('add-comments-modal')">Add Comments</button>
-                            <button class="px-3 py-1 text-xs font-medium text-white bg-gray-600 hover:bg-gray-700 rounded-full">Show Remarks</button>
-                            <button class="px-3 py-1 text-xs font-medium text-white bg-green-600 hover:bg-green-700 rounded-full">Download</button>
-                        </div>
-                    </td>
-                </tr>
-                <tr class="border-b hover:bg-gray-50">
-                    <td class="px-4 py-3 text-sm text-gray-700">Document1.pdf</td>
-                    <td class="px-4 py-3 text-sm text-gray-700">John Doe</td>
-                    <td class="px-4 py-3 text-sm text-gray-500">2024-12-20</td>
-                    <td class="px-4 py-3 text-center text-sm">
-                        <span class="px-3 py-1 text-xs font-medium text-yellow-800 bg-yellow-100 rounded-full">Under Review</span>
-                    </td>
-                    <td class="px-4 py-3 text-center text-sm">
-                        <!-- Actions arranged in a flex column for responsiveness -->
-                        <div class="flex flex-wrap gap-2 justify-center">
-                            <button class="px-3 py-1 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-full">Assign Reviewer</button>
-                            <button class="px-3 py-1 text-xs font-medium text-white bg-orange-600 hover:bg-orange-700 rounded-full">Return for Revision</button>
-                            <button class="px-3 py-1 text-xs font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-full" onclick="openModal('add-comments-modal')">Add Comments</button>
-                            <button class="px-3 py-1 text-xs font-medium text-white bg-gray-600 hover:bg-gray-700 rounded-full">Show Remarks</button>
-                            <button class="px-3 py-1 text-xs font-medium text-white bg-green-600 hover:bg-green-700 rounded-full">Download</button>
-                        </div>
-                    </td>
-                </tr>
-                
-                <!-- Additional rows can be dynamically rendered here -->
+            @endforeach
             </tbody>
         </table>
     </div>
+
+    <!-- Pagination 
+    <div class="mt-6 flex justify-between items-center">
+        <div class="text-sm text-gray-600">
+            Showing 1 to 10 of 50 entries
+        </div>
+        <div class="flex space-x-2">
+            <button class="px-3 py-1 text-sm text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200">Previous</button>
+            <button class="px-3 py-1 text-sm text-white bg-indigo-600 rounded-lg hover:bg-indigo-700">1</button>
+            <button class="px-3 py-1 text-sm text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200">2</button>
+            <button class="px-3 py-1 text-sm text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200">3</button>
+            <button class="px-3 py-1 text-sm text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200">Next</button>
+        </div>
+    </div>
+</div>-->
+
+<!-- Modal for Assigning Reviewer -->
+<div id="assign-reviewer-modal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-md p-6 w-full max-w-lg">
+        <h3 class="text-lg font-medium text-gray-800 mb-4">Assign Reviewer</h3>
+        <select class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:outline-none mb-4">
+            <option value="">Select Reviewer</option>
+            <option value="1">Dr. Smith</option>
+            <option value="2">Dr. Johnson</option>
+            <option value="3">Dr. Williams</option>
+        </select>
+        <div class="mt-4 flex justify-end">
+            <button class="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg mr-2" onclick="closeModal('assign-reviewer-modal')">Cancel</button>
+            <button class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg">Assign</button>
+        </div>
+    </div>
 </div>
 
-<!-- Modal for Adding Review Comments -->
+<!-- Modal for Adding Comments -->
 <div id="add-comments-modal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
     <div class="bg-white rounded-lg shadow-md p-6 w-full max-w-lg">
-        <h3 class="text-lg font-medium text-gray-800 mb-4">Add Review Comments</h3>
+        <h3 class="text-lg font-medium text-gray-800 mb-4">Add Comments</h3>
         <textarea 
             rows="4" 
             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:outline-none"
             placeholder="Write your comments here..."></textarea>
         <div class="mt-4 flex justify-end">
             <button class="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg mr-2" onclick="closeModal('add-comments-modal')">Cancel</button>
-            <button class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg">Submit</button>
+            <button class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg">Approve</button>
         </div>
     </div>
 </div>
@@ -182,8 +280,32 @@
     function closeModal(modalId) {
         document.getElementById(modalId).classList.add('hidden');
     }
+    
     function openModal(modalId) {
         document.getElementById(modalId).classList.remove('hidden');
     }
+    
+    function toggleDropdown(dropdownId) {
+        const dropdown = document.getElementById(dropdownId);
+        const allDropdowns = document.querySelectorAll('.dropdown div[id^="actions-dropdown-"]');
+        
+        // Close all other dropdowns
+        allDropdowns.forEach(d => {
+            if (d.id !== dropdownId) {
+                d.classList.add('hidden');
+            }
+        });
+        
+        // Toggle the clicked dropdown
+        dropdown.classList.toggle('hidden');
+    }
+    
+    // Close dropdowns when clicking outside
+    window.addEventListener('click', function(e) {
+        if (!e.target.closest('.dropdown')) {
+            const allDropdowns = document.querySelectorAll('.dropdown div[id^="actions-dropdown-"]');
+            allDropdowns.forEach(d => d.classList.add('hidden'));
+        }
+    });
 </script>
 @endsection
