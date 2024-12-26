@@ -8,7 +8,7 @@
                 <!-- Dashboard Content -->                
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                     <!-- Stats Card 1 -->
-                    <div class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-400">
                         <div class="flex items-center">
                             <div class="p-3 rounded-full bg-indigo-100 text-indigo-500">
                                 <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -22,7 +22,7 @@
                         </div>
                     </div>
                     <!-- Stats Card 2 -->
-                    <div class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-400">
                         <div class="flex items-center">
                             <div class="p-3 rounded-full bg-green-100 text-green-500">
                                 <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -37,7 +37,7 @@
                     </div>
 
                     <!-- Stats Card 3 -->
-                    <div class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-400">
                         <div class="flex items-center">
                             <div class="p-3 rounded-full bg-blue-100 text-blue-500">
                                 <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -52,7 +52,7 @@
                     </div>
 
                     <!-- Stats Card 4 -->
-                    <div class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-400">
                         <div class="flex items-center">
                             <div class="p-3 rounded-full bg-red-100 text-red-500">
                                 <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
