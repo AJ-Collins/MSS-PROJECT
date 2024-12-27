@@ -13,11 +13,12 @@ class AbstractSubmission extends Model
     public $incrementing = false; // Since serial_number is not auto-incrementing
     protected $keyType = 'string';
     protected $fillable = [
-        'serialNumber',
+        'serial_number',
         'title', 
         'sub_theme', 
         'abstract', 
         'keywords',
+        'reviewer_reg_no',
         // Add any other fields you want to allow mass-assignment for
     ];
 }

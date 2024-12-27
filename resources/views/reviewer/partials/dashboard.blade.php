@@ -125,36 +125,36 @@
             <table class="min-w-full table-auto">
                 <thead class="bg-gray-100">
                     <tr>
-                        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600">Document Name</th>
-                        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600">Category</th>
+                        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600">Serial_No</th>
                         <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600">Title</th>
+                        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600">Sub_Theme</th>
                         <th class="px-4 py-2 text-center text-sm font-semibold text-gray-600">Status</th>
                         <th class="px-4 py-2 text-center text-sm font-semibold text-gray-600">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- Example Submission -->
+                    @forelse ($assignedAbstracts as $abstract)
                     <tr class="border-b hover:bg-gray-50">
-                        <td class="px-4 py-3 text-sm text-gray-700">Abstract 1.pdf</td>
-                        <td class="px-4 py-3 text-sm text-gray-700">Healthcare</td>
-                        <td class="px-4 py-3 text-sm text-gray-500">Medical Innovation Quarterly</td>
+                        <td class="px-4 py-3 text-sm text-gray-700">{{ $abstract->serial_number }}</td>
+                        <td class="px-4 py-3 text-sm text-gray-700">{{ $abstract->title }}</td>
+                        <td class="px-4 py-3 text-sm text-gray-500">{{ $abstract->sub_theme }}</td>
                         <td class="px-4 py-3 text-center">
                             <span class="px-2 py-1 text-xs font-medium text-yellow-800 bg-yellow-100 rounded-full">To Review</span>
                         </td>
                         <td class="px-4 py-3 text-center space-x-2">
-    <button 
-        class="px-2 py-1 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-full"
-        @click="$store.modal.open()"
-    >
-        Review
-    </button>
+                            <button 
+                                class="px-2 py-1 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-full"
+                                @click="$store.modal.open()"
+                            >
+                                Review
+                            </button>
 
-    <button 
-        class="px-2 py-1 text-xs font-medium text-white bg-gray-600 hover:bg-gray-700 rounded-full"
-    >
-        Download
-    </button>
-</td>
+                            <button 
+                                class="px-2 py-1 text-xs font-medium text-white bg-gray-600 hover:bg-gray-700 rounded-full"
+                            >
+                                Download
+                            </button>
+                        </td>
 
 <!-- Modal -->
 <div 
@@ -244,6 +244,11 @@
     </div>
 </div>
                     </tr>
+                    @empty
+                    <tr>
+                    <td colspan="3" class="px-4 py-2 text-center">No abstracts assigned yet.</td>
+                </tr>
+            @endforelse
                 </tbody>
             </table>
         </div>
@@ -267,13 +272,42 @@
         <div x-show="activeTab === 'proposals'" class="p-4">
             <table class="min-w-full table-auto">
                 <thead class="bg-gray-50">
-                    <!-- Same headers and structure as Abstracts -->
-                </thead>
-                <tbody>
-                    <!-- Example Submission -->
-                    <tr class="border-b hover:bg-gray-50">
-                        <!-- Document details and actions -->
+                    <tr>
+                        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600">Serial_No</th>
+                        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600">Title</th>
+                        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600">Sub_Theme</th>
+                        <th class="px-4 py-2 text-center text-sm font-semibold text-gray-600">Status</th>
+                        <th class="px-4 py-2 text-center text-sm font-semibold text-gray-600">Actions</th>
                     </tr>
+                </thead>        
+                <tbody>
+                    @forelse ($assignedProposals as $proposal)
+                    <tr class="border-b hover:bg-gray-50">
+                        <td class="px-4 py-3 text-sm text-gray-700">{{ $proposal->serial_number }}</td>
+                        <td class="px-4 py-3 text-sm text-gray-700">{{ $proposal->title }}</td>
+                        <td class="px-4 py-3 text-sm text-gray-500">{{ $proposal->sub_theme }}</td>
+                        <td class="px-4 py-3 text-center">
+                            <span class="px-2 py-1 text-xs font-medium text-yellow-800 bg-yellow-100 rounded-full">To Review</span>
+                        </td>
+                        <td class="px-4 py-3 text-center space-x-2">
+                            <button 
+                                class="px-2 py-1 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-full"
+                                @click="$store.modal.open()"
+                            >
+                                Review
+                            </button>
+
+                            <button 
+                                class="px-2 py-1 text-xs font-medium text-white bg-gray-600 hover:bg-gray-700 rounded-full"
+                            >
+                                Download
+                            </button>
+                        </td>
+                        @empty
+                        <tr>
+                            <td colspan="3" class="px-4 py-2 text-center">No proposals assigned yet.</td>
+                        </tr>
+                        @endforelse
                 </tbody>
             </table>
         </div>

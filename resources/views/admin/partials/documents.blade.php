@@ -19,6 +19,11 @@
 </div>
 
 <div class="mt-6 px-6 py-4 bg-white rounded-lg shadow-md border border-gray-200">
+        @if (session('success'))
+            <div class="bg-green-100 border border-green-500 text-green-700 p-4 mb-6 rounded-lg">
+                <p class="font-medium">{{ session('success') }}</p>
+            </div>
+        @endif
     <!-- Search and Filter Section -->
     <div class="flex flex-col md:flex-row justify-between items-center mb-6 space-y-4 md:space-y-0 md:space-x-4">
         <div class="w-full md:w-1/3">
@@ -140,7 +145,7 @@
                                     <div class="py-1">
                                         <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" 
                                                 onclick="openModal('assign-reviewer-modal-{{ $submission->serial_number }}')">
-                                            Assign Reviewer
+                                                Assign Reviewer
                                         </button>
                                         <form action="{{ route('approve.abstract') }}" method="POST" class="contents">
                                             @csrf
@@ -190,6 +195,34 @@
                                 <button type="submit" 
                                         class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg">
                                     Reject
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                 <!-- Modal for Assigning Reviewer -->
+                 <div id="assign-reviewer-modal-{{ $submission->serial_number }}" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
+                    <div class="bg-white rounded-lg shadow-md p-6 w-full max-w-lg">
+                        <h3 class="text-lg font-medium text-gray-800 mb-4">Assign Reviewer</h3>
+                        <form action="{{ route('assign.abstract.reviewer', $submission->serial_number) }}" method="POST">
+                            @csrf
+                            <select name="reg_no" 
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:outline-none mb-4" 
+                                    required>
+                                <option value="">Select Reviewer</option>
+                                @foreach ($reviewers as $reviewer)
+                                    <option value="{{ $reviewer->reg_no }}">{{ $reviewer->name }}</option>
+                                @endforeach
+                            </select>
+                            <div class="mt-4 flex justify-end">
+                                <button type="button" 
+                                        class="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg mr-2" 
+                                        onclick="closeModal('assign-reviewer-modal-{{ $submission->serial_number }}')">
+                                    Cancel
+                                </button>
+                                <button type="submit" 
+                                        class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg">
+                                    Assign
                                 </button>
                             </div>
                         </form>
@@ -264,7 +297,10 @@
                                 <div id="actions-dropdown-{{ $researchSubmission->serial_number }}" 
                                     class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-10">
                                     <div class="py-1">
-                                        <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Assign Reviewer</button>
+                                        <button 
+                                            class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                            onclick="openModal('assign-reviewer-modal-{{ $researchSubmission->serial_number }}')">
+                                            Assign Reviewer</button>
                                         <form action="{{ route('approve.proposal') }}" method="POST" class="contents">
                                             @csrf
                                             <input type="hidden" name="serial_number" value="{{ $researchSubmission->serial_number }}">
@@ -312,6 +348,34 @@
                         </form>
                     </div>
                 </div>
+               <!-- Modal for Assigning Reviewer -->
+               <div id="assign-reviewer-modal-{{ $researchSubmission->serial_number }}" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
+                    <div class="bg-white rounded-lg shadow-md p-6 w-full max-w-lg">
+                        <h3 class="text-lg font-medium text-gray-800 mb-4">Assign Reviewer</h3>
+                        <form action="{{ route('assign.proposal.reviewer', $researchSubmission->serial_number) }}" method="POST">
+                            @csrf
+                            <select name="reg_no" 
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:outline-none mb-4" 
+                                    required>
+                                <option value="">Select Reviewer</option>
+                                @foreach ($reviewers as $reviewer)
+                                    <option value="{{ $reviewer->reg_no }}">{{ $reviewer->name }}</option>
+                                @endforeach
+                            </select>
+                            <div class="mt-4 flex justify-end">
+                                <button type="button" 
+                                        class="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg mr-2" 
+                                        onclick="closeModal('assign-reviewer-modal-{{ $researchSubmission->serial_number }}')">
+                                    Cancel
+                                </button>
+                                <button type="submit" 
+                                        class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg">
+                                    Assign
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             @endforeach
             </tbody>
         </table>
@@ -331,26 +395,6 @@
         </div>
     </div>
 </div>-->
-
-<!-- Modal for Assigning Reviewer -->
-<div id="assign-reviewer-modal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
-    <div class="bg-white rounded-lg shadow-md p-6 w-full max-w-lg">
-        <h3 class="text-lg font-medium text-gray-800 mb-4">Assign Reviewer</h3>
-        <select class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:outline-none mb-4">
-            <option value="">Select Reviewer</option>
-            <option value="1">Dr. Smith</option>
-            <option value="2">Dr. Johnson</option>
-            <option value="3">Dr. Williams</option>
-        </select>
-        <div class="mt-4 flex justify-end">
-            <button class="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg mr-2" onclick="closeModal('assign-reviewer-modal')">Cancel</button>
-            <button class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg">Assign</button>
-        </div>
-    </div>
-</div>
-
-
-
 <script>
     function closeModal(modalId) {
         document.getElementById(modalId).classList.add('hidden');

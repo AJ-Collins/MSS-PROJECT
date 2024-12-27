@@ -35,6 +35,14 @@ Route::view('/', 'welcome');
 Route::prefix('admin')->middleware(['auth'])->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
     Route::get('/users', [AdminController::class, 'users'])->name('admin.users');
+
+    Route::post('/users/create', [AdminController::class, 'createUser'])->name('admin.users.create');
+    Route::post('/users/{reg_no}/update', [AdminController::class, 'updateUser'])->name('admin.users.update');
+    Route::post('/users/{reg_no}/updateRole', [AdminController::class, 'updateRole'])->name('admin.users.updateRole');
+    Route::post('/users/{user}/toggle-status', [AdminController::class, 'toggleStatus'])->name('users.toggle-status');
+    Route::post('/assign-abstract-reviewer/{serial_number}', [AdminController::class, 'assignAbstractReviewer'])->name('assign.abstract.reviewer');
+    Route::post('/assign-proposal-reviewer/{serial_number}', [AdminController::class, 'assignProposalReviewer'])->name('assign.proposal.reviewer');
+
     Route::get('/submissions', [AdminController::class, 'submissions'])->name('admin.submissions');
     Route::get('/reports', [AdminController::class, 'reports'])->name('admin.reports');
     Route::get('/documents', [AdminController::class, 'documents'])->name('admin.documents');
@@ -50,7 +58,8 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
 //Reviewer routes
 Route::prefix('reviewer')->middleware(['auth'])->group(function () {
     Route::get('/dashboard', [ReviewerController::class, 'dashboard'])->name('reviewer.partials.dashboard');
-    //Route::get('/users', [AdminController::class, 'users'])->name('admin.users');
+    Route::get('/assigned-abstracts', [ReviewerController::class, 'assignedAbstracts'])->name('reviewer.assignedAbstracts');
+
     //Route::get('/submissions', [AdminController::class, 'submissions'])->name('admin.submissions');
     //Route::get('/reports', [AdminController::class, 'reports'])->name('admin.reports');
     Route::get('/documents', [ReviewerController::class, 'documentsReview'])->name('reviewer.partials.documents');
