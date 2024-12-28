@@ -69,7 +69,7 @@
     <!-- Wrap everything in a single Alpine.js component -->
     <div x-data="{ activeTab: 'abstracts' }">
         <div class="border-b border-gray-200 shadow-sm bg-white">
-            <h2 class="text-2xl font-semibold text-gray-800 tracking-tight p-4">Document Management</h2>
+            <h2 class="text-2xl font-semibold text-gray-800 tracking-tight p-4">Recents</h2>
         </div>
 
         <!-- Tabbed Menu - Removed extra padding -->

@@ -129,9 +129,15 @@ class AdminController extends Controller
     {   
         $admin = Auth::user();
 
-        $submissions = AbstractSubmission::all();
-        $researchSubmissions = ResearchSubmission::all();
-
+        // Get submissions with their reviewer information
+        $submissions = AbstractSubmission::leftJoin('users', 'users.reg_no', '=', 'abstract_submissions.reviewer_reg_no')
+            ->select('abstract_submissions.*', 'users.name as reviewer_name')
+            ->get();
+        // Get submissions with their reviewer information
+        $researchSubmissions = ResearchSubmission::leftJoin('users', 'users.reg_no', '=', 'research_submissions.reviewer_reg_no')
+            ->select('research_submissions.*', 'users.name as reviewer_name')
+            ->get();
+            
         $reviewers = User::whereHas('roles', function ($query){
             $query->where('name', 'Reviewer');
         })->get();
@@ -166,6 +172,17 @@ class AdminController extends Controller
 
         return redirect()->back()->with('success', 'Reviewer assigned successfully.');
     }
+    public function removeAbstractReviewer(Request $request, $serial_number)
+    {
+        // Find the abstract submission by serial number
+        $submission = AbstractSubmission::where('serial_number', $serial_number)->firstOrFail();
+
+        // Remove the reviewer assignment
+        $submission->reviewer_reg_no = null;
+        $submission->save();
+
+        return redirect()->back()->with('success', 'Reviewer removed successfully.');
+    }
     public function assignProposalReviewer(Request $request, $serial_number)
     {
         // Validate the reviewer_reg_no
@@ -193,6 +210,17 @@ class AdminController extends Controller
         $researchSubmission->save();
 
         return redirect()->back()->with('success', 'Reviewer assigned successfully.');
+    }
+    public function removeProposalReviewer(Request $request, $serial_number)
+    {
+        // Find the abstract submission by serial number
+        $researchSubmission = ResearchSubmission::where('serial_number', $serial_number)->firstOrFail();
+
+        // Remove the reviewer assignment
+        $researchSubmission->reviewer_reg_no = null;
+        $researchSubmission->save();
+
+        return redirect()->back()->with('success', 'Reviewer removed successfully.');
     }
     public function rejectAbstract(Request $request)
     {

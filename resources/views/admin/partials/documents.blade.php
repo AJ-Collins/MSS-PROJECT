@@ -4,7 +4,7 @@
 <div class="px-6 py-4 border-b border-gray-200 shadow-sm bg-white">
     <h2 class="text-2xl font-semibold text-gray-800 tracking-tight">Document Management</h2>
     
-    <!-- Document Type Filter -->
+    <!-- Document Type Filter 
     <div class="mt-4 flex space-x-4">
         <button class="px-4 py-2 text-sm font-medium text-indigo-600 bg-indigo-50 rounded-lg hover:bg-indigo-100">
             Abstracts
@@ -14,7 +14,7 @@
         </button>
         <button class="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-50 rounded-lg hover:bg-gray-100">
             Research Proposals
-        </button>
+        </button>-->
     </div>
 </div>
 
@@ -26,22 +26,12 @@
         @endif
     <!-- Search and Filter Section -->
     <div class="flex flex-col md:flex-row justify-between items-center mb-6 space-y-4 md:space-y-0 md:space-x-4">
-        <div class="w-full md:w-1/3">
+        <div class="w-full md:w-4/4">
             <input 
                 type="text" 
                 placeholder="Search documents..." 
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:outline-none"
             >
-        </div>
-        <div class="w-full md:w-1/3">
-            <select class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:outline-none">
-                <option value="">Filter by Status</option>
-                <option value="pending">Pending Review</option>
-                <option value="under_review">Under Review</option>
-                <option value="revision">Needs Revision</option>
-                <option value="approved">Approved</option>
-                <option value="rejected">Rejected</option>
-            </select>
         </div>
         <button class="w-full md:w-auto px-6 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700">
             Search
@@ -58,6 +48,7 @@
                     <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600">Submitted By</th>
                     <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600">Submission Date</th>
                     <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600">Score</th>
+                    <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600">Reviewer</th>
                     <th class="px-4 py-2 text-center text-sm font-semibold text-gray-600">Status</th>
                     <th class="px-4 py-2 text-center text-sm font-semibold text-gray-600">Related Documents</th>
                     <th class="px-4 py-2 text-center text-sm font-semibold text-gray-600">Actions</th>
@@ -79,6 +70,24 @@
                             <span class="text-orange-800 font-semibold">Need revision</span>
                         @else
                             {{ $submission->score }}
+                        @endif
+                    </td>
+                    <td class="px-4 py-3 text-sm text-gray-700">
+                        @if($submission->reviewer_reg_no && $submission->reviewer_name)
+                            @php
+                                $firstName = explode(' ', $submission->reviewer_name)[0];
+                            @endphp
+                            <span>{{ $firstName }}</span>
+                            <!-- Form for removing reviewer -->
+                            <form action="{{ route('remove.abstract.reviewer', $submission->serial_number) }}" method="POST" class="inline">
+                                @csrf
+                                @method('POST')
+                                <button type="submit" class="ml-2 text-red-500 hover:text-red-700" title="Remove Reviewer">
+                                    X
+                                </button>
+                            </form>
+                        @else
+                            <span class="text-red-500">Not assigned</span>
                         @endif
                     </td>
                     <td class="px-4 py-3 text-center">
@@ -114,7 +123,7 @@
                         <span class="px-3 py-1 text-xs font-medium {{ $style['text'] }} {{ $style['bg'] }} rounded-full">
                             {{ $currentStatus ?: 'Unknown' }}
                         </span>
-                    </td>
+                    </td>                    
                     <td class="px-4 py-3 text-center">
                         @if($submission->final_status === 'Approved' && !$submission->article)
                             <form action="" method="POST" class="inline">
@@ -245,6 +254,24 @@
                             Below Average
                         @else
                             {{ $researchSubmission->score }}
+                        @endif
+                    </td>
+                    <td class="px-4 py-3 text-sm text-gray-700">
+                        @if($researchSubmission->reviewer_reg_no && $researchSubmission->reviewer_name)
+                            @php
+                                $firstName = explode(' ', $researchSubmission->reviewer_name)[0];
+                            @endphp
+                            <span>{{ $firstName }}</span>
+                            <!-- Form for removing reviewer -->
+                            <form action="{{ route('remove.proposal.reviewer', $researchSubmission->serial_number) }}" method="POST" class="inline">
+                                @csrf
+                                @method('POST')
+                                <button type="submit" class="ml-2 text-red-500 hover:text-red-700" title="Remove Reviewer">
+                                    X
+                                </button>
+                            </form>
+                        @else
+                            <span class="text-red-500">Not assigned</span>
                         @endif
                     </td>
                     <td class="px-4 py-3 text-center">

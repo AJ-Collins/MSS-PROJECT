@@ -18,6 +18,7 @@ class ResearchSubmission extends Model
         'sub_theme',
         'abstract',
         'keywords',
-        'pdf_document_path'
+        'pdf_document_path',
+        'reviewer_reg_no',
      ];
 }
