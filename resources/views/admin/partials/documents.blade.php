@@ -3,19 +3,6 @@
 @section('admin-content')
 <div class="px-6 py-4 border-b border-gray-200 shadow-sm bg-white">
     <h2 class="text-2xl font-semibold text-gray-800 tracking-tight">Document Management</h2>
-    
-    <!-- Document Type Filter 
-    <div class="mt-4 flex space-x-4">
-        <button class="px-4 py-2 text-sm font-medium text-indigo-600 bg-indigo-50 rounded-lg hover:bg-indigo-100">
-            Abstracts
-        </button>
-        <button class="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-50 rounded-lg hover:bg-gray-100">
-            Articles
-        </button>
-        <button class="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-50 rounded-lg hover:bg-gray-100">
-            Research Proposals
-        </button>-->
-    </div>
 </div>
 
 <div class="mt-6 px-6 py-4 bg-white rounded-lg shadow-md border border-gray-200">
@@ -37,12 +24,29 @@
             Search
         </button>
     </div>
+    <!-- Mass Assign Section -->
+    <div class="flex flex-col md:flex-row justify-between items-center mb-4 space-y-4 md:space-y-0">
+        <select id="mass-assign-reviewer" 
+                class="w-full md:w-auto px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:outline-none">
+            <option value="">Select Reviewer</option>
+            @foreach ($reviewers as $reviewer)
+                <option value="{{ $reviewer->reg_no }}">{{ $reviewer->name }}</option>
+            @endforeach
+        </select>
+        <button id="mass-assign-btn" 
+                class="w-full md:w-auto px-6 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700">
+            Assign to Selected
+        </button>
+    </div>
 
     <!-- Document Table -->
     <div class="overflow-x-auto h-80 overflow-y-auto">
         <table class="min-w-full table-auto">
             <thead class="bg-gray-50">
                 <tr>
+                    <th class="px-4 py-2">
+                        <input type="checkbox" id="select-all" class="w-4 h-4 text-indigo-600 border-gray-300 rounded">
+                    </th>
                     <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600">Title</th>
                     <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600">Type</th>
                     <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600">Submitted By</th>
@@ -56,6 +60,10 @@
             </thead>
             @foreach ($submissions as $submission)
                 <tr class="border-b hover:bg-gray-50">
+                    <td class="px-4 py-3 text-center">
+                        <input type="checkbox" class="submission-checkbox w-4 h-4 text-indigo-600 border-gray-300 rounded" 
+                            value="{{ $submission->serial_number }}">
+                    </td>
                     <td class="px-4 py-3 text-sm text-gray-700">
                         <div class="font-medium">{{ $submission->title }}</div>
                         <div class="text-xs text-gray-500">{{ $submission->serial_number }}</div>
@@ -168,7 +176,7 @@
                                             class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                                 Download PDF
                                         </a>
-                                        <a href="{{ route('proposal.abstractWord.download', $submission->serial_number) }}" 
+                                        <a href="{{ route('abstract.abstractWord.download', $submission->serial_number) }}" 
                                             class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                                 Download Word
                                         </a>
@@ -245,6 +253,10 @@
             @endforeach
             @foreach ($researchSubmissions as $researchSubmission)
                 <tr class="border-b hover:bg-gray-50">
+                    <td class="px-4 py-3 text-center">
+                        <input type="checkbox" class="submission-checkbox w-4 h-4 text-indigo-600 border-gray-300 rounded" 
+                            value="{{ $researchSubmission->serial_number }}">
+                    </td>
                     <td class="px-4 py-3 text-sm text-gray-700">
                         <div class="font-medium">{{ $researchSubmission->article_title }}</div>
                         <div class="text-xs text-gray-500">{{ $researchSubmission->serial_number }}</div>
@@ -464,6 +476,86 @@
             const allDropdowns = document.querySelectorAll('.dropdown div[id^="actions-dropdown-"]');
             allDropdowns.forEach(d => d.classList.add('hidden'));
         }
+    });
+</script>
+<script>
+    // Select/Deselect All Checkboxes
+    document.getElementById('select-all').addEventListener('change', function() {
+        const checkboxes = document.querySelectorAll('.submission-checkbox');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = this.checked;
+        });
+    });
+
+    // Handle Mass Assign Button Click
+    document.getElementById('mass-assign-btn').addEventListener('click', function() {
+        const selectedSubmissions = Array.from(document.querySelectorAll('.submission-checkbox:checked'))
+            .map(checkbox => checkbox.value);
+        const selectedReviewer = document.getElementById('mass-assign-reviewer').value;
+
+        if (selectedSubmissions.length === 0 || !selectedReviewer) {
+            alert('Please select at least one submission and a reviewer.');
+            return;
+        }
+
+        // Send data to the server
+        fetch('{{ route('assign.mass.reviewer') }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({
+                submissions: selectedSubmissions,
+                reviewer: selectedReviewer
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.message);
+            location.reload(); // Reload page to reflect changes
+        })
+        .catch(error => console.error('Error:', error));
+    });
+</script>
+<script>
+    // Select/Deselect All Checkboxes
+    document.getElementById('select-all-proposal').addEventListener('change', function() {
+        const checkboxes = document.querySelectorAll('.submission-checkbox');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = this.checked;
+        });
+    });
+
+    // Handle Mass Assign Button Click
+    document.getElementById('mass-assign-btn').addEventListener('click', function() {
+        const selectedSubmissions = Array.from(document.querySelectorAll('.submission-checkbox:checked'))
+            .map(checkbox => checkbox.value);
+        const selectedReviewer = document.getElementById('mass-assign-reviewer').value;
+
+        if (selectedSubmissions.length === 0 || !selectedReviewer) {
+            alert('Please select at least one submission and a reviewer.');
+            return;
+        }
+
+        // Send data to the server
+        fetch('{{ route('assign.mass.reviewer') }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({
+                submissions: selectedSubmissions,
+                reviewer: selectedReviewer
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.message);
+            location.reload(); // Reload page to reflect changes
+        })
+        .catch(error => console.error('Error:', error));
     });
 </script>
 @endsection

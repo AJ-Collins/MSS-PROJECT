@@ -79,12 +79,6 @@
                     class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800 border-b-2 transition-colors duration-150"
                     :class="{ 'border-indigo-500 text-indigo-600': activeTab === 'abstracts', 'border-transparent': activeTab !== 'abstracts' }"
                     @click="activeTab = 'abstracts'">
-                    Abstracts
-                </button>
-                <button 
-                    class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800 border-b-2 transition-colors duration-150"
-                    :class="{ 'border-indigo-500 text-indigo-600': activeTab === 'articles', 'border-transparent': activeTab !== 'articles' }"
-                    @click="activeTab = 'articles'">
                     Articles
                 </button>
                 <button 
@@ -97,9 +91,9 @@
         </div>
 
         <!-- Tab Content - Adjusted spacing -->
-        <div class="bg-white shadow-sm">
-            <!-- Abstracts Tab -->
-            <div x-show="activeTab === 'abstracts'" class="overflow-x-auto">
+        <div class="bg-white shadow-sm h-96">
+            <!-- Articles Tab -->
+            <div x-show="activeTab === 'abstracts'" class="overflow-x-auto h-96">
                 <table class="min-w-full table-auto">                
                     <thead class="bg-gray-50">
                         <tr>
@@ -153,44 +147,30 @@
                                 </span>
                             </td>
                             <td class="px-4 py-3 text-center space-x-2">
-                                <button class="px-2 py-1 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-full">View</button>                            
-                                <button class="px-2 py-1 text-xs font-medium text-white bg-gray-600 hover:bg-gray-700 rounded-full">Download</button>
+                            <button class="px-2 py-1 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-full">View</button>                            
+                                <div class="relative inline-block text-left">
+                                    <button onclick="toggleDropdown(event)" class="inline-flex justify-center w-full px-2 py-1 text-xs font-medium text-white bg-gray-600 rounded-full hover:bg-gray-700 focus:outline-none">
+                                        Download
+                                    </button>
+                                    <div class="absolute right-0 z-10 hidden mt-2 w-32 origin-top-right rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none dropdown-menu">
+                                        <div class="py-1">
+                                            <!-- Download as PDF -->
+                                            <a href="{{ route('research.abstract.download', $submission->serial_number) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                Download PDF
+                                            </a>
+                                            <!-- Download as Word -->
+                                            <a href="{{ route('abstract.abstractWord.download', $submission->serial_number) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                Download Word
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
                             </td>
                         </tr> 
                         @endforeach                       
                     </tbody>
                 </table>
             </div>
-
-            <!-- Articles Tab -->
-            <div x-show="activeTab === 'articles'" class="p-4">
-            <table class="min-w-full table-auto">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600">Document Name</th>
-                            <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600">Uploaded By</th>
-                            <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600">Uploaded On</th>
-                            <th class="px-4 py-2 text-center text-sm font-semibold text-gray-600">Status</th>
-                            <th class="px-4 py-2 text-center text-sm font-semibold text-gray-600">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr class="border-b hover:bg-gray-50">
-                            <td class="px-4 py-3 text-sm text-gray-700">Abstract 1.pdf</td>
-                            <td class="px-4 py-3 text-sm text-gray-700">Jane Smith</td>
-                            <td class="px-4 py-3 text-sm text-gray-500">2024-12-20</td>
-                            <td class="px-4 py-3 text-center">
-                                <span class="px-2 py-1 text-xs font-medium text-yellow-800 bg-yellow-100 rounded-full">To Review</span>
-                            </td>
-                            <td class="px-4 py-3 text-center space-x-2">
-                                <button class="px-2 py-1 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-full">Review</button>                           
-                                <button class="px-2 py-1 text-xs font-medium text-white bg-gray-600 hover:bg-gray-700 rounded-full">Download</button>
-                            </td>
-                        </tr>                        
-                    </tbody>
-                </table>
-            </div>
-
             <!-- Research Proposals Tab -->
             <div x-show="activeTab === 'proposals'" class="p-4">
             <table class="min-w-full table-auto">
@@ -246,8 +226,24 @@
                                 </span>
                             </td>
                             <td class="px-4 py-3 text-center space-x-2">
-                              <button class="px-2 py-1 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-full">View</button>
-                                <button class="px-2 py-1 text-xs font-medium text-white bg-gray-600 hover:bg-gray-700 rounded-full">Download</button>
+                            <button class="px-2 py-1 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-full">View</button>                            
+                                <div class="relative inline-block text-left">
+                                    <button onclick="toggleDropdown(event)" class="inline-flex justify-center w-full px-2 py-1 text-xs font-medium text-white bg-gray-600 rounded-full hover:bg-gray-700 focus:outline-none">
+                                        Download
+                                    </button>
+                                    <div class="absolute right-0 z-10 hidden mt-2 w-32 origin-top-right rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none dropdown-menu">
+                                        <div class="py-1">
+                                            <!-- Download as PDF -->
+                                            <a href="{{ route('proposal.abstract.download', $researchSubmission->serial_number) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                Download PDF
+                                            </a>
+                                            <!-- Download as Word -->
+                                            <a href="{{ route('proposal.abstractWord.download', $researchSubmission->serial_number) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                Download Word
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
                             </td>
                         </tr>  
                     @endforeach                 
@@ -256,4 +252,26 @@
             </div>
         </div>
     </div>
+<script>
+function toggleDropdown(event) {
+    const button = event.currentTarget;
+    const dropdown = button.nextElementSibling;
+
+    // Close other dropdowns
+    document.querySelectorAll('.dropdown-menu').forEach(menu => {
+        if (menu !== dropdown) menu.classList.add('hidden');
+    });
+
+    // Toggle visibility of the clicked dropdown
+    dropdown.classList.toggle('hidden');
+}
+
+// Close dropdowns when clicking outside
+document.addEventListener('click', (event) => {
+    if (!event.target.closest('.relative')) {
+        document.querySelectorAll('.dropdown-menu').forEach(menu => menu.classList.add('hidden'));
+    }
+});
+
+</script>
 @endsection

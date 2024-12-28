@@ -46,6 +46,9 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
     Route::post('/remove-abstract-reviewer/{serial_number}', [AdminController::class, 'removeAbstractReviewer'])->name('remove.abstract.reviewer');
     Route::post('/assign-proposal-reviewer/{serial_number}', [AdminController::class, 'assignProposalReviewer'])->name('assign.proposal.reviewer');
     Route::post('/remove-proposal-reviewer/{serial_number}', [AdminController::class, 'removeProposalReviewer'])->name('remove.proposal.reviewer');
+    Route::post('/assign-mass-reviewer', [AdminController::class, 'assignAbstractMassReviewer'])->name('assign.mass.reviewer');
+    Route::post('/assign-proposal-mass-reviewer', [AdminController::class, '  assignProposalMassReviewer'])->name('assign.proposal-mass.reviewer');
+  
 
     Route::get('/submissions', [AdminController::class, 'submissions'])->name('admin.submissions');
     Route::get('/reports', [AdminController::class, 'reports'])->name('admin.reports');
@@ -108,7 +111,7 @@ Route::prefix('user')->middleware(['auth'])->group(function () {
 
 //Abstarct download routes
 Route::get('/abstracts/{serial_number}/pdf', [AbstractsController::class, 'downloadPdf'])->name('research.abstract.download');
-Route::get('/abstracts/{serial_number}/word', [AbstractsController::class, 'downloadWord'])->name('proposal.abstractWord.download');
+Route::get('/abstracts/{serial_number}/word', [AbstractsController::class, 'downloadWord'])->name('abstract.abstractWord.download');
 
 //Download all Abstarct routes
 Route::get('/abstracts/download-all', [AbstractsController::class, 'downloadAllAbstracts'])->name('abstract.downloadAll');
@@ -117,6 +120,6 @@ Route::get('/abstracts/download-word', [AbstractsController::class, 'downloadAll
 //Proposal download routes
 Route::get('/proposals/{serial_number}/pdf', [ProposalController::class, 'downloadPdf'])->name('proposal.abstract.download');
 Route::get('/proposals/{serial_number}/word', [ProposalController::class, 'downloadProposalWord'])->name('proposal.abstractWord.download');
-//Download all Abstarct routes
+//Download all Proposal Abstarct routes
 Route::get('/proposals/download-all', [ProposalController::class, 'downloadAllProposalAbstracts'])->name('proposal.downloadAll');
 Route::get('/proposals/download-word', [ProposalController::class, 'downloadAllProposalAbstractsWord'])->name('proposal.downloadAllWord');

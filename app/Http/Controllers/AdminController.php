@@ -183,6 +183,41 @@ class AdminController extends Controller
 
         return redirect()->back()->with('success', 'Reviewer removed successfully.');
     }
+    public function assignAbstractMassReviewer(Request $request)
+    {
+        $request->validate([
+            'submissions' => 'required|array|min:1',
+            'reviewer' => [
+                'required',
+                'string',
+                'exists:users,reg_no', // Ensure the reviewer exists in the users table
+                function ($attribute, $value, $fail) {
+                    $reviewer = User::where('reg_no', $value)
+                        ->whereHas('roles', function ($query) {
+                            $query->where('name', 'reviewer');
+                        })->first();
+
+                    if (!$reviewer) {
+                        $fail('The specified reviewer does not have the reviewer role.');
+                    }
+                },
+            ],
+        ]);
+
+        try {
+            DB::transaction(function () use ($request) {
+                foreach ($request->submissions as $serialNumber) {
+                    AbstractSubmission::where('serial_number', $serialNumber)
+                        ->update(['reviewer_reg_no' => $request->reviewer]);
+                }
+            });
+
+            return response()->json(['message' => 'Reviewers assigned successfully!'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'An error occurred while assigning reviewers.'], 500);
+        }
+    }
+
     public function assignProposalReviewer(Request $request, $serial_number)
     {
         // Validate the reviewer_reg_no
@@ -210,6 +245,40 @@ class AdminController extends Controller
         $researchSubmission->save();
 
         return redirect()->back()->with('success', 'Reviewer assigned successfully.');
+    }
+    public function assignProposalMassReviewer(Request $request)
+    {
+        $request->validate([
+            'submissions' => 'required|array|min:1',
+            'reviewer' => [
+                'required',
+                'string',
+                'exists:users,reg_no', // Ensure the reviewer exists in the users table
+                function ($attribute, $value, $fail) {
+                    $reviewer = User::where('reg_no', $value)
+                        ->whereHas('roles', function ($query) {
+                            $query->where('name', 'reviewer');
+                        })->first();
+
+                    if (!$reviewer) {
+                        $fail('The specified reviewer does not have the reviewer role.');
+                    }
+                },
+            ],
+        ]);
+
+        try {
+            DB::transaction(function () use ($request) {
+                foreach ($request->submissions as $serialNumber) {
+                    ResearchSubmission::where('serial_number', $serialNumber)
+                        ->update(['reviewer_reg_no' => $request->reviewer]);
+                }
+            });
+
+            return response()->json(['message' => 'Reviewers assigned successfully!'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'An error occurred while assigning reviewers.'], 500);
+        }
     }
     public function removeProposalReviewer(Request $request, $serial_number)
     {
