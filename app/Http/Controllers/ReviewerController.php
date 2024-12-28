@@ -22,23 +22,35 @@ class ReviewerController extends Controller
         $reviewer = Auth::user(); // Assuming the reviewer is logged in
 
         // Fetch abstracts assigned to the logged-in reviewer
-        $assignedAbstracts = AbstractSubmission::where('reviewer_reg_no', $reviewer->reg_no)->get();
-        $assignedProposals = ResearchSubmission::where('reviewer_reg_no', $reviewer->reg_no)->get();
+        $submissions = AbstractSubmission::where('reviewer_reg_no', $reviewer->reg_no)->get();
+        $researchSubmissions = ResearchSubmission::where('reviewer_reg_no', $reviewer->reg_no)->get();
+
+        $abstractCount = $submissions->count();
+        $proposalCount = $researchSubmissions->count();
         
-        return view('reviewer.partials.dashboard', compact('assignedAbstracts', 'assignedProposals'));
+        return view('reviewer.partials.dashboard', compact('submissions', 'researchSubmissions', 'abstractCount', 'proposalCount'));
     }
     public function documentsReview()
     {
-        return view('reviewer.partials.documents');
+        $reviewer = Auth::user(); // Assuming the reviewer is logged in
+
+        // Fetch abstracts assigned to the logged-in reviewer
+        $submissions = AbstractSubmission::where('reviewer_reg_no', $reviewer->reg_no)->get();
+        $researchSubmissions = ResearchSubmission::where('reviewer_reg_no', $reviewer->reg_no)->get();
+
+        $abstractCount = $submissions->count();
+        $proposalCount = $researchSubmissions->count();
+
+        return view('reviewer.partials.documents', compact('submissions', 'researchSubmissions', 'abstractCount', 'proposalCount'));
     }
     public function assignedAbstracts()
     {
         $reviewer = Auth::user(); // Assuming the reviewer is logged in
 
         // Fetch abstracts assigned to the logged-in reviewer
-        $assignedAbstracts = AbstractSubmission::where('reviewer_reg_no', $reviewer->reg_no)->get();
+        $submission = AbstractSubmission::where('reviewer_reg_no', $reviewer->reg_no)->get();
 
-        return view('reviewer.partials.dashboard', compact('assignedAbstracts'));
+        return view('reviewer.partials.dashboard', compact('submission'));
     }
 
     public function assessment()
