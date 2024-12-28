@@ -4,51 +4,76 @@
 <div class="px-6 py-4 border-b border-gray-200 shadow-sm bg-white">
     <h2 class="text-2xl font-semibold text-gray-800 tracking-tight">Document Management</h2>
 </div>
-
-<div class="mt-6 px-6 py-4 bg-white rounded-lg shadow-md border border-gray-200">
-        @if (session('success'))
-            <div class="bg-green-100 border border-green-500 text-green-700 p-4 mb-6 rounded-lg">
-                <p class="font-medium">{{ session('success') }}</p>
-            </div>
-        @endif
-    <!-- Search and Filter Section -->
-    <div class="flex flex-col md:flex-row justify-between items-center mb-6 space-y-4 md:space-y-0 md:space-x-4">
-        <div class="w-full md:w-4/4">
-            <input 
-                type="text" 
-                placeholder="Search documents..." 
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:outline-none"
-            >
+<div x-data="{ activeTab: 'abstracts' }">
+    <!-- Tabbed Menu -->
+    <div class="bg-white border-b border-gray-200">
+        <div class="flex">
+            <button 
+                class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800 border-b-2 transition-colors duration-150"
+                :class="{ 'border-indigo-500 text-indigo-600': activeTab === 'abstracts', 'border-transparent': activeTab !== 'abstracts' }"
+                @click="activeTab = 'abstracts'">
+                Abstracts
+            </button>
+            <button 
+                class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800 border-b-2 transition-colors duration-150"
+                :class="{ 'border-indigo-500 text-indigo-600': activeTab === 'proposals', 'border-transparent': activeTab !== 'proposals' }"
+                @click="activeTab = 'proposals'">
+                Research Proposals
+            </button>
         </div>
-        <button class="w-full md:w-auto px-6 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700">
-            Search
-        </button>
-    </div>
-    <!-- Mass Assign Section -->
-    <div class="flex flex-col md:flex-row justify-between items-center mb-4 space-y-4 md:space-y-0">
-        <select id="mass-assign-reviewer" 
-                class="w-full md:w-auto px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:outline-none">
-            <option value="">Select Reviewer</option>
-            @foreach ($reviewers as $reviewer)
-                <option value="{{ $reviewer->reg_no }}">{{ $reviewer->name }}</option>
-            @endforeach
-        </select>
-        <button id="mass-assign-btn" 
-                class="w-full md:w-auto px-6 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700">
-            Assign to Selected
-        </button>
     </div>
 
-    <!-- Document Table -->
-    <div class="overflow-x-auto h-80 overflow-y-auto">
+    <!-- Abstracts Tab Content -->
+    <div x-show="activeTab === 'abstracts'">
+        <div class="mt-6 px-6 py-4 bg-white rounded-lg shadow-md border border-gray-200">
+            @if (session('success'))
+                <div class="bg-green-100 border border-green-500 text-green-700 p-4 mb-6 rounded-lg">
+                    <p class="font-medium">{{ session('success') }}</p>
+                </div>
+            @endif
+        <!-- Search and Filter Section -->
+        <div class="flex flex-col md:flex-row justify-between items-center mb-6 space-y-4 md:space-y-0 md:space-x-4">
+            <div class="w-full md:w-4/4">
+                <input 
+                    type="text" 
+                    placeholder="Search documents..." 
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+                >
+            </div>
+            <button class="w-full md:w-auto px-6 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700">
+                Search
+            </button>
+        </div>
+        <div class="flex justify-between items-center mb-4">
+            <!-- Bulk Selection -->
+            <div class="flex items-center space-x-2">
+                <input type="checkbox" id="select-all-abstracts" 
+                    class="w-4 h-4 text-indigo-600 border-gray-300 rounded"
+                    onclick="toggleSelectAllAbstracts(this)">
+                <label for="select-all-abstracts" class="text-sm text-gray-700">Select All</label>
+            </div>
+
+            <!-- Reviewer Selection and Assign Button -->
+            <div class="flex items-center space-x-4">
+                <select id="reviewer-dropdown" 
+                        name="reviewer" 
+                        class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+                        required>
+                    <option value="">Select Reviewer</option>
+                    @foreach ($reviewers as $reviewer)
+                        <option value="{{ $reviewer->reg_no }}">{{ $reviewer->name }}</option>
+                    @endforeach
+                </select>
+                <button onclick="assignAbstractReviewers()" 
+                        class="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700">
+                    Assign Reviewer
+                </button>
+            </div>
+        </div>
         <table class="min-w-full table-auto">
             <thead class="bg-gray-50">
                 <tr>
-                    <th class="px-4 py-2">
-                        <input type="checkbox" id="select-all" class="w-4 h-4 text-indigo-600 border-gray-300 rounded">
-                    </th>
-                    <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600">Title</th>
-                    <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600">Type</th>
+                    <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600">Title</th>                 
                     <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600">Submitted By</th>
                     <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600">Submission Date</th>
                     <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600">Score</th>
@@ -58,17 +83,17 @@
                     <th class="px-4 py-2 text-center text-sm font-semibold text-gray-600">Actions</th>
                 </tr>
             </thead>
+            <tbody>
             @foreach ($submissions as $submission)
                 <tr class="border-b hover:bg-gray-50">
                     <td class="px-4 py-3 text-center">
-                        <input type="checkbox" class="submission-checkbox w-4 h-4 text-indigo-600 border-gray-300 rounded" 
+                        <input type="checkbox" class="abstract-submission-checkbox w-4 h-4 text-indigo-600 border-gray-300 rounded" 
                             value="{{ $submission->serial_number }}">
                     </td>
                     <td class="px-4 py-3 text-sm text-gray-700">
                         <div class="font-medium">{{ $submission->title }}</div>
                         <div class="text-xs text-gray-500">{{ $submission->serial_number }}</div>
                     </td>
-                    <td class="px-4 py-3 text-sm text-gray-700">Abstract</td>
                     <td class="px-4 py-3 text-sm text-gray-700">{{ $submission->user_reg_no }}</td>
                     <td class="px-4 py-3 text-sm text-gray-500">{{ \Carbon\Carbon::parse($submission->created_at)->format('d M Y') }}</td>
                     <td class="px-4 py-3 text-sm text-gray-700">
@@ -251,17 +276,89 @@
                     </div>
                 </div>
             @endforeach
+            </tbody>
+        </table>
+        </div>
+    </div>
+
+
+
+
+
+    <!-- Research Proposals Tab Content -->
+    <div x-show="activeTab === 'proposals'">
+         <div class="mt-6 px-6 py-4 bg-white rounded-lg shadow-md border border-gray-200">
+            @if (session('success'))
+                <div class="bg-green-100 border border-green-500 text-green-700 p-4 mb-6 rounded-lg">
+                    <p class="font-medium">{{ session('success') }}</p>
+                </div>
+            @endif
+        <!-- Search and Filter Section -->
+        <div class="flex flex-col md:flex-row justify-between items-center mb-6 space-y-4 md:space-y-0 md:space-x-4">
+            <div class="w-full md:w-4/4">
+                <input 
+                    type="text" 
+                    placeholder="Search documents..." 
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+                >
+            </div>
+            <button class="w-full md:w-auto px-6 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700">
+                Search
+            </button>
+        </div>
+        <div class="flex justify-between items-center mb-4">
+    <!-- Bulk Selection -->
+    <div class="flex items-center space-x-2">
+        <input type="checkbox" id="select-all-proposals" 
+               class="w-4 h-4 text-indigo-600 border-gray-300 rounded"
+               onclick="toggleSelectAllProposals(this)">
+        <label for="select-all-proposals" class="text-sm text-gray-700">Select All</label>
+    </div>
+
+    <!-- Reviewer Selection and Assign Button -->
+    <div class="flex items-center space-x-4">
+        <select id="proposal-reviewer-dropdown" 
+                name="reviewer" 
+                class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+                required>
+            <option value="">Select Reviewer</option>
+            @foreach ($reviewers as $reviewer)
+                <option value="{{ $reviewer->reg_no }}">{{ $reviewer->name }}</option>
+            @endforeach
+        </select>
+        <button onclick="assignReviewers()" 
+                class="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700">
+            Assign Reviewer
+        </button>
+    </div>
+</div>
+        <table class="min-w-full table-auto">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-4 py-2">
+                        <input type="checkbox" id="select-all" class="w-4 h-4 text-indigo-600 border-gray-300 rounded">
+                    </th>
+                    <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600">Title</th>
+                    <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600">Submitted By</th>
+                    <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600">Submission Date</th>
+                    <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600">Score</th>
+                    <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600">Reviewer</th>
+                    <th class="px-4 py-2 text-center text-sm font-semibold text-gray-600">Status</th>
+                    <th class="px-4 py-2 text-center text-sm font-semibold text-gray-600">Related Documents</th>
+                    <th class="px-4 py-2 text-center text-sm font-semibold text-gray-600">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
             @foreach ($researchSubmissions as $researchSubmission)
                 <tr class="border-b hover:bg-gray-50">
                     <td class="px-4 py-3 text-center">
-                        <input type="checkbox" class="submission-checkbox w-4 h-4 text-indigo-600 border-gray-300 rounded" 
+                        <input type="checkbox" class="proposal-submission-checkbox w-4 h-4 text-indigo-600 border-gray-300 rounded" 
                             value="{{ $researchSubmission->serial_number }}">
                     </td>
                     <td class="px-4 py-3 text-sm text-gray-700">
                         <div class="font-medium">{{ $researchSubmission->article_title }}</div>
                         <div class="text-xs text-gray-500">{{ $researchSubmission->serial_number }}</div>
                     </td>
-                    <td class="px-4 py-3 text-sm text-gray-700">Research Proposal</td>
                     <td class="px-4 py-3 text-sm text-gray-700">{{ $researchSubmission->user_reg_no }}</td>
                     <td class="px-4 py-3 text-sm text-gray-500">{{ \Carbon\Carbon::parse($researchSubmission->created_at)->format('d M Y') }}</td>
                     <td class="px-4 py-3 text-sm text-gray-700">
@@ -430,22 +527,8 @@
             @endforeach
             </tbody>
         </table>
-    </div>
-
-    <!-- Pagination 
-    <div class="mt-6 flex justify-between items-center">
-        <div class="text-sm text-gray-600">
-            Showing 1 to 10 of 50 entries
-        </div>
-        <div class="flex space-x-2">
-            <button class="px-3 py-1 text-sm text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200">Previous</button>
-            <button class="px-3 py-1 text-sm text-white bg-indigo-600 rounded-lg hover:bg-indigo-700">1</button>
-            <button class="px-3 py-1 text-sm text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200">2</button>
-            <button class="px-3 py-1 text-sm text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200">3</button>
-            <button class="px-3 py-1 text-sm text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200">Next</button>
-        </div>
-    </div>
-</div>-->
+    </div>  
+</div>
 <script>
     function closeModal(modalId) {
         document.getElementById(modalId).classList.add('hidden');
@@ -479,83 +562,105 @@
     });
 </script>
 <script>
-    // Select/Deselect All Checkboxes
-    document.getElementById('select-all').addEventListener('change', function() {
-        const checkboxes = document.querySelectorAll('.submission-checkbox');
-        checkboxes.forEach(checkbox => {
-            checkbox.checked = this.checked;
-        });
+// Function to toggle the "Select All" checkbox
+function toggleSelectAllAbstracts(source) {
+    const checkboxes = document.querySelectorAll('.abstract-submission-checkbox');
+    checkboxes.forEach((checkbox) => {
+        checkbox.checked = source.checked;
     });
+}
 
-    // Handle Mass Assign Button Click
-    document.getElementById('mass-assign-btn').addEventListener('click', function() {
-        const selectedSubmissions = Array.from(document.querySelectorAll('.submission-checkbox:checked'))
-            .map(checkbox => checkbox.value);
-        const selectedReviewer = document.getElementById('mass-assign-reviewer').value;
+// Function to handle assigning reviewers to selected submissions
+function assignAbstractReviewers() {
+    const selectedSubmissions = Array.from(document.querySelectorAll('.abstract-submission-checkbox:checked'))
+        .map((checkbox) => checkbox.value); // Collect all selected submission IDs
+    const selectedReviewer = document.getElementById('reviewer-dropdown').value; // Get the selected reviewer
 
-        if (selectedSubmissions.length === 0 || !selectedReviewer) {
-            alert('Please select at least one submission and a reviewer.');
-            return;
-        }
+    if (selectedSubmissions.length === 0) {
+        alert('Please select at least one submission.');
+        return;
+    }
 
-        // Send data to the server
-        fetch('{{ route('assign.mass.reviewer') }}', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            },
-            body: JSON.stringify({
-                submissions: selectedSubmissions,
-                reviewer: selectedReviewer
-            })
-        })
+    if (!selectedReviewer) {
+        alert('Please select a reviewer.');
+        return;
+    }
+
+    // Send the selected submissions and reviewer to the server via a POST request
+    fetch('{{ route('assign.mass.reviewer') }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+        },
+        body: JSON.stringify({
+            submissions: selectedSubmissions,
+            reviewer: selectedReviewer,
+        }),
+    })
         .then(response => response.json())
         .then(data => {
-            alert(data.message);
-            location.reload(); // Reload page to reflect changes
+            if (data.message) {
+                alert(data.message);
+                location.reload(); // Reload the page to reflect changes
+            } else if (data.error) {
+                alert(data.error); // Handle error if there's any
+            }
         })
-        .catch(error => console.error('Error:', error));
-    });
-</script>
-<script>
-    // Select/Deselect All Checkboxes
-    document.getElementById('select-all-proposal').addEventListener('change', function() {
-        const checkboxes = document.querySelectorAll('.submission-checkbox');
-        checkboxes.forEach(checkbox => {
-            checkbox.checked = this.checked;
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred. Please try again.');
         });
+}
+ 
+function toggleSelectAllProposals(source) {
+    const checkboxes = document.querySelectorAll('.proposal-submission-checkbox');
+    checkboxes.forEach((checkbox) => {
+        checkbox.checked = source.checked;
     });
+}
 
-    // Handle Mass Assign Button Click
-    document.getElementById('mass-assign-btn').addEventListener('click', function() {
-        const selectedSubmissions = Array.from(document.querySelectorAll('.submission-checkbox:checked'))
-            .map(checkbox => checkbox.value);
-        const selectedReviewer = document.getElementById('mass-assign-reviewer').value;
+function assignReviewers() {
+    const selected = Array.from(document.querySelectorAll('.proposal-submission-checkbox:checked'))
+        .map((checkbox) => checkbox.value);
 
-        if (selectedSubmissions.length === 0 || !selectedReviewer) {
-            alert('Please select at least one submission and a reviewer.');
-            return;
-        }
+    const reviewer = document.getElementById('proposal-reviewer-dropdown').value;
 
-        // Send data to the server
-        fetch('{{ route('assign.mass.reviewer') }}', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            },
-            body: JSON.stringify({
-                submissions: selectedSubmissions,
-                reviewer: selectedReviewer
-            })
-        })
+    if (selected.length === 0) {
+        alert('Please select at least one submission.');
+        return;
+    }
+
+    if (!reviewer) {
+        alert('Please select a reviewer.');
+        return;
+    }
+
+    // Make a POST request to assign reviewers
+    fetch('{{ route('assign.proposal.massReviewer') }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+        },
+        body: JSON.stringify({
+            submissions: selected,
+            reviewer: reviewer,
+        }),
+    })
         .then(response => response.json())
         .then(data => {
-            alert(data.message);
-            location.reload(); // Reload page to reflect changes
+            if (data.message) {
+                alert(data.message);
+                location.reload(); // Reload the page to reflect changes
+            } else if (data.error) {
+                alert(data.error);
+            }
         })
-        .catch(error => console.error('Error:', error));
-    });
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred. Please try again.');
+        });
+}
 </script>
 @endsection

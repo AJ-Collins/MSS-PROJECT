@@ -46,8 +46,9 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
     Route::post('/remove-abstract-reviewer/{serial_number}', [AdminController::class, 'removeAbstractReviewer'])->name('remove.abstract.reviewer');
     Route::post('/assign-proposal-reviewer/{serial_number}', [AdminController::class, 'assignProposalReviewer'])->name('assign.proposal.reviewer');
     Route::post('/remove-proposal-reviewer/{serial_number}', [AdminController::class, 'removeProposalReviewer'])->name('remove.proposal.reviewer');
-    Route::post('/assign-mass-reviewer', [AdminController::class, 'assignAbstractMassReviewer'])->name('assign.mass.reviewer');
-    Route::post('/assign-proposal-mass-reviewer', [AdminController::class, '  assignProposalMassReviewer'])->name('assign.proposal-mass.reviewer');
+    Route::post('/abstracts/assign-mass-reviewer', [AdminController::class, 'assignAbstractMassReviewer'])->name('assign.mass.reviewer');
+    Route::post('/proposals/assign-mass-reviewer', [AdminController::class, 'assignProposalMassReviewer'])
+        ->name('assign.proposal.massReviewer');
   
 
     Route::get('/submissions', [AdminController::class, 'submissions'])->name('admin.submissions');
