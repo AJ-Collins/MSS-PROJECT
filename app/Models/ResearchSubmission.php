@@ -21,4 +21,9 @@ class ResearchSubmission extends Model
         'pdf_document_path',
         'reviewer_reg_no',
      ];
+
+     public function authors()
+    {
+        return $this->hasMany(Author::class, 'abstract_submission_id');
+    }
 }

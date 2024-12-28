@@ -19,4 +19,13 @@ class Author extends Model
         'is_correspondent',
         'submission_type',
     ];
+
+    public function abstractSubmission()
+    {
+        return $this->belongsTo(AbstractSubmission::class, 'abstract_submission_id');
+    }
+    public function proposalSubmission()
+    {
+        return $this->belongsTo(ResearchSubmission::class, 'abstract_submission_id');
+    }
 }

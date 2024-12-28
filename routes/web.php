@@ -11,6 +11,8 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\AbstractsController;
+use App\Http\Controllers\ProposalController;
 
 Route::get('email/verify', [App\Http\Controllers\Auth\VerificationController::class, 'show'])->name('verification.notice');
 Route::get('email/verify/{id}/{hash}', [App\Http\Controllers\Auth\VerificationController::class, 'verify'])
@@ -104,4 +106,17 @@ Route::prefix('user')->middleware(['auth'])->group(function () {
     
 });
 
+//Abstarct download routes
+Route::get('/abstracts/{serial_number}/pdf', [AbstractsController::class, 'downloadPdf'])->name('research.abstract.download');
+Route::get('/abstracts/{serial_number}/word', [AbstractsController::class, 'downloadWord'])->name('proposal.abstractWord.download');
 
+//Download all Abstarct routes
+Route::get('/abstracts/download-all', [AbstractsController::class, 'downloadAllAbstracts'])->name('abstract.downloadAll');
+Route::get('/abstracts/download-word', [AbstractsController::class, 'downloadAllAbstractsWord'])->name('abstracts.download.word');
+
+//Proposal download routes
+Route::get('/proposals/{serial_number}/pdf', [ProposalController::class, 'downloadPdf'])->name('proposal.abstract.download');
+Route::get('/proposals/{serial_number}/word', [ProposalController::class, 'downloadProposalWord'])->name('proposal.abstractWord.download');
+//Download all Abstarct routes
+Route::get('/proposals/download-all', [ProposalController::class, 'downloadAllProposalAbstracts'])->name('proposal.downloadAll');
+Route::get('/proposals/download-word', [ProposalController::class, 'downloadAllProposalAbstractsWord'])->name('proposal.downloadAllWord');

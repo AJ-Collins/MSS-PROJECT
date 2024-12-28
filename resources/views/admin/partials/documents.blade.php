@@ -164,9 +164,14 @@
                                                 Approve
                                             </button>
                                         </form>
-                                        <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                            Download
-                                        </button>
+                                        <a href="{{ route('research.abstract.download', $submission->serial_number) }}" 
+                                            class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                Download PDF
+                                        </a>
+                                        <a href="{{ route('proposal.abstractWord.download', $submission->serial_number) }}" 
+                                            class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                Download Word
+                                        </a>
                                         <button class="block w-full text-left px-4 py-2 text-sm text-green-900 hover:bg-gray-100">
                                             Return for Revision
                                         </button>
@@ -336,7 +341,14 @@
                                                 Approve
                                             </button>
                                         </form>
-                                        <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Download</button>
+                                        <a href="{{ route('proposal.abstract.download', $researchSubmission->serial_number) }}" 
+                                            class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                Download PDF
+                                        </a>
+                                        <a href="{{ route('proposal.abstractWord.download', $researchSubmission->serial_number) }}" 
+                                            class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                Download Word
+                                        </a>
                                         <button class="block w-full text-left px-4 py-2 text-sm text-green-900 hover:bg-gray-100">Return for Revision</button>
                                         <button class="block w-full text-left px-4 py-2 text-sm text-red-700 hover:bg-gray-100"
                                                 onclick="openModal('add-comments-modal-{{ $researchSubmission->serial_number }}')">

@@ -5,9 +5,18 @@
     <!-- Header -->
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-bold">Reports & Analytics</h1>
-        <button class="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
-            Generate Overall Report
-        </button>
+        <a href="{{ route('abstract.downloadAll') }}" class="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+            Download All Abstracts PDF
+        </a>
+        <a href="{{ route('abstracts.download.word') }}" class="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+            Download All Abstracts Words
+        </a>
+        <a href="{{ route('proposal.downloadAll') }}" class="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+            Download All Proposals PDF
+        </a>
+        <a href="{{ route('proposal.downloadAllWord') }}" class="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+            Download All Proposals Word
+        </a>
     </div>
 
     <!-- Analytics Section -->

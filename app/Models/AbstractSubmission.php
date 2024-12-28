@@ -23,5 +23,8 @@ class AbstractSubmission extends Model
         // Add any other fields you want to allow mass-assignment for
     ];
 
-    
+    public function authors()
+    {
+        return $this->hasMany(Author::class, 'abstract_submission_id');
+    }
 }
