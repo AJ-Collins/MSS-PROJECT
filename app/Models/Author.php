@@ -18,14 +18,16 @@ class Author extends Model
         'department',
         'is_correspondent',
         'submission_type',
+        'abstract_submission_id',
+        'research_submission_id',
     ];
 
     public function abstractSubmission()
     {
-        return $this->belongsTo(AbstractSubmission::class, 'abstract_submission_id');
+        return $this->belongsTo(AbstractSubmission::class, 'abstract_submission_id', 'serial_number');
     }
     public function proposalSubmission()
     {
-        return $this->belongsTo(ResearchSubmission::class, 'abstract_submission_id');
+        return $this->belongsTo(ResearchSubmission::class, 'research_submission_id', 'serial_number');
     }
 }

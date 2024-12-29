@@ -52,6 +52,69 @@ class ReviewerController extends Controller
 
         return view('reviewer.partials.dashboard', compact('submission'));
     }
+    public function getAbstract($serial_number)
+    {
+        $abstract = AbstractSubmission::with('authors')->where('serial_number', $serial_number)->first();
+
+        if (!$abstract) {
+            return response()->json(['error' => 'Abstract not found'], 404);
+        }
+
+        $keywords = json_decode($abstract->keywords);
+        // Format keywords as comma-separated string
+        $formattedKeywords = is_array($keywords) ? implode(', ', $keywords) : '';
+        
+        $authors = $abstract->authors->map(function ($author) {
+            return [
+                'first_name' => $author->first_name,
+                'middle_name' => $author->middle_name,
+                'surname' => $author->surname,
+                'university' => $author->university,
+                'department' => $author->department,
+                'is_correspondent' => $author->is_correspondent,
+            ];
+        });
+
+        return response()->json([
+            'title' => $abstract->title,
+            'abstract' => $abstract->abstract,
+            'keywords' => $formattedKeywords,
+            'sub_theme' => $abstract->sub_theme,
+            'authors' => $authors,
+        ]);
+    }
+
+    public function getProposal($serial_number)
+    {
+        $abstract = ResearchSubmission::with('authors')->where('serial_number', $serial_number)->first();
+
+        if (!$abstract) {
+            return response()->json(['error' => 'Abstract not found'], 404);
+        }
+
+        $keywords = json_decode($abstract->keywords);
+        // Format keywords as comma-separated string
+        $formattedKeywords = is_array($keywords) ? implode(', ', $keywords) : '';
+        
+        $authors = $abstract->authors->map(function ($author) {
+            return [
+                'first_name' => $author->first_name,
+                'middle_name' => $author->middle_name,
+                'surname' => $author->surname,
+                'university' => $author->university,
+                'department' => $author->department,
+                'is_correspondent' => $author->is_correspondent,
+            ];
+        });
+
+        return response()->json([
+            'title' => $abstract->article_title,
+            'abstract' => $abstract->abstract,
+            'keywords' => $formattedKeywords,
+            'sub_theme' => $abstract->sub_theme,
+            'authors' => $authors,
+        ]);
+    }
 
     public function assessment()
     {

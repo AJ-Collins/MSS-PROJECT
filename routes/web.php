@@ -67,13 +67,14 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
 Route::prefix('reviewer')->middleware(['auth'])->group(function () {
     Route::get('/dashboard', [ReviewerController::class, 'dashboard'])->name('reviewer.partials.dashboard');
     Route::get('/assigned-abstracts', [ReviewerController::class, 'assignedAbstracts'])->name('reviewer.assignedAbstracts');
-
-    //Route::get('/submissions', [AdminController::class, 'submissions'])->name('admin.submissions');
-    //Route::get('/reports', [AdminController::class, 'reports'])->name('admin.reports');
     Route::get('/documents', [ReviewerController::class, 'documentsReview'])->name('reviewer.partials.documents');
     Route::get('/assessment', [ReviewerController::class, 'assessment'])->name('reviewer.partials.assessment');
     Route::get('/reviewed', [ReviewerController::class, 'revieweddocuments'])->name('reviewer.partials.reviewed');
     Route::get('/profile', [ReviewerController::class, 'profile'])->name('reviewer.partials.profile');
+
+    Route::get('/abstracts/{serial_number}', [ReviewerController::class, 'getAbstract']);
+    Route::get('/proposals/{serial_number}', [ReviewerController::class, 'getProposal']);
+
 });
 //User routes
 Route::prefix('user')->middleware(['auth'])->group(function () {

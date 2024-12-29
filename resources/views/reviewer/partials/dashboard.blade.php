@@ -121,7 +121,7 @@
                         <td class="px-4 py-3 text-center space-x-2">
                             <button 
                                 class="px-2 py-1 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-full"
-                                @click="$store.modal.open()"
+                                @click="$store.modal.open({ serial_number: '{{ $submission->serial_number }}' })"
                             >
                                 Review
                             </button>
@@ -129,93 +129,7 @@
                                 Download
                             </a>
                         </td>
-                        <!-- Modal -->
-                        <div 
-                            x-data="{ zoomLevel: 100 }"
-                            x-show="$store.modal.isOpen"
-                            @keydown.escape.window="$store.modal.close()"
-                            class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
-                        >
-                            <div 
-                                class="w-1/2 h-[80vh] flex flex-col bg-gray-50 rounded-lg shadow-lg"
-                                @click.away="$store.modal.close()"
-                            >
-                                <!-- Header -->
-                                <div class="flex-none bg-white border-b border-gray-200">
-                                    <div class="px-6 py-4 flex items-center justify-between">
-                                        <div>
-                                            <h2 class="text-lg font-semibold text-gray-900">Document Preview</h2>
-                                            <p class="mt-1 text-sm text-gray-500">Abstract</p>
-                                        </div>
-                                        <div class="flex items-center gap-2">
-                                            <span class="text-sm text-gray-600" x-text="`${zoomLevel}%`"></span>
-                                            <button 
-                                                @click="zoomLevel = Math.max(10, zoomLevel - 10)" 
-                                                class="p-2 text-gray-500 hover:bg-gray-100 rounded-lg" 
-                                                title="Zoom Out"
-                                            >
-                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
-                                                </svg>
-                                            </button>
-                                            <button 
-                                                @click="zoomLevel += 10" 
-                                                class="p-2 text-gray-500 hover:bg-gray-100 rounded-lg" 
-                                                title="Zoom In"
-                                            >
-                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                                                </svg>
-                                            </button>
-                                            <button 
-                                                @click="$store.modal.close()" 
-                                                class="p-2 text-gray-500 hover:bg-gray-100 rounded-lg" 
-                                                title="Close"
-                                            >
-                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                                </svg>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Document Viewer -->
-                                <div class="flex-1 overflow-y-auto p-6">
-                                    <div 
-                                        class="bg-white rounded-xl shadow-sm h-full border border-gray-200"
-                                        :style="`transform: scale(${zoomLevel/100}); transform-origin: top left;`"
-                                    >
-                                        <div class="h-full flex items-center justify-center border-2 border-dashed border-gray-200 rounded-xl p-8">
-                                            <div class="text-center">
-                                                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                                </svg>
-                                                <h3 class="mt-2 text-sm font-medium text-gray-900">Document Preview</h3>
-                                                <p class="mt-1 text-sm text-gray-500">PDF, DOCX, or other document formats</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- Footer with Accept/Decline buttons -->
-                                <div class="flex-none bg-white border-t border-gray-200 px-6 py-4">
-                                    <div class="flex justify-end space-x-2">
-                                        <button 
-                                            class="px-2 py-1 text-xs font-medium text-white bg-green-600 hover:bg-green-700 rounded-full"
-                                            @click="$store.modal.close()"
-                                        >
-                                            Accept
-                                        </button>
-                                        <button 
-                                            class="px-2 py-1 text-xs font-medium text-white bg-red-600 hover:bg-red-700 rounded-full"
-                                            @click="$store.modal.close()"
-                                        >
-                                            Decline
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        
                     </tr>
                     @empty
                     <tr>
@@ -224,6 +138,93 @@
             @endforelse
                 </tbody>
             </table>
+            <div 
+                x-data="{ zoomLevel: 100 }"
+                x-show="$store.modal.isOpen"
+                @keydown.escape.window="$store.modal.close()"
+                class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden bg-black bg-opacity-50"
+                style="display: none;"
+            >
+                <div class="min-h-screen w-full flex items-center justify-center p-4">
+                    <div 
+                        class="w-full md:w-1/2 max-h-[90vh] flex flex-col bg-gray-50 rounded-lg shadow-lg relative"
+                        @click.away="$store.modal.close()"
+                    >
+                        <!-- Header -->
+                        <div class="flex-none bg-white border-b border-gray-200 sticky top-0 z-10">
+                            <div class="px-6 py-4 flex items-center justify-between">
+                                <div>
+                                    <h2 class="text-lg font-semibold text-gray-900">Abstract Preview</h2>
+                                </div>
+                                <button 
+                                    @click="$store.modal.close()" 
+                                    class="p-2 text-gray-500 hover:bg-gray-100 rounded-lg" 
+                                    title="Close"
+                                >
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Document Viewer -->
+                        <div class="flex-1 overflow-y-auto p-8 bg-white">
+                            <div class="max-w-3xl mx-auto space-y-6">
+                                <template x-if="$store.modal.abstract">
+                                    <div class="space-y-6  pt-10">
+                                        <h1 
+                                            x-text="$store.modal.abstract.title"
+                                            class="text-2xl font-bold text-center text-gray-900"
+                                        ></h1>
+                                        <ul class="list-none text-center text-sm text-gray-700">
+                                            <template x-for="author in $store.modal.abstract?.authors || []" :key="author.email">
+                                                <li x-text="`${author.first_name} ${author.middle_name || ''} ${author.surname}`"></li>
+                                            </template>
+                                        </ul>
+                                        <h2 class="text-lg font-bold text-gray-900 mt-8">ABSTRACT</h2>
+                                        <p 
+                                            x-text="$store.modal.abstract.content"
+                                            class="text-gray-700 leading-relaxed text-justify"
+                                        ></p>
+                                        <div class="mt-6">
+                                            <h3 class="font-bold text-gray-900">Keywords</h3>
+                                            <p x-text="$store.modal.abstract.keywords || 'Not available'" class="text-gray-700"></p>
+                                        </div>
+                                        <div class="mt-4">
+                                            <h3 class="font-bold text-gray-900">Sub-Theme</h3>
+                                            <p x-text="$store.modal.abstract.sub_theme || 'Not available'" class="text-gray-700"></p>
+                                        </div>
+                                    </div>
+                                </template>
+                                <template x-if="!$store.modal.abstract">
+                                    <div class="text-center">
+                                        <p class="text-sm text-gray-500">Loading...</p>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+
+                        <!-- Footer -->
+                        <div class="flex-none bg-white border-t border-gray-200 px-6 py-4 sticky bottom-0 z-10">
+                            <div class="flex justify-end space-x-2">
+                                <button 
+                                    class="px-2 py-1 text-xs font-medium text-white bg-green-600 hover:bg-green-700 rounded-full"
+                                    @click="$store.modal.close()"
+                                >
+                                    Accept
+                                </button>
+                                <button 
+                                    class="px-2 py-1 text-xs font-medium text-white bg-red-600 hover:bg-red-700 rounded-full"
+                                    @click="$store.modal.close()"
+                                >
+                                    Decline
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Research Proposals Tab (Similar Layout as Abstracts) -->
@@ -250,7 +251,7 @@
                         <td class="px-4 py-3 text-center space-x-2">
                             <button 
                                 class="px-2 py-1 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-full"
-                                @click="$store.modal.open()"
+                                @click="$store.proposalModal.open({ serial_number: '{{ $researchSubmission->serial_number }}' })"
                             >
                                 Review
                             </button>
@@ -265,6 +266,93 @@
                         @endforelse
                 </tbody>
             </table>
+            <div 
+                x-data="{ zoomLevel: 100 }"
+                x-show="$store.proposalModal.isOpen"
+                @keydown.escape.window="$store.proposalModal.close()"
+                class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden bg-black bg-opacity-50"
+                style="display: none;"
+            >
+                <div class="min-h-screen w-full flex items-center justify-center p-4">
+                    <div 
+                        class="w-full md:w-1/2 max-h-[90vh] flex flex-col bg-gray-50 rounded-lg shadow-lg relative"
+                        @click.away="$store.proposalModal.close()"
+                    >
+                        <!-- Header -->
+                        <div class="flex-none bg-white border-b border-gray-200 sticky top-0 z-10">
+                            <div class="px-6 py-4 flex items-center justify-between">
+                                <div>
+                                    <h2 class="text-lg font-semibold text-gray-900">Proposal Preview</h2>
+                                </div>
+                                <button 
+                                    @click="$store.proposalModal.close()" 
+                                    class="p-2 text-gray-500 hover:bg-gray-100 rounded-lg" 
+                                    title="Close"
+                                >
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Document Viewer -->
+                        <div class="flex-1 overflow-y-auto p-8 bg-white">
+                        <div class="max-w-3xl mx-auto space-y-6">
+                                <template x-if="$store.proposalModal.proposal">
+                                    <div class="space-y-6  pt-10">
+                                        <h1 
+                                            x-text="$store.proposalModal.proposal.title"
+                                            class="text-2xl font-bold text-center text-gray-900"
+                                        ></h1>
+                                        <ul class="list-none text-center text-sm text-gray-700">
+                                            <template x-for="author in $store.proposalModal.proposal?.authors || []" :key="author.email">
+                                                <li x-text="`${author.first_name} ${author.middle_name || ''} ${author.surname}`"></li>
+                                            </template>
+                                        </ul>
+                                        <h2 class="text-lg font-bold text-gray-900 mt-8">PROPOSAL ABSTRACT</h2>
+                                        <p 
+                                            x-text="$store.proposalModal.proposal.content"
+                                            class="text-gray-700 leading-relaxed text-justify"
+                                        ></p>
+                                        <div class="mt-6">
+                                            <h3 class="font-bold text-gray-900">Keywords</h3>
+                                            <p x-text="$store.proposalModal.proposal.keywords || 'Not available'" class="text-gray-700"></p>
+                                        </div>
+                                        <div class="mt-4">
+                                            <h3 class="font-bold text-gray-900">Sub-Theme</h3>
+                                            <p x-text="$store.proposalModal.proposal.sub_theme || 'Not available'" class="text-gray-700"></p>
+                                        </div>
+                                    </div>
+                                </template>
+                                <template x-if="!$store.proposalModal.proposal">
+                                    <div class="text-center">
+                                        <p class="text-sm text-gray-500">Loading...</p>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+
+                        <!-- Footer -->
+                        <div class="flex-none bg-white border-t border-gray-200 px-6 py-4 sticky bottom-0 z-10">
+                            <div class="flex justify-end space-x-2">
+                                <button 
+                                    class="px-2 py-1 text-xs font-medium text-white bg-green-600 hover:bg-green-700 rounded-full"
+                                    @click="$store.proposalModal.close()"
+                                >
+                                    Accept
+                                </button>
+                                <button 
+                                    class="px-2 py-1 text-xs font-medium text-white bg-red-600 hover:bg-red-700 rounded-full"
+                                    @click="$store.proposalModal.close()"
+                                >
+                                    Decline
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -272,13 +360,82 @@
 document.addEventListener('alpine:init', () => {
     Alpine.store('modal', {
         isOpen: false,
-        open() {
-            this.isOpen = true
+        abstract: null,
+        open(params) {
+            this.isOpen = true;
+            this.loadAbstract(params.serial_number);
         },
         close() {
-            this.isOpen = false
-        }
-    })
-})
+            this.isOpen = false;
+            this.abstract = null;
+        },
+        async loadAbstract(serial_number) {
+            try {
+                const response = await fetch(`/reviewer/abstracts/${serial_number}`);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                this.abstract = {
+                    title: data.title,
+                    content: data.abstract,
+                    keywords: data.keywords,
+                    sub_theme: data.sub_theme,
+                    authors: data.authors
+                };
+            } catch (error) {
+                console.error('Error fetching abstract:', error);
+                this.abstract = {
+                    title: 'Error',
+                    content: 'Failed to load abstract. Please try again.',
+                    keywords: '',
+                    sub_theme: '',
+                    authors: []
+                };
+            }
+        },
+    });
+});
+</script>
+<script>
+document.addEventListener('alpine:init', () => {
+    Alpine.store('proposalModal', {
+        isOpen: false,
+        proposal: null,
+        open(params) {
+            this.isOpen = true;
+            this.loadProposal(params.serial_number);
+        },
+        close() {
+            this.isOpen = false;
+            this.proposal = null;
+        },
+        async loadProposal(serial_number) {
+            try {
+                const response = await fetch(`/reviewer/proposals/${serial_number}`);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                this.proposal = {
+                    title: data.title,
+                    content: data.abstract,
+                    keywords: data.keywords,
+                    sub_theme: data.sub_theme,
+                    authors: data.authors
+                };
+            } catch (error) {
+                console.error('Error fetching proposal:', error);
+                this.proposal = {
+                    title: 'Error',
+                    content: 'Failed to load abstract. Please try again.',
+                    keywords: '',
+                    sub_theme: '',
+                    authors: []
+                };
+            }
+        },
+    });
+});
 </script>
 @endsection

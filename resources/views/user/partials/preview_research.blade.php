@@ -49,12 +49,12 @@
                                 <div class="bg-gray-50 rounded-lg p-4">
                                     <div class="space-y-4">
                                     <div class="p-8">
-                                    <h1 class="text-3xl font-bold text-gray-900 text-center mb-2">
-    {{ $authorData['first_name'] }} {{ $authorData['middle_name'] }} {{ $authorData['surname'] }}
-</h1>
-<h2 class="text-lg font-medium text-gray-700 text-center">{{ $authorData['university'] }}</h2>
-<h3 class="text-md text-gray-600 text-center">{{ $authorData['department'] }}</h3>
-                </div>
+                                        <h1 class="text-3xl font-bold text-gray-900 text-center mb-2">
+                                            {{ $authorData['first_name'] ?? '' }} {{ $authorData['middle_name'] ?? '' }} {{ $authorData['surname'] ?? '' }}
+                                        </h1>
+                                        <h2 class="text-lg font-medium text-gray-700 text-center">{{ $authorData['university'] ?? '' }}</h2>
+                                        <h3 class="text-md text-gray-600 text-center">{{ $authorData['department'] ?? '' }}</h3>
+                                    </div>
                                         <div>
                                             <h4 class="text-sm font-medium text-gray-500">Title</h4>
                                             <p class="mt-1 text-base text-gray-900">{{ $articleTitle }}</p>

@@ -89,12 +89,6 @@ public function postPreview(Request $request)
         return redirect()->route('user.step1')->with('error', 'No author or abstract data available.');
     }
 
-    // Save author(s)
-    foreach ($allAuthors as $authorData) {
-        $author = new Author($authorData);
-        $author->save();
-    }
-
     // Generate serial number
     $subTheme = $abstractData['sub_theme'];
     $acronyms = [
@@ -121,6 +115,12 @@ public function postPreview(Request $request)
     $abstractSubmission->user_reg_no = $user->reg_no;
     $abstractSubmission->final_status = "Pending";
     $abstractSubmission->save();
+
+    foreach ($allAuthors as $authorData) {
+        $authorData['abstract_submission_id'] = $serialNumber; // Associate the serial number
+        $author = new Author($authorData);
+        $author->save();
+    }
 
     $request->session()->forget(['author', 'abstract', 'all_authors']);
     return redirect()->route('submit.confirm')->with('success', 'Submission successfully stored.');

@@ -25,6 +25,6 @@ class AbstractSubmission extends Model
 
     public function authors()
     {
-        return $this->hasMany(Author::class, 'abstract_submission_id');
+        return $this->hasMany(Author::class, 'abstract_submission_id', 'serial_number');
     }
 }

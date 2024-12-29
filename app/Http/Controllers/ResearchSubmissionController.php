@@ -104,19 +104,14 @@ public function preview_research(Request $request)
 {
     $authorData = session()->get('author');
     $submissionData = $request->session()->get('submission_data');
+    $allAuthors = $request->session()->get('all_authors', []);
+
     
     if (!$submissionData) {
         return redirect()->route('submit.step2_research')
             ->with('error', 'No submission data found.');
     }
 
-    // Ensure keywords is always an array
-    $keywords = $submissionData['keywords'] ?? [];
-    if (is_string($keywords)) {
-        $keywords = array_filter(explode(',', $keywords));
-    } elseif (!is_array($keywords)) {
-        $keywords = [];
-    }
 
     // Make sure abstract data is set in session
     $articleTitle = $submissionData['article_title'] ?? 'N/A';
@@ -128,7 +123,7 @@ public function preview_research(Request $request)
         'articleTitle' => $articleTitle,
         'subTheme' => $subTheme,
         'abstract' => $abstract,
-        'keywords' => $keywords,
+        'keywords' => is_array($submissionData['keywords'] ?? null) ? $submissionData['keywords'] : [],
         'documentPath' => $submissionData['pdf_document_path'] ?? null
     ]);
 }
@@ -138,15 +133,10 @@ public function postPreview_research(Request $request)
     // Retrieve session data
     $authorData = $request->session()->get('author');
     $submissionData = $request->session()->get('submission_data');
+    $allAuthors = $request->session()->get('all_authors');
 
     if (!$authorData || !$submissionData) {
         return redirect()->route('user.step1_research')->with('error', 'No author or submission data available.');
-    }
-
-    // Save author(s) data
-    foreach ($request->session()->get('all_authors', []) as $authorData) {
-        $author = new Author($authorData);
-        $author->save();
     }
 
     // Generate serial number for research submission
@@ -177,6 +167,12 @@ public function postPreview_research(Request $request)
     $researchSubmission->user_reg_no = $user->reg_no;
     $researchSubmission->final_status = "Pending";
     $researchSubmission->save();
+
+    foreach ($allAuthors as $authorData) {
+        $authorData['research_submission_id'] = $serialNumber; // Associate the serial number
+        $author = new Author($authorData);
+        $author->save();
+    }
 
     // Clear session data after submission
     $request->session()->forget(['author', 'submission_data', 'all_authors']);
