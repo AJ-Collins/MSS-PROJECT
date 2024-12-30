@@ -26,4 +26,5 @@ class ResearchSubmission extends Model
     {
         return $this->hasMany(Author::class, 'research_submission_id','serial_number');
     }
+    
 }

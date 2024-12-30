@@ -69,8 +69,11 @@ Route::prefix('reviewer')->middleware(['auth'])->group(function () {
     Route::get('/assigned-abstracts', [ReviewerController::class, 'assignedAbstracts'])->name('reviewer.assignedAbstracts');
     Route::get('/documents', [ReviewerController::class, 'documentsReview'])->name('reviewer.partials.documents');
     Route::get('/assessment/abstract/{serial_number}', [ReviewerController::class, 'AbstractAssessment'])->name('reviewer.abstract.assessment');
+    Route::get('/assessment/proposal-view/{serial_number}', [ReviewerController::class, 'ProposalAssessment'])->name('reviewer.proposal.assessment');
     Route::post('/assessment/abstract/{serial_number}', [ReviewerController::class, 'AbstractAssessmentStore'])->name('reviewer.abstracts.assessment.store');
+    Route::post('/assessment/proposal-store/{serial_number}', [ReviewerController::class, 'ProposalAssessmentStore'])->name('reviewer.proposal.assessment.store');
     Route::get('/assessment/abstracts/{serial_number}', [ReviewerController::class, 'AbstracPreview'])->name('reviewer.assessment.abstractpreview');
+    Route::get('/assessment/proposal/{serial_number}', [ReviewerController::class, 'ProposalPreview'])->name('reviewer.assessment.proposalpreview');
     Route::get('/reviewed', [ReviewerController::class, 'revieweddocuments'])->name('reviewer.partials.reviewed');
     Route::get('/profile', [ReviewerController::class, 'profile'])->name('reviewer.partials.profile');
     
