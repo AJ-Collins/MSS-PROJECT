@@ -47,28 +47,7 @@
 
             <!-- Scrollable Form Content -->
             <div class="flex-1 overflow-y-auto">
-            <form 
-            @submit="handleSubmit"
-            action="{{ route('reviewer.abstracts.assessment.store', $submission->serial_number) }}" 
-                    method="POST" 
-                    class="p-6 space-y-6">
-                    @csrf
-                    @if ($errors->any())
-    <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative" role="alert">
-        <strong class="font-bold">Please check the following errors:</strong>
-        <ul class="mt-2 list-disc list-inside">
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
-
-@if(session('success'))
-    <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded relative" role="alert">
-        {{ session('success') }}
-    </div>
-@endif
+                <form @submit.prevent="// Handle form submission" class="p-6 space-y-6">
                     <!-- Assessment Sections -->
                     <div class="space-y-6">
                         <!-- Research Thematic Area -->
@@ -77,10 +56,10 @@
                                 <div class="flex items-start justify-between">
                                     <div class="flex-1 pr-4">
                                         <label class="block text-base font-semibold text-gray-900">
-                                            Research Thematic Area <span class="text-red-500"> (Out of 5)</span>
+                                            Research Thematic Area<span class="text-red-500"> (Out of 5)</span>
                                         </label>
                                         <textarea 
-                                            name="thematic_comments" 
+                                            name="thematic_area"
                                             placeholder="Provide comments on the research thematic area..." 
                                             class="mt-4 w-full h-20 min-h-[120px] rounded-lg border border-gray-800 bg-gray-100 focus:border-blue-500 focus:ring-blue-500" 
                                             required
@@ -91,7 +70,8 @@
                                             <label class="block text-sm font-medium text-gray-700">Score</label>
                                             <input 
                                                 type="number" 
-                                                name="thematic_score"
+                                                x-model="scores.title"
+                                                @input="updateTotalScore"
                                                 class="mt-2 w-20 text-center text-lg font-bold rounded-md border border-gray-300 focus:border-blue-500 focus:ring-blue-500" 
                                                 min="0" 
                                                 max="5"
@@ -101,19 +81,13 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-
-                        <!-- Research Title -->
-                        <div class="bg-white rounded-xl border border-gray-200 shadow-sm">
-                            <div class="p-6">
                                 <div class="flex items-start justify-between">
                                     <div class="flex-1 pr-4">
                                         <label class="block text-base font-semibold text-gray-900">
                                             Research Title <span class="text-red-500"> (Out of 5)</span>
                                         </label>
                                         <textarea 
-                                            name="title_comments" 
+                                            name="thematic_area"
                                             placeholder="Provide comments on the research title..." 
                                             class="mt-4 w-full h-20 min-h-[120px] rounded-lg border border-gray-800 bg-gray-100 focus:border-blue-500 focus:ring-blue-500" 
                                             required
@@ -124,7 +98,8 @@
                                             <label class="block text-sm font-medium text-gray-700">Score</label>
                                             <input 
                                                 type="number" 
-                                                name="title_score"
+                                                x-model="scores.methodology"
+                                                @input="updateTotalScore"
                                                 class="mt-2 w-20 text-center text-lg font-bold rounded-md border border-gray-300 focus:border-blue-500 focus:ring-blue-500" 
                                                 min="0" 
                                                 max="5"
@@ -134,19 +109,14 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-
-                        <!-- Objectives/Aims -->
-                        <div class="bg-white rounded-xl border border-gray-200 shadow-sm">
-                            <div class="p-6">
                                 <div class="flex items-start justify-between">
                                     <div class="flex-1 pr-4">
                                         <label class="block text-base font-semibold text-gray-900">
                                             Objective(s)/ Aims <span class="text-red-500"> (Out of 5)</span>
                                         </label>
+                                        <p class="mt-1 text-sm text-gray-500">Evaluate the research focus and alignment</p>
                                         <textarea 
-                                            name="objectives_comments" 
+                                            name="thematic_area"
                                             placeholder="Provide comments on the objectives/aims..." 
                                             class="mt-4 w-full h-20 min-h-[120px] rounded-lg border border-gray-800 bg-gray-100 focus:border-blue-500 focus:ring-blue-500" 
                                             required
@@ -157,7 +127,8 @@
                                             <label class="block text-sm font-medium text-gray-700">Score</label>
                                             <input 
                                                 type="number" 
-                                                name="objectives_score"
+                                                x-model="scores.output"
+                                                @input="updateTotalScore"
                                                 class="mt-2 w-20 text-center text-lg font-bold rounded-md border border-gray-300 focus:border-blue-500 focus:ring-blue-500" 
                                                 min="0" 
                                                 max="5"
@@ -167,19 +138,14 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-
-                        <!-- Methodology -->
-                        <div class="bg-white rounded-xl border border-gray-200 shadow-sm">
-                            <div class="p-6">
                                 <div class="flex items-start justify-between">
                                     <div class="flex-1 pr-4">
                                         <label class="block text-base font-semibold text-gray-900">
                                             Methodology <span class="text-red-500"> (Out of 30)</span>
                                         </label>
+                                        <p class="mt-1 text-sm text-gray-500">Evaluate the research focus and alignment</p>
                                         <textarea 
-                                            name="methodology_comments" 
+                                            name="thematic_area"
                                             placeholder="Provide comments on the methodology..." 
                                             class="mt-4 w-full h-20 min-h-[120px] rounded-lg border border-gray-800 bg-gray-100 focus:border-blue-500 focus:ring-blue-500" 
                                             required
@@ -190,29 +156,25 @@
                                             <label class="block text-sm font-medium text-gray-700">Score</label>
                                             <input 
                                                 type="number" 
-                                                name="methodology_score"
+                                                x-model="scores.objectives"
+                                                @input="updateTotalScore"
                                                 class="mt-2 w-20 text-center text-lg font-bold rounded-md border border-gray-300 focus:border-blue-500 focus:ring-blue-500" 
                                                 min="0" 
                                                 max="30"
                                                 required
                                             >
-                                            <div class="mt-1 text-xs text-gray-800">Out of 30</div>
+                                            <div class="mt-1 text-xs text-gray-800">Out of 5</div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-
-                        <!-- Expected Output -->
-                        <div class="bg-white rounded-xl border border-gray-200 shadow-sm">
-                            <div class="p-6">
                                 <div class="flex items-start justify-between">
                                     <div class="flex-1 pr-4">
                                         <label class="block text-base font-semibold text-gray-900">
                                             Expected Output <span class="text-red-500"> (Out of 5)</span>
                                         </label>
+                                        <p class="mt-1 text-sm text-gray-500">Evaluate the research focus and alignment</p>
                                         <textarea 
-                                            name="output_comments" 
+                                            name="thematic_area"
                                             placeholder="Provide comments on the expected output..." 
                                             class="mt-4 w-full h-20 min-h-[120px] rounded-lg border border-gray-800 bg-gray-100 focus:border-blue-500 focus:ring-blue-500" 
                                             required
@@ -223,7 +185,8 @@
                                             <label class="block text-sm font-medium text-gray-700">Score</label>
                                             <input 
                                                 type="number" 
-                                                name="output_score"
+                                                x-model="scores.thematic"
+                                                @input="updateTotalScore"
                                                 class="mt-2 w-20 text-center text-lg font-bold rounded-md border border-gray-300 focus:border-blue-500 focus:ring-blue-500" 
                                                 min="0" 
                                                 max="5"
@@ -273,7 +236,6 @@
                                                     value="minor"
                                                     x-model="selectedType"
                                                     class="h-4 w-4 text-blue-600 focus:ring-blue-500"
-                                                    required
                                                 >
                                                 <div class="ml-3">
                                                     <div class="font-medium text-gray-900">Minor Corrections</div>
@@ -284,7 +246,7 @@
                                                 x-collapse 
                                                 class="border-t border-gray-200 p-4 bg-white">
                                                 <textarea 
-                                                    name="correction_comments" 
+                                                    name="minor_corrections" 
                                                     class="w-full min-h-[100px] rounded-lg border border-gray-800 bg-gray-100 h-20 focus:border-blue-500 focus:ring-blue-500" 
                                                     placeholder="Describe the minor corrections needed..."
                                                 ></textarea>
@@ -300,19 +262,18 @@
                                                     name="correction_type" 
                                                     value="major"
                                                     x-model="selectedType"
-                                                    class="h-4 w-4 text-blue-600 focus:ring-blue-500"
-                                                    required
+                                                    class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
                                                 >
                                                 <div class="ml-3">
                                                     <div class="font-medium text-gray-900">Major Corrections</div>
-                                                    <div class="text-sm text-gray-500">Significant revisions or rework needed</div>
+                                                    <div class="text-sm text-gray-500">Significant revisions required</div>
                                                 </div>
                                             </label>
                                             <div x-show="selectedType === 'major'" 
                                                 x-collapse 
                                                 class="border-t border-gray-200 p-4 bg-white">
                                                 <textarea 
-                                                    name="correction_comments" 
+                                                    name="major_corrections" 
                                                     class="w-full min-h-[100px] rounded-lg border border-gray-800 bg-gray-100 h-20 focus:border-blue-500 focus:ring-blue-500" 
                                                     placeholder="Describe the major corrections needed..."
                                                 ></textarea>
@@ -328,21 +289,20 @@
                                                     name="correction_type" 
                                                     value="reject"
                                                     x-model="selectedType"
-                                                    class="h-4 w-4 text-blue-600 focus:ring-blue-500"
-                                                    required
+                                                    class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
                                                 >
                                                 <div class="ml-3">
                                                     <div class="font-medium text-gray-900">Reject</div>
-                                                    <div class="text-sm text-gray-500">The proposal is not suitable for submission</div>
+                                                    <div class="text-sm text-gray-500">Research proposal does not meet requirements</div>
                                                 </div>
                                             </label>
                                             <div x-show="selectedType === 'reject'" 
                                                 x-collapse 
                                                 class="border-t border-gray-200 p-4 bg-white">
                                                 <textarea 
-                                                    name="correction_comments" 
+                                                    name="reject_reasons" 
                                                     class="w-full min-h-[100px] rounded-lg border border-gray-800 bg-gray-100 h-20 focus:border-blue-500 focus:ring-blue-500" 
-                                                    placeholder="Provide comments explaining the rejection..."
+                                                    placeholder="Provide detailed reasons for rejection..."
                                                 ></textarea>
                                             </div>
                                         </div>
@@ -351,18 +311,20 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- Submit Button -->
-                    <div class="text-right">
-                        <button 
-                            type="submit" 
-                            class="inline-flex justify-center py-3 px-6 text-lg font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
-                            Submit Assessment
-                        </button>
-                    </div>
                 </form>
+            </div>
 
-            </div>            
+            <!-- Sticky Footer -->
+            <div class="flex-none bg-white border-t border-gray-200 p-6">
+                <div class="flex items-center justify-between gap-4">
+                    <button type="button" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+                        Save Draft
+                    </button>
+                    <button type="submit" class="px-8 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700">
+                        Submit Assessment
+                    </button>
+                </div>
+            </div>
         </div>
 
         <!-- Right Panel - Document Preview -->
@@ -372,76 +334,47 @@
                 <div class="px-6 py-4 flex items-center justify-between">
                     <div>
                         <h2 class="text-lg font-semibold text-gray-900">Document Preview</h2>
-                        <p class="mt-1 text-sm text-gray-500">Abstract</p>
-                    </div>        
+                        <p class="mt-1 text-sm text-gray-500">Research Proposal Document</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm text-gray-600" x-text="`${zoomLevel}%`"></span>
+                        <button @click="zoomOut" class="p-2 text-gray-500 hover:bg-gray-100 rounded-lg" title="Zoom Out">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/>
+                            </svg>
+                        </button>
+                        <button @click="zoomIn" class="p-2 text-gray-500 hover:bg-gray-100 rounded-lg" title="Zoom In">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                            </svg>
+                        </button>
+                        <button class="p-2 text-gray-500 hover:bg-gray-100 rounded-lg" title="Download">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
             </div>
 
             <!-- Document Viewer -->
-            <div 
-                x-data="documentPreview('{{ route('reviewer.assessment.abstractpreview', $serial_number) }}')" 
-                x-init="loadAbstract()"
-                class="flex-1 overflow-y-auto p-6"
-            >
-                <!-- Loading State -->
-                <div x-show="loading" class="flex justify-center items-center h-full">
-                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-                </div>
-
-                <!-- Content -->
-                <div x-show="!loading && abstract" class="max-w-3xl mx-auto bg-white shadow p-8">
-                    <h1 x-text="abstract.title" class="text-2xl font-bold text-center text-gray-900 mb-6"></h1>
-                    
-                    <div class="mb-8 text-center">
-                        <div class="space-y-1">
-                            <template x-for="(author, index) in [...new Set(abstract.authors.map(a => JSON.stringify(a)))].map(a => JSON.parse(a))" :key="index">
-                                <p class="text-sm text-gray-700" x-text="[author.first_name, author.middle_name, author.surname].filter(Boolean).join(' ')"></p>
-                            </template>
+            <div class="flex-1 overflow-y-auto p-6">
+                <div 
+                    class="bg-white rounded-xl shadow-sm h-full border border-gray-200"
+                    :style="`transform: scale(${zoomLevel/100}); transform-origin: top left;`"
+                >
+                    <div class="h-full flex items-center justify-center border-2 border-dashed border-gray-200 rounded-xl p-8">
+                        <div class="text-center">
+                            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            <h3 class="mt-2 text-sm font-medium text-gray-900">Document Preview</h3>
+                            <p class="mt-1 text-sm text-gray-500">PDF, DOCX, or other document formats</p>
                         </div>
                     </div>
-
-                    <h2 class="text-lg font-bold text-gray-900 mb-4">ABSTRACT</h2>
-                    <p x-text="abstract.content" class="text-gray-700 leading-relaxed text-justify mb-6"></p>
-
-                    <div class="space-y-4">
-                        <div>
-                            <h3 class="font-bold text-gray-900">Keywords</h3>
-                            <p x-text="abstract.keywords || 'Not available'" class="text-gray-700"></p>
-                        </div>
-                        <div>
-                            <h3 class="font-bold text-gray-900">Sub-Theme</h3>
-                            <p x-text="abstract.sub_theme || 'Not available'" class="text-gray-700"></p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Error State -->
-                <div x-show="!loading && !abstract" class="flex justify-center items-center h-full">
-                    <p class="text-red-600">Failed to load abstract</p>
                 </div>
             </div>
         </div>
     </div>
 </div>
-<script>
-function documentPreview(apiUrl) {
-    return {
-        abstract: null,
-        loading: true,
-        async loadAbstract() {
-            try {
-                const response = await fetch(apiUrl);
-                const data = await response.json();
-                this.abstract = response.ok ? data : null;
-            } catch (error) {
-                console.error('Error:', error);
-                this.abstract = null;
-            } finally {
-                this.loading = false;
-            }
-        }
-    };
-}
-</script>
-
 @endsection

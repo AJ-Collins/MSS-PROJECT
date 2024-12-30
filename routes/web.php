@@ -68,9 +68,12 @@ Route::prefix('reviewer')->middleware(['auth'])->group(function () {
     Route::get('/dashboard', [ReviewerController::class, 'dashboard'])->name('reviewer.partials.dashboard');
     Route::get('/assigned-abstracts', [ReviewerController::class, 'assignedAbstracts'])->name('reviewer.assignedAbstracts');
     Route::get('/documents', [ReviewerController::class, 'documentsReview'])->name('reviewer.partials.documents');
-    Route::get('/assessment', [ReviewerController::class, 'assessment'])->name('reviewer.partials.assessment');
+    Route::get('/assessment/abstract/{serial_number}', [ReviewerController::class, 'AbstractAssessment'])->name('reviewer.abstract.assessment');
+    Route::post('/assessment/abstract/{serial_number}', [ReviewerController::class, 'AbstractAssessmentStore'])->name('reviewer.abstracts.assessment.store');
+    Route::get('/assessment/abstracts/{serial_number}', [ReviewerController::class, 'AbstracPreview'])->name('reviewer.assessment.abstractpreview');
     Route::get('/reviewed', [ReviewerController::class, 'revieweddocuments'])->name('reviewer.partials.reviewed');
     Route::get('/profile', [ReviewerController::class, 'profile'])->name('reviewer.partials.profile');
+    
 
     Route::get('/abstracts/{serial_number}', [ReviewerController::class, 'getAbstract']);
     Route::get('/proposals/{serial_number}', [ReviewerController::class, 'getProposal']);

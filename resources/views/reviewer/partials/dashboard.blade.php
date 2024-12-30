@@ -83,14 +83,14 @@
                 :class="{ 'border-indigo-500 text-indigo-600': activeTab === 'abstracts', 'border-transparent': activeTab !== 'abstracts' }"
                 @click="activeTab = 'abstracts'">
                 Articles
-                <span class="bg-indigo-100 text-indigo-600 px-2 py-0.5 rounded-full text-xs">3</span>
+                <span class="bg-indigo-100 text-indigo-600 px-2 py-0.5 rounded-full text-xs">{{ $abstractCount }}</span>
             </button>
             <button 
                 class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800 border-b-2 transition-colors duration-150"
                 :class="{ 'border-indigo-500 text-indigo-600': activeTab === 'proposals', 'border-transparent': activeTab !== 'proposals' }"
                 @click="activeTab = 'proposals'">
                 Research Proposals
-                <span class="bg-indigo-100 text-indigo-600 px-2 py-0.5 rounded-full text-xs">2</span>
+                <span class="bg-indigo-100 text-indigo-600 px-2 py-0.5 rounded-full text-xs">{{ $proposalCount }}</span>
             </button>
         </div>
     </div>

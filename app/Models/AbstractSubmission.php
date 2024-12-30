@@ -27,4 +27,8 @@ class AbstractSubmission extends Model
     {
         return $this->hasMany(Author::class, 'abstract_submission_id', 'serial_number');
     }
+    public function assessments()
+    {
+        return $this->hasMany(ResearchAssessment::class, 'abstract_submission_id', 'serial_number');
+    }
 }
