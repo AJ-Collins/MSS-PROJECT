@@ -48,7 +48,7 @@
                             </div>
                             <div class="ml-4">
                                 <p class="text-sm text-gray-500">Pending</p>
-                                <p class="text-2xl font-semibold text-gray-700">3</p>
+                                <p class="text-2xl font-semibold text-gray-700">{{ $newProposalCount + $newAbstractCount }}</p>
                             </div>
                         </div>
                     </div>
@@ -70,7 +70,7 @@
                 </div>
 
 <!-- Document Management Section -->
-<div x-data="{ activeTab: 'abstracts' }">
+<div x-data="{ activeTab: 'articles' }">
     <div class="border-b border-gray-200 shadow-sm bg-white">
         <h2 class="text-2xl font-semibold text-gray-800 tracking-tight p-4">Document Management</h2>
     </div>
@@ -80,17 +80,17 @@
         <div class="flex">
             <button 
                 class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800 border-b-2 transition-colors duration-150"
-                :class="{ 'border-indigo-500 text-indigo-600': activeTab === 'abstracts', 'border-transparent': activeTab !== 'abstracts' }"
-                @click="activeTab = 'abstracts'">
+                :class="{ 'border-indigo-500 text-indigo-600': activeTab === 'articles', 'border-transparent': activeTab !== 'articles' }"
+                @click="activeTab = 'articles'">
                 Articles
-                <span class="bg-indigo-100 text-indigo-600 px-2 py-0.5 rounded-full text-xs">{{ $abstractCount }}</span>
+                <span class="bg-indigo-100 text-indigo-600 px-2 py-0.5 rounded-full text-xs">{{ $newAbstractCount}}</span>
             </button>
             <button 
                 class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800 border-b-2 transition-colors duration-150"
                 :class="{ 'border-indigo-500 text-indigo-600': activeTab === 'proposals', 'border-transparent': activeTab !== 'proposals' }"
                 @click="activeTab = 'proposals'">
                 Research Proposals
-                <span class="bg-indigo-100 text-indigo-600 px-2 py-0.5 rounded-full text-xs">{{ $proposalCount }}</span>
+                <span class="bg-indigo-100 text-indigo-600 px-2 py-0.5 rounded-full text-xs">{{ $newProposalCount }}</span>
             </button>
         </div>
     </div>
@@ -98,7 +98,7 @@
     <!-- Tab Content - Abstracts, Articles, and Proposals -->
     <div class="bg-white shadow-sm">
         <!-- Articles Tab -->
-        <div x-show="activeTab === 'abstracts'" class="overflow-x-auto">
+        <div x-show="activeTab === 'articles'" class="overflow-x-auto">
             <table class="min-w-full table-auto">
                 <thead class="bg-gray-100">
                     <tr>
@@ -116,11 +116,14 @@
                         <td class="px-4 py-3 text-sm text-gray-700">{{ $submission->title }}</td>
                         <td class="px-4 py-3 text-sm text-gray-500">{{ $submission->sub_theme }}</td>
                         <td class="px-4 py-3 text-center">
-                            <span class="px-2 py-1 text-xs font-medium text-yellow-800 bg-yellow-100 rounded-full">To Review</span>
+                            <span class="px-2 py-1 text-xs font-medium {{ ($submission->reviewer_status === null || $submission->reviewer_status === '') ? 'text-red-800 bg-red-100' : 'text-yellow-800 bg-yellow-100' }} rounded-full">
+                                {{ $submission->reviewer_status === null || $submission->reviewer_status === '' ? 'NotAccepted' : $submission->reviewer_status }}
+                            </span>
                         </td>
                         <td class="px-4 py-3 text-center space-x-2">
                             <button 
                                 class="px-2 py-1 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-full"
+                                
                                 @click="$store.modal.open({ serial_number: '{{ $submission->serial_number }}' })"
                             >
                                 Review
@@ -208,18 +211,23 @@
                         <!-- Footer -->
                         <div class="flex-none bg-white border-t border-gray-200 px-6 py-4 sticky bottom-0 z-10">
                             <div class="flex justify-end space-x-2">
-                                <button 
-                                    class="px-2 py-1 text-xs font-medium text-white bg-green-600 hover:bg-green-700 rounded-full"
-                                    @click="$store.modal.close()"
-                                >
+                            @foreach ($submissions as $submission)
+                            <form action="{{ route('update.abstract.reviewer.status') }}" method="POST">
+                                @csrf
+                                <input type="hidden" name="serial_number" value="{{ $submission->serial_number }}">
+                                <input type="hidden" name="reviewer_status" value="accepted">
+                                <button type="submit" class="px-2 py-1 text-xs font-medium text-white bg-green-600 hover:bg-green-700 rounded-full">
                                     Accept
                                 </button>
-                                <button 
-                                    class="px-2 py-1 text-xs font-medium text-white bg-red-600 hover:bg-red-700 rounded-full"
-                                    @click="$store.modal.close()"
-                                >
-                                    Decline
+                            </form>
+                            <form action="{{ route('reviewer.abstract.reject') }}" method="POST">
+                                @csrf
+                                <input type="hidden" name="serial_number" value="{{ $submission->serial_number }}">
+                                <button type="submit" class="px-2 py-1 text-xs font-medium text-white bg-red-600 hover:bg-red-700 rounded-full">
+                                    Reject
                                 </button>
+                            </form>
+                            @endforeach
                             </div>
                         </div>
                     </div>
@@ -246,7 +254,9 @@
                         <td class="px-4 py-3 text-sm text-gray-700">{{ $researchSubmission->article_title }}</td>
                         <td class="px-4 py-3 text-sm text-gray-500">{{ $researchSubmission->sub_theme }}</td>
                         <td class="px-4 py-3 text-center">
-                            <span class="px-2 py-1 text-xs font-medium text-yellow-800 bg-yellow-100 rounded-full">To Review</span>
+                            <span class="px-2 py-1 text-xs font-medium {{ ($researchSubmission->reviewer_status === null || $researchSubmission->reviewer_status === '') ? 'text-red-800 bg-red-100' : 'text-yellow-800 bg-yellow-100' }} rounded-full">
+                                {{ $researchSubmission->reviewer_status === null || $researchSubmission->reviewer_status === '' ? 'NotAccepted' : $researchSubmission->reviewer_status }}
+                            </span>
                         </td>
                         <td class="px-4 py-3 text-center space-x-2">
                             <button 
@@ -336,18 +346,23 @@
                         <!-- Footer -->
                         <div class="flex-none bg-white border-t border-gray-200 px-6 py-4 sticky bottom-0 z-10">
                             <div class="flex justify-end space-x-2">
-                                <button 
-                                    class="px-2 py-1 text-xs font-medium text-white bg-green-600 hover:bg-green-700 rounded-full"
-                                    @click="$store.proposalModal.close()"
-                                >
-                                    Accept
-                                </button>
-                                <button 
-                                    class="px-2 py-1 text-xs font-medium text-white bg-red-600 hover:bg-red-700 rounded-full"
-                                    @click="$store.proposalModal.close()"
-                                >
-                                    Decline
-                                </button>
+                            @forelse ($researchSubmissions as $researchSubmission)
+                                <form action="{{ route('update.proposal.reviewer.status') }}" method="POST">
+                                    @csrf
+                                    <input type="hidden" name="serial_number" value="{{ $researchSubmission->serial_number }}">
+                                    <input type="hidden" name="reviewer_status" value="accepted">
+                                    <button type="submit" class="px-2 py-1 text-xs font-medium text-white bg-green-600 hover:bg-green-700 rounded-full">
+                                        Accept
+                                    </button>
+                                </form>
+                                <form action="{{ route('reviewer.proposal.reject') }}" method="POST">
+                                    @csrf
+                                    <input type="hidden" name="serial_number" value="{{ $researchSubmission->serial_number }}">
+                                    <button type="submit" class="px-2 py-1 text-xs font-medium text-white bg-red-600 hover:bg-red-700 rounded-full">
+                                        Reject
+                                    </button>
+                                </form>
+                            @endforeach
                             </div>
                         </div>
                     </div>

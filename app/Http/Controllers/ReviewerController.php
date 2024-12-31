@@ -25,16 +25,107 @@ class ReviewerController extends Controller
 
         // Fetch abstracts assigned to the logged-in reviewer
         $submissions = AbstractSubmission::where('reviewer_reg_no', $reviewer->reg_no)
-            ->whereNull('score')
-            ->get();
+        ->where(function($query) {
+            $query->where('reviewer_status', '')
+                  ->orWhereNull('reviewer_status');
+        })
+        ->get();
+            
         $researchSubmissions = ResearchSubmission::where('reviewer_reg_no', $reviewer->reg_no)
-            ->whereNull('score')
-            ->get();
+        ->where(function($query) {
+            $query->where('reviewer_status', '')
+                  ->orWhereNull('reviewer_status');
+        })
+        ->get();
 
-        $abstractCount = $submissions->count();
-        $proposalCount = $researchSubmissions->count();
+        $abstractCount = AbstractSubmission::where('reviewer_reg_no', $reviewer->reg_no)->count();
+        $proposalCount = ResearchSubmission::where('reviewer_reg_no', $reviewer->reg_no)->count();
         
-        return view('reviewer.partials.dashboard', compact('submissions', 'researchSubmissions', 'abstractCount', 'proposalCount'));
+        $newAbstractCount = $submissions->count();
+        $newProposalCount = $researchSubmissions->count();
+        
+        return view('reviewer.partials.dashboard', compact(
+            'submissions', 
+            'researchSubmissions', 
+            'abstractCount', 
+            'proposalCount',
+            'newAbstractCount',
+            'newProposalCount'));
+    }
+
+    public function abstractStatus(Request $request)
+    {
+        $request->validate([
+            'serial_number' => 'required|exists:abstract_submissions,serial_number',
+            'reviewer_status' => 'required|string',
+        ]);
+
+        $submission = AbstractSubmission::find($request->serial_number);
+        if ($submission) {
+            $submission->reviewer_status = $request->reviewer_status;
+            $submission->save();
+        }
+
+        return back()->with('success', 'Reviewer status updated successfully!');
+    }
+
+    public function abstractReject(Request $request)
+    {
+        $request->validate([
+            'serial_number' => 'required|exists:abstract_submissions,serial_number',
+        ]);
+
+        $submission = AbstractSubmission::find($request->serial_number);
+
+        if ($submission) {
+            // Update the reviewer status
+            $submission->reviewer_status = '';
+
+            // Remove the reviewer_reg_no (set it to null)
+            $submission->reviewer_reg_no = null;
+
+            // Save the changes
+            $submission->save();
+        }
+
+        return back()->with('success', 'Reviewer status updated and reviewer unassigned successfully!');
+    }
+
+    public function proposalStatus(Request $request)
+    {
+        $request->validate([
+            'serial_number' => 'required|exists:research_submissions,serial_number',
+            'reviewer_status' => 'required|string',
+        ]);
+
+        $researchSubmission = ResearchSubmission::find($request->serial_number);
+        if ($researchSubmission) {
+            $researchSubmission->reviewer_status = $request->reviewer_status;
+            $researchSubmission->save();
+        }
+
+        return back()->with('success', 'Reviewer status updated successfully!');
+    }
+    public function proposalReject(Request $request)
+    {
+        $request->validate([
+            'serial_number' => 'required|exists:research_submissions,serial_number',
+        ]);
+
+        $researchSubmission = ResearchSubmission::find($request->serial_number);
+
+        if ($researchSubmission) {
+            // Update the reviewer status
+            $researchSubmission->reviewer_status = '';
+
+            // Remove the reviewer_reg_no (set it to null)
+            $researchSubmission->reviewer_reg_no = null;
+
+            // Save the changes
+            $researchSubmission->save();
+        }
+
+        return back()->with('success', 'Reviewer status updated and reviewer unassigned successfully!');
     }
     public function documentsReview()
     {
@@ -42,10 +133,10 @@ class ReviewerController extends Controller
 
         // Fetch abstracts assigned to the logged-in reviewer
         $submissions = AbstractSubmission::where('reviewer_reg_no', $reviewer->reg_no)
-                ->whereNull('score')
+                ->where('reviewer_status', 'accepted')
                 ->get();
         $researchSubmissions = ResearchSubmission::where('reviewer_reg_no', $reviewer->reg_no)
-                ->whereNull('score')
+                ->where('reviewer_status', 'accepted')
                 ->get();
 
         $abstractCount = $submissions->count();
@@ -257,7 +348,7 @@ class ReviewerController extends Controller
             
             $user = auth()->user();
         // Update or create assessment for this abstract
-        ProposalAssessment::updateOrCreate(
+        ResearchAssessment::updateOrCreate(
             [
                 'abstract_submission_id' => $serial_number,
                 'reviewer_reg_no' => auth()->user()->reg_no,

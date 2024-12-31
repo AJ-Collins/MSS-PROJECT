@@ -27,8 +27,8 @@ return new class extends Migration
             $table->integer('output_score'); // Score for output
             $table->text('output_comments'); // Comments for output
             $table->text('general_comments'); // General comments
-            $table->enum('correction_type', ['minor', 'major', 'reject']); // Correction type
-            $table->text('correction_comments'); // Correction comments
+            $table->enum('correction_type', ['minor', 'major', 'reject'])->nullable(); // Correction type
+            $table->text('correction_comments')->nullable(); // Correction comments
             $table->timestamps();
 
             // Foreign key constraints

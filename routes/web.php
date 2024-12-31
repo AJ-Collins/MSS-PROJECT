@@ -76,6 +76,10 @@ Route::prefix('reviewer')->middleware(['auth'])->group(function () {
     Route::get('/assessment/proposal/{serial_number}', [ReviewerController::class, 'ProposalPreview'])->name('reviewer.assessment.proposalpreview');
     Route::get('/reviewed', [ReviewerController::class, 'revieweddocuments'])->name('reviewer.partials.reviewed');
     Route::get('/profile', [ReviewerController::class, 'profile'])->name('reviewer.partials.profile');
+    Route::post('/update-abstract-reviewer-status', [ReviewerController::class, 'abstractStatus'])->name('update.abstract.reviewer.status');
+    Route::post('/abstract/reject', [ReviewerController::class, 'abstractReject'])->name('reviewer.abstract.reject');
+    Route::post('/update-proposal-reviewer-status', [ReviewerController::class, 'proposalStatus'])->name('update.proposal.reviewer.status');
+    Route::post('/proposal/reject', [ReviewerController::class, 'proposalReject'])->name('reviewer.proposal.reject');
     
 
     Route::get('/abstracts/{serial_number}', [ReviewerController::class, 'getAbstract']);
