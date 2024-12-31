@@ -273,7 +273,6 @@
                                                     value="minor"
                                                     x-model="selectedType"
                                                     class="h-4 w-4 text-blue-600 focus:ring-blue-500"
-                                                    required
                                                 >
                                                 <div class="ml-3">
                                                     <div class="font-medium text-gray-900">Minor Corrections</div>
@@ -301,7 +300,6 @@
                                                     value="major"
                                                     x-model="selectedType"
                                                     class="h-4 w-4 text-blue-600 focus:ring-blue-500"
-                                                    required
                                                 >
                                                 <div class="ml-3">
                                                     <div class="font-medium text-gray-900">Major Corrections</div>
@@ -329,7 +327,6 @@
                                                     value="reject"
                                                     x-model="selectedType"
                                                     class="h-4 w-4 text-blue-600 focus:ring-blue-500"
-                                                    required
                                                 >
                                                 <div class="ml-3">
                                                     <div class="font-medium text-gray-900">Reject</div>

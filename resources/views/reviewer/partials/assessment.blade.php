@@ -238,112 +238,109 @@
 
                         <!-- Assessment Decision -->
                         <div class="bg-white rounded-xl border border-gray-200 shadow-sm">
-                            <div class="p-6 space-y-6">
-                                <!-- General Comments -->
-                                <div>
-                                    <div class="flex items-start justify-between mb-4">
-                                        <div>
-                                            <h3 class="text-base font-semibold text-gray-900">General Comments</h3>
-                                            <p class="mt-1 text-sm text-gray-500">Provide your overall assessment of the research proposal</p>
-                                        </div>
+                        <div class="p-6 space-y-6">
+                            <!-- General Comments -->
+                            <div>
+                                <div class="flex items-start justify-between mb-4">
+                                    <div>
+                                        <h3 class="text-base font-semibold text-gray-900">General Comments</h3>
+                                        <p class="mt-1 text-sm text-gray-500">Provide your overall assessment of the research proposal</p>
                                     </div>
-                                    <textarea 
-                                        name="general_comments" 
-                                        class="w-full min-h-[120px] rounded-lg border border-gray-800 bg-gray-100 h-20 focus:border-blue-500 focus:ring-blue-500" 
-                                        placeholder="Enter your general comments and observations..."
-                                        required
-                                    ></textarea>
+                                </div>
+                                <textarea 
+                                    name="general_comments" 
+                                    class="w-full min-h-[120px] rounded-lg border border-gray-800 bg-gray-100 h-20 focus:border-blue-500 focus:ring-blue-500" 
+                                    placeholder="Enter your general comments and observations..."
+                                    required
+                                ></textarea>
+                            </div>
+
+                            <!-- Assessment Type -->
+                            <div>
+                                <div class="mb-4">
+                                    <h3 class="text-base font-semibold text-gray-900">Assessment Decision</h3>
+                                    <p class="mt-1 text-sm text-gray-500">Select one assessment decision (optional)</p>
                                 </div>
 
-                                <!-- Assessment Type -->
-                                <div>
-                                    <div class="mb-4">
-                                        <h3 class="text-base font-semibold text-gray-900">Assessment Decision</h3>
-                                        <p class="mt-1 text-sm text-gray-500">Select the type of corrections needed</p>
+                                <div class="space-y-4" x-data="{ selectedType: null }">
+                                    <!-- Minor Corrections -->
+                                    <div class="rounded-lg border border-gray-200 overflow-hidden">
+                                        <label class="flex items-center p-4 cursor-pointer hover:bg-gray-50"
+                                            :class="{ 'bg-blue-50 border-blue-200': selectedType === 'minor' }">
+                                            <input 
+                                                type="radio" 
+                                                name="correction_type" 
+                                                value="minor"
+                                                x-model="selectedType"
+                                                class="h-4 w-4 text-blue-600 focus:ring-blue-500"
+                                            >
+                                            <div class="ml-3">
+                                                <div class="font-medium text-gray-900">Minor Corrections</div>
+                                                <div class="text-sm text-gray-500">Small changes or clarifications needed</div>
+                                            </div>
+                                        </label>
+                                        <div x-show="selectedType === 'minor'" 
+                                            x-collapse 
+                                            class="border-t border-gray-200 p-4 bg-white">
+                                            <textarea 
+                                                name="correction_comments" 
+                                                class="w-full min-h-[100px] rounded-lg border border-gray-800 bg-gray-100 h-20 focus:border-blue-500 focus:ring-blue-500" 
+                                                placeholder="Describe the minor corrections needed (optional)..."
+                                            ></textarea>
+                                        </div>
                                     </div>
 
-                                    <div class="space-y-4" x-data="{ selectedType: null }">
-                                        <!-- Minor Corrections -->
-                                        <div class="rounded-lg border border-gray-200 overflow-hidden">
-                                            <label class="flex items-center p-4 cursor-pointer hover:bg-gray-50"
-                                                :class="{ 'bg-blue-50 border-blue-200': selectedType === 'minor' }">
-                                                <input 
-                                                    type="radio" 
-                                                    name="correction_type" 
-                                                    value="minor"
-                                                    x-model="selectedType"
-                                                    class="h-4 w-4 text-blue-600 focus:ring-blue-500"
-                                                    required
-                                                >
-                                                <div class="ml-3">
-                                                    <div class="font-medium text-gray-900">Minor Corrections</div>
-                                                    <div class="text-sm text-gray-500">Small changes or clarifications needed</div>
-                                                </div>
-                                            </label>
-                                            <div x-show="selectedType === 'minor'" 
-                                                x-collapse 
-                                                class="border-t border-gray-200 p-4 bg-white">
-                                                <textarea 
-                                                    name="correction_comments" 
-                                                    class="w-full min-h-[100px] rounded-lg border border-gray-800 bg-gray-100 h-20 focus:border-blue-500 focus:ring-blue-500" 
-                                                    placeholder="Describe the minor corrections needed..."
-                                                ></textarea>
+                                    <!-- Major Corrections -->
+                                    <div class="rounded-lg border border-gray-200 overflow-hidden">
+                                        <label class="flex items-center p-4 cursor-pointer hover:bg-gray-50"
+                                            :class="{ 'bg-blue-50 border-blue-200': selectedType === 'major' }">
+                                            <input 
+                                                type="radio" 
+                                                name="correction_type" 
+                                                value="major"
+                                                x-model="selectedType"
+                                                class="h-4 w-4 text-blue-600 focus:ring-blue-500"
+                                            >
+                                            <div class="ml-3">
+                                                <div class="font-medium text-gray-900">Major Corrections</div>
+                                                <div class="text-sm text-gray-500">Significant revisions or rework needed</div>
                                             </div>
+                                        </label>
+                                        <div x-show="selectedType === 'major'" 
+                                            x-collapse 
+                                            class="border-t border-gray-200 p-4 bg-white">
+                                            <textarea 
+                                                name="correction_comments" 
+                                                class="w-full min-h-[100px] rounded-lg border border-gray-800 bg-gray-100 h-20 focus:border-blue-500 focus:ring-blue-500" 
+                                                placeholder="Describe the major corrections needed (optional)..."
+                                            ></textarea>
                                         </div>
+                                    </div>
 
-                                        <!-- Major Corrections -->
-                                        <div class="rounded-lg border border-gray-200 overflow-hidden">
-                                            <label class="flex items-center p-4 cursor-pointer hover:bg-gray-50"
-                                                :class="{ 'bg-blue-50 border-blue-200': selectedType === 'major' }">
-                                                <input 
-                                                    type="radio" 
-                                                    name="correction_type" 
-                                                    value="major"
-                                                    x-model="selectedType"
-                                                    class="h-4 w-4 text-blue-600 focus:ring-blue-500"
-                                                    required
-                                                >
-                                                <div class="ml-3">
-                                                    <div class="font-medium text-gray-900">Major Corrections</div>
-                                                    <div class="text-sm text-gray-500">Significant revisions or rework needed</div>
-                                                </div>
-                                            </label>
-                                            <div x-show="selectedType === 'major'" 
-                                                x-collapse 
-                                                class="border-t border-gray-200 p-4 bg-white">
-                                                <textarea 
-                                                    name="correction_comments" 
-                                                    class="w-full min-h-[100px] rounded-lg border border-gray-800 bg-gray-100 h-20 focus:border-blue-500 focus:ring-blue-500" 
-                                                    placeholder="Describe the major corrections needed..."
-                                                ></textarea>
+                                    <!-- Reject -->
+                                    <div class="rounded-lg border border-gray-200 overflow-hidden">
+                                        <label class="flex items-center p-4 cursor-pointer hover:bg-gray-50"
+                                            :class="{ 'bg-blue-50 border-blue-200': selectedType === 'reject' }">
+                                            <input 
+                                                type="radio" 
+                                                name="correction_type" 
+                                                value="reject"
+                                                x-model="selectedType"
+                                                class="h-4 w-4 text-blue-600 focus:ring-blue-500"
+                                            >
+                                            <div class="ml-3">
+                                                <div class="font-medium text-gray-900">Reject</div>
+                                                <div class="text-sm text-gray-500">The proposal is not suitable for submission</div>
                                             </div>
-                                        </div>
-
-                                        <!-- Reject -->
-                                        <div class="rounded-lg border border-gray-200 overflow-hidden">
-                                            <label class="flex items-center p-4 cursor-pointer hover:bg-gray-50"
-                                                :class="{ 'bg-blue-50 border-blue-200': selectedType === 'reject' }">
-                                                <input 
-                                                    type="radio" 
-                                                    name="correction_type" 
-                                                    value="reject"
-                                                    x-model="selectedType"
-                                                    class="h-4 w-4 text-blue-600 focus:ring-blue-500"
-                                                    required
-                                                >
-                                                <div class="ml-3">
-                                                    <div class="font-medium text-gray-900">Reject</div>
-                                                    <div class="text-sm text-gray-500">The proposal is not suitable for submission</div>
-                                                </div>
-                                            </label>
-                                            <div x-show="selectedType === 'reject'" 
-                                                x-collapse 
-                                                class="border-t border-gray-200 p-4 bg-white">
-                                                <textarea 
-                                                    name="correction_comments" 
-                                                    class="w-full min-h-[100px] rounded-lg border border-gray-800 bg-gray-100 h-20 focus:border-blue-500 focus:ring-blue-500" 
-                                                    placeholder="Provide comments explaining the rejection..."
-                                                ></textarea>
+                                        </label>
+                                        <div x-show="selectedType === 'reject'" 
+                                            x-collapse 
+                                            class="border-t border-gray-200 p-4 bg-white">
+                                            <textarea 
+                                                name="correction_comments" 
+                                                class="w-full min-h-[100px] rounded-lg border border-gray-800 bg-gray-100 h-20 focus:border-blue-500 focus:ring-blue-500" 
+                                                placeholder="Provide comments explaining the rejection (optional)..."
+                                            ></textarea>
                                             </div>
                                         </div>
                                     </div>

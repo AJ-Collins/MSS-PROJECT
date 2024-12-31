@@ -134,9 +134,11 @@ class ReviewerController extends Controller
         // Fetch abstracts assigned to the logged-in reviewer
         $submissions = AbstractSubmission::where('reviewer_reg_no', $reviewer->reg_no)
                 ->where('reviewer_status', 'accepted')
+                ->whereNull('score')
                 ->get();
         $researchSubmissions = ResearchSubmission::where('reviewer_reg_no', $reviewer->reg_no)
                 ->where('reviewer_status', 'accepted')
+                ->whereNull('score')
                 ->get();
 
         $abstractCount = $submissions->count();
@@ -334,8 +336,8 @@ class ReviewerController extends Controller
             'output_score' => 'required|integer|min:0|max:5',
             'output_comments' => 'required|string',
             'general_comments' => 'required|string',
-            'correction_type' => 'required|in:minor,major,reject',
-            'correction_comments' => 'required|string',
+            'correction_type' => 'nullable|string|in:minor,major,reject',
+            'correction_comments' => 'string',
         ]);
 
         // Calculate total score
@@ -379,8 +381,8 @@ class ReviewerController extends Controller
             'output_score' => 'required|integer|min:0|max:5',
             'output_comments' => 'required|string',
             'general_comments' => 'required|string',
-            'correction_type' => 'required|in:minor,major,reject',
-            'correction_comments' => 'required|string',
+            'correction_type' => 'nullable|string|in:minor,major,reject',
+            'correction_comments' => 'string',
         ]);
 
         // Calculate total score
