@@ -2,7 +2,7 @@
 
 @section('user-content')
 <div class="mb-8">
-    <h1 class="text-3xl font-bold text-gray-900">Research Submissions Portal</h1>
+    <h1 class="text-3xl font-bold text-gray-900">| Submissions Portal</h1>
     <p class="mt-2 text-sm text-gray-600">Choose your submission type to begin the application process</p>
 </div>
 
@@ -10,11 +10,6 @@
 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
     <!-- Conference Card -->
     <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-400 transition-transform transform hover:scale-[1.02]">
-        <div class="flex items-center justify-between mb-6">
-            <span class="px-4 py-2 rounded-full text-sm font-medium bg-blue-50 text-blue-600">
-                Open for Submissions
-            </span>
-        </div>
         <h2 class="text-xl font-bold text-gray-800 mb-4">TUM 6TH MULTIDISCIPLINARY CONFERENCE</h2>
         <ul class="space-y-2 text-gray-600 mb-6">
             <li class="flex items-center">
@@ -42,11 +37,6 @@
 
     <!-- Research Funding Card -->
     <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-400 transition-transform transform hover:scale-[1.02]">
-        <div class="flex items-center justify-between mb-6">
-            <span class="px-4 py-2 rounded-full text-sm font-medium bg-green-50 text-green-600">
-                2024 Funding Cycle
-            </span>
-        </div>
         <h2 class="text-xl font-bold text-gray-800 mb-4">INTERNAL RESEARCH FUNDING FOR 2024</h2>
         <ul class="space-y-2 text-gray-600 mb-6">
             <li class="flex items-center">

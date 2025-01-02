@@ -13,6 +13,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\AbstractsController;
 use App\Http\Controllers\ProposalController;
+use Illuminate\Support\Facades\Storage;
 
 Route::get('email/verify', [App\Http\Controllers\Auth\VerificationController::class, 'show'])->name('verification.notice');
 Route::get('email/verify/{id}/{hash}', [App\Http\Controllers\Auth\VerificationController::class, 'verify'])
@@ -110,6 +111,17 @@ Route::prefix('user')->middleware(['auth'])->group(function () {
 
     Route::get('/submit/step2_research', [ResearchSubmissionController::class, 'step2_research'])->name('user.step2_research');
     Route::post('/submit/step2_research', [ResearchSubmissionController::class, 'postStep2_research'])->name('submit.step2_research');
+    Route::post('/delete-file-session', function () {
+        if (session()->has('abstract.pdf_document_path')) {
+            Storage::disk('public')->delete(session('abstract.pdf_document_path'));
+            // Forget the file path from the session
+            session()->forget('abstract.pdf_document_path');
+            session()->forget('abstract.pdf_document_path');
+            return response()->json(['success' => true]);
+        }
+        return response()->json(['success' => false, 'message' => 'No file found']);
+    });
+    Route::get('/download-abstract-pdf', [ResearchSubmissionController::class, 'downloadAbstractPdf'])->name('user.downloadAbstractPdf');
     
     Route::get('/submit/preview_research', [ResearchSubmissionController::class, 'preview_research'])->name('user.preview_research');
     Route::post('/submit/preview_research', [ResearchSubmissionController::class, 'postPreview_research'])->name('submit.preview_research');

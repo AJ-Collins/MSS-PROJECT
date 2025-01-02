@@ -18,29 +18,15 @@
                 <span class="text-sm font-medium text-green-600">Authors</span>
             </div>
 
-            <!-- Step 2: Active -->
-            <div class="flex flex-col items-center">
-                <div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-semibold mb-2">
-                    2
+            <!-- Steps 2-4 remain the same -->
+            @foreach(['Abstract', 'Preview', 'Confirm'] as $key => $step)
+                <div class="flex flex-col items-center">
+                    <div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-semibold mb-2">
+                        {{ $key + 2 }}
+                    </div>
+                    <span class="text-sm font-medium text-gray-500">{{ $step }}</span>
                 </div>
-                <span class="text-sm font-medium text-green-600">Abstract</span>
-            </div>
-
-            <!-- Step 3: Pending -->
-            <div class="flex flex-col items-center">
-                <div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-semibold mb-2">
-                    3
-                </div>
-                <span class="text-sm font-medium text-gray-500">Preview</span>
-            </div>
-
-            <!-- Step 4: Pending -->
-            <div class="flex flex-col items-center">
-                <div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-semibold mb-2">
-                    4
-                </div>
-                <span class="text-sm font-medium text-gray-500">Confirm</span>
-            </div>
+            @endforeach
         </div>
     </div>
 </div>
@@ -53,156 +39,111 @@
             <h2 class="text-2xl font-bold text-white">Author Information</h2>
             <p class="text-green-100 text-sm mt-2">Please provide details for all authors. The primary author will be listed as the main contact.</p>
         </div>
+
         @if ($errors->any())
-            <div class="alert alert-danger">
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-        <form 
-            id="authorForm" 
-            method="POST" 
-            action="{{route('submit.step1_research')}}" 
-            class="p-8" 
-            novalidate>
-            @csrf
-            <input type="hidden" name="submission_type" value="abstract">
-            <!-- Authors Container -->
-            <div id="authorsContainer" class="space-y-8">
-                <!-- Primary Author Section -->
-                <div class="author-section bg-gray-50 p-6 border border-gray-800 transition-all duration-300 hover:shadow-md" data-author-index="0">
-                    <div class="flex items-center justify-between mb-6 pb-4 border-b border-gray-200">
-                        <div class="flex items-center space-x-3">
-                        <div class="flex items-center space-x-2">
-                        <div class="bg-green-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold">
-                            <h3 class="text-gray-800">1</h3>
-                        </div>
-                        <span class="text-gray-800">Author</span>
+            <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-4">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                        </svg>
                     </div>
-                        
-                        </div>
-                        
-                        <div class="flex items-center space-x-4">
-                            <label class="flex items-center space-x-2 text-sm text-gray-600 hover:text-gray-800 cursor-pointer">
-                                <input 
-                                    type="checkbox" 
-                                    name="authors[0][is_correspondent]" 
-                                    value="1" 
-                                    class="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500">
-                                <span>Corresponding Author</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="grid md:grid-cols-2 gap-6">
-                        <!-- Left Column -->
-                        <div class="space-y-5">
-                            <!-- First Name -->
-                            <div class="form-group">
-                                <label class="block text-sm font-medium text-gray-700 mb-1">
-                                    First Name <span class="text-red-500">*</span>
-                                </label>
-                                <input 
-                                    type="text" 
-                                    name="authors[0][first_name]" 
-                                    value=""
-                                    class="form-input block w-full rounded-md border border-gray-800 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 transition px-4 py-3 text-lg"
-                                    placeholder="Enter first name"
-                                    pattern="^(?=.{3,}$)([A-Za-z]{3,})(?:\s[A-Za-z]{3,})*$"
-                                    required>
-                                <div class="error-message text-red-500 text-xs mt-1 hidden"></div>
-                            </div>
-
-                            <!-- Middle Name -->
-                            <div class="form-group">
-                                <label class="block text-sm font-medium text-gray-700 mb-1">
-                                    Middle Name <span class="text-red-500">*</span>
-                                </label>
-                                <input 
-                                    type="text" 
-                                    name="authors[0][middle_name]"
-                                    value=""
-                                    class="form-input block w-full rounded-md border border-gray-800 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 transition px-4 py-3 text-lg"
-                                    placeholder="Enter middle name"
-                                    pattern="[A-Za-z\s]{3,}" 
-                                    value=""
-                                    required>
-                                <div class="error-message text-red-500 text-xs mt-1 hidden"></div>
-                            </div>
-
-                            <!-- Surname -->
-                            <div class="form-group">
-                                <label class="block text-sm font-medium text-gray-700 mb-1">
-                                    Surname <span class="text-red-500">*</span>
-                                </label>
-                                <input 
-                                    type="text" 
-                                    name="authors[0][surname]"
-                                    value=""
-                                    class="form-input block w-full rounded-md border border-gray-800 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 transition px-4 py-3 text-lg"
-                                    placeholder="Enter Surname"
-                                    pattern="[A-Za-z\s]{3,}"
-                                    required>
-                                <div class="error-message text-red-500 text-xs mt-1 hidden"></div>
-                            </div>
-                        </div>
-
-                        <!-- Right Column -->
-                        <div class="space-y-5">
-                            <!-- Email -->
-                            <div class="form-group">
-                                <label class="block text-sm font-medium text-gray-700 mb-1">
-                                    Email Address <span class="text-red-500">*</span>
-                                </label>
-                                <input 
-                                    type="email" 
-                                    name="authors[0][email]"
-                                    value="" 
-                                    class="form-input block w-full rounded-md border border-gray-800 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 transition px-4 py-3 text-lg"
-                                    placeholder="email@institution.edu"
-                                    required>
-                                <div class="error-message text-red-500 text-xs mt-1 hidden"></div>
-                            </div>
-
-                            <!-- Institution -->
-                            <div class="form-group">
-                                <label class="block text-sm font-medium text-gray-700 mb-1">
-                                    Institution/Organization <span class="text-red-500">*</span>
-                                </label>
-                                <input 
-                                    type="text" 
-                                    name="authors[0][university]" 
-                                    class="form-input block w-full rounded-md border border-gray-800 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 transition px-4 py-3 text-lg"
-                                    placeholder="Enter institution name"
-                                    pattern="[A-Za-z0-9\s,.]+"
-                                    required>
-                                <div class="error-message text-red-500 text-xs mt-1 hidden"></div>
-                            </div>
-
-                            <!-- Department -->
-                            <div class="form-group">
-                                <label class="block text-sm font-medium text-gray-700 mb-1">
-                                    Department <span class="text-red-500">*</span>
-                                </label>
-                                <input type="text" name="authors[0][department]" 
-                                    class="form-input block w-full rounded-md border border-gray-800 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 transition px-4 py-3 text-lg"
-                                    placeholder="Enter department name"
-                                    required>
-                                <div class="error-message text-red-500 text-xs mt-1 hidden"></div>
-                            </div>
-                        </div>
+                    <div class="ml-3">
+                        <ul class="list-disc list-inside text-sm text-red-700">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
                     </div>
                 </div>
+            </div>
+        @endif
+
+        <form id="authorForm" method="POST" action="{{ route('submit.step1_research') }}" class="p-8" novalidate>
+            @csrf
+            <input type="hidden" name="submission_type" value="{{ $submissionType }}">
+            
+            <!-- Authors Container -->
+            <div id="authorsContainer" class="space-y-8">
+                @foreach(old('authors', session('all_authors', [['is_correspondent' => false]])) as $index => $author)
+                    <div class="author-section bg-gray-50 p-6 border border-gray-800 transition-all duration-300 hover:shadow-md" data-author-index="{{ $index }}">
+                        <!-- Author Header -->
+                        <div class="flex items-center justify-between mb-6 pb-4 border-b border-gray-200">
+                            <div class="flex items-center space-x-2">
+                                <div class="bg-green-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold">
+                                    {{ $index + 1 }}
+                                </div>
+                                <span class="text-gray-800">Author</span>
+                            </div>
+                            
+                            <div class="flex items-center space-x-4">
+                                <label class="flex items-center space-x-2 text-sm text-gray-600 hover:text-gray-800 cursor-pointer">
+                                    <input type="checkbox" 
+                                           name="authors[{{ $index }}][is_correspondent]" 
+                                           value="1" 
+                                           class="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                                           {{ isset($author['is_correspondent']) && $author['is_correspondent'] ? 'checked' : '' }}>
+                                    <span>Corresponding Author</span>
+                                </label>
+                                @if($index > 0)
+                                    <button type="button" class="remove-author-btn text-red-500 hover:text-red-700 focus:outline-none">
+                                        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg>
+                                    </button>
+                                @endif
+                            </div>
+                        </div>
+
+                        <!-- Author Fields -->
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <!-- Left Column -->
+                            <div class="space-y-5">
+                                @foreach(['first_name' => 'First Name', 'middle_name' => 'Middle Name', 'surname' => 'Surname'] as $field => $label)
+                                    <div class="form-group">
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                                            {{ $label }} <span class="text-red-500">*</span>
+                                        </label>
+                                        <input type="text" 
+                                               name="authors[{{ $index }}][{{ $field }}]" 
+                                               value="{{ old("authors.$index.$field", $author[$field] ?? '') }}"
+                                               class="form-input block w-full rounded-md border border-gray-800 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 transition px-4 py-3 text-lg @error("authors.$index.$field") border-red-500 @enderror"
+                                               placeholder="Enter {{ strtolower($label) }}"
+                                               required>
+                                        @error("authors.$index.$field")
+                                            <div class="text-red-500 text-xs mt-1">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                @endforeach
+                            </div>
+
+                            <!-- Right Column -->
+                            <div class="space-y-5">
+                                @foreach(['email' => 'Email Address', 'university' => 'Institution/Organization', 'department' => 'Department'] as $field => $label)
+                                    <div class="form-group">
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                                            {{ $label }} <span class="text-red-500">*</span>
+                                        </label>
+                                        <input type="{{ $field === 'email' ? 'email' : 'text' }}" 
+                                               name="authors[{{ $index }}][{{ $field }}]" 
+                                               value="{{ old("authors.$index.$field", $author[$field] ?? '') }}"
+                                               class="form-input block w-full rounded-md border border-gray-800 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 transition px-4 py-3 text-lg @error("authors.$index.$field") border-red-500 @enderror"
+                                               placeholder="Enter {{ strtolower($label) }}"
+                                               required>
+                                        @error("authors.$index.$field")
+                                            <div class="text-red-500 text-xs mt-1">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
             </div>
 
             <!-- Add Author Button -->
             <div class="mt-6 flex justify-center">
-                <button type="button" id="addAuthorBtn" 
-                    class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium 
-                    text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                <button type="button" id="addAuthorBtn" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
                     <svg class="-ml-1 mr-2 h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
                     </svg>
@@ -212,19 +153,13 @@
 
             <!-- Navigation Buttons -->
             <div class="flex justify-between mt-8 pt-6 border-t border-gray-200">
-                <button type="button" onclick="window.history.back()" 
-                    class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium 
-                    text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                <button type="button" onclick="window.history.back()" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
                     <svg class="-ml-1 mr-2 h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
                     </svg>
                     Previous
                 </button>
-
-                <button 
-                    type="submit"
-                    class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium 
-                    text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
                     Next
                     <svg class="ml-2 -mr-1 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
@@ -238,7 +173,7 @@
     <div class="mt-6 text-center">
         <p class="text-sm text-gray-500">
             Need assistance? Contact our support team at 
-            <a href="mailto:support@example.com" class="text-green-600 hover:text-green-700">support@tum.ac.ke.com</a>
+            <a href="mailto:support@tum.ac.ke" class="text-green-600 hover:text-green-700">support@tum.ac.ke</a>
         </p>
     </div>
 </div>
@@ -248,45 +183,58 @@ document.addEventListener('DOMContentLoaded', function() {
     const authorsContainer = document.getElementById('authorsContainer');
     const addAuthorBtn = document.getElementById('addAuthorBtn');
     const MAX_AUTHORS = 5;
+    let authorTemplate = null;
+
+    // Get the template from the first author section
+    if (document.querySelector('.author-section')) {
+        authorTemplate = document.querySelector('.author-section').cloneNode(true);
+    }
 
     // Function to create new author section
     function createAuthorSection(index) {
-        const template = document.querySelector('.author-section').cloneNode(true);
-
+        const newSection = authorTemplate.cloneNode(true);
+        
         // Update all input names and clear values
-        template.querySelectorAll('input').forEach(input => {
+        newSection.querySelectorAll('input').forEach(input => {
             const newName = input.name.replace(/\[\d+\]/, `[${index}]`);
             input.name = newName;
             input.value = '';
             input.checked = false;
+            
+            // Clear any error states
+            input.classList.remove('border-red-500');
+            const errorDiv = input.nextElementSibling;
+            if (errorDiv && errorDiv.classList.contains('text-red-500')) {
+                errorDiv.textContent = '';
+                errorDiv.classList.add('hidden');
+            }
         });
 
-        const numberBadge = template.querySelector('.bg-green-500');
+        // Update number badge
+        const numberBadge = newSection.querySelector('.bg-green-500');
         numberBadge.innerText = index + 1;
 
-        // Add remove button if not present
-        if (!template.querySelector('.remove-author-btn')) {
-            const removeBtn = document.createElement('button');
-            removeBtn.type = 'button';
-            removeBtn.className = 'remove-author-btn text-red-500 hover:text-red-700 focus:outline-none';
-            removeBtn.innerHTML = `<svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-                </svg>`;
-            
-            removeBtn.addEventListener('click', function() {
-                template.classList.add('scale-95', 'opacity-0');
-                setTimeout(() => {
-                    template.remove();
-                    updateAuthorNumbers();
-                    checkAuthorsLimit();
-                }, 200);
-            });
+        // Add remove button
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className = 'remove-author-btn text-red-500 hover:text-red-700 focus:outline-none';
+        removeBtn.innerHTML = `<svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+        </svg>`;
 
-            const titleContainer = template.querySelector('.flex.items-center.justify-between');
-            titleContainer.appendChild(removeBtn);
-        }
+        removeBtn.addEventListener('click', function() {
+            newSection.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                newSection.remove();
+                updateAuthorNumbers();
+                checkAuthorsLimit();
+            }, 200);
+        });
 
-        return template;
+        const headerDiv = newSection.querySelector('.flex.items-center.justify-between');
+        headerDiv.appendChild(removeBtn);
+
+        return newSection;
     }
 
     // Function to update author numbers
@@ -323,49 +271,43 @@ document.addEventListener('DOMContentLoaded', function() {
             const newSection = createAuthorSection(currentCount);
             newSection.classList.add('scale-95', 'opacity-0');
             authorsContainer.appendChild(newSection);
-        
+            
             // Animate entrance
             requestAnimationFrame(() => {
                 newSection.classList.remove('scale-95', 'opacity-0');
             });
-        
+            
             checkAuthorsLimit();
         }
     });
 
-    // Form validation before submitting
+    // Form validation
     const form = document.getElementById('authorForm');
-
-    // Function to validate form
-    form.addEventListener('submit', function(event) {
-        const isValid = validateForm();
-        if (!isValid) {
-            event.preventDefault();  // Prevent form submission if validation fails
-        }
-    });
-
-    // Function to validate the form
+    
     function validateForm() {
         let isValid = true;
         const requiredFields = form.querySelectorAll('input[required]');
+        
+        // Clear all previous errors
+        document.querySelectorAll('.error-message').forEach(error => {
+            error.textContent = '';
+            error.classList.add('hidden');
+        });
+        document.querySelectorAll('.form-input').forEach(input => {
+            input.classList.remove('border-red-500');
+        });
 
+        // Validate each required field
         requiredFields.forEach(field => {
             const errorDiv = field.nextElementSibling;
-
-            // Clear previous errors
-            field.classList.remove('border-red-500');
-            errorDiv.classList.add('hidden');
-
             if (!field.value.trim()) {
                 isValid = false;
                 field.classList.add('border-red-500');
-                errorDiv.textContent = 'This field is required';
-                errorDiv.classList.remove('hidden');
+                showFieldError(field, 'This field is required');
             } else if (field.type === 'email' && !validateEmail(field.value)) {
                 isValid = false;
                 field.classList.add('border-red-500');
-                errorDiv.textContent = 'Please enter a valid email address';
-                errorDiv.classList.remove('hidden');
+                showFieldError(field, 'Please enter a valid email address');
             }
         });
 
@@ -381,56 +323,77 @@ document.addEventListener('DOMContentLoaded', function() {
         return isValid;
     }
 
+    // Helper function to show field errors
+    function showFieldError(field, message) {
+        const errorDiv = field.nextElementSibling;
+        if (errorDiv) {
+            errorDiv.textContent = message;
+            errorDiv.classList.remove('hidden');
+        }
+    }
+
     // Email validation helper
     function validateEmail(email) {
-        const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        return re.test(String(email).toLowerCase());
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     }
 
     // Function to show notifications
     function showNotification(message, type = 'info') {
         const notification = document.createElement('div');
-        notification.className = `fixed bottom-4 right-4 px-6 py-3 rounded-lg shadow-lg transform transition-all duration-300 ease-in-out translate-y-full`;
-
-        switch (type) {
-            case 'error':
-                notification.classList.add('bg-red-500', 'text-white');
-                break;
-            case 'warning':
-                notification.classList.add('bg-yellow-500', 'text-white');
-                break;
-            case 'success':
-                notification.classList.add('bg-green-500', 'text-white');
-                break;
-            default:
-                notification.classList.add('bg-blue-500', 'text-white');
-        }
-
+        notification.className = `fixed bottom-4 right-4 px-6 py-3 rounded-lg shadow-lg transform transition-all duration-300 ease-in-out translate-y-full z-50`;
+        
+        const colors = {
+            error: 'bg-red-500',
+            warning: 'bg-yellow-500',
+            success: 'bg-green-500',
+            info: 'bg-blue-500'
+        };
+        
+        notification.classList.add(colors[type], 'text-white');
         notification.textContent = message;
         document.body.appendChild(notification);
 
         // Animate in
-        setTimeout(() => {
+        requestAnimationFrame(() => {
             notification.classList.remove('translate-y-full');
-        }, 100);
+        });
 
-        // Animate out and remove
+        // Auto-dismiss after 3 seconds
         setTimeout(() => {
             notification.classList.add('translate-y-full');
-            setTimeout(() => {
-                notification.remove();
-            }, 300);
+            setTimeout(() => notification.remove(), 300);
         }, 3000);
     }
 
+    // Form submit handler
+    form.addEventListener('submit', function(event) {
+        if (!validateForm()) {
+            event.preventDefault();
+            showNotification('Please correct the errors before proceeding', 'error');
+        }
+    });
+
     // Initialize form state
     checkAuthorsLimit();
-});
 
+    // Add remove button functionality to existing remove buttons
+    document.querySelectorAll('.remove-author-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const section = btn.closest('.author-section');
+            section.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                section.remove();
+                updateAuthorNumbers();
+                checkAuthorsLimit();
+            }, 200);
+        });
+    });
+});
 </script>
 
 <style>
 .author-section {
+    transform-origin: center;
     transition: all 0.3s ease-in-out;
 }
 
