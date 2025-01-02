@@ -85,7 +85,7 @@
                         id="article-title" 
                         name="article_title" 
                         placeholder="Enter the title of your article" 
-                        value="" 
+                        value="{{ old('article_title', $abstract['article_title'] ?? '') }}" 
                         class="form-input block w-full rounded-md border border-gray-800 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 transition px-4 py-3 text-lg @error('article_title') border-red-500 @enderror"
                         required>
                     @error('article_title')
@@ -97,35 +97,25 @@
 
             <!-- Sub-Theme Selection -->
             <div class="form-group">
-                <label for="sub-theme" class="block text-lg font-medium text-gray-700 mb-2">
+                <label id="sub-theme-label" for="sub-theme" class="block text-lg font-medium text-gray-700 mb-2">
                     Sub-Theme <span class="text-red-500">*</span>
                 </label>
                 <div class="relative">
                     <select id="sub-theme" 
                         name="sub_theme" 
-                        class="w-full h-12 px-4 border border-gray-800 rounded-lg shadow-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors appearance-none bg-white @error('sub_theme') border-red-500 @enderror"
+                        class="w-full h-12 px-4 border rounded-lg shadow-sm transition-colors appearance-none bg-white 
+                            focus:ring-2 focus:ring-green-500 focus:border-green-500
+                            @error('sub_theme') border-red-500 @else border-gray-800 @enderror"
+                        aria-labelledby="sub-theme-label" 
                         required>
                         <option value="">Select a sub-theme</option>
-                        <option value="Transformative Education" {{ old('sub_theme') == 'Transformative Education' ? 'selected' : '' }}>
-                            Transformative Education
-                        </option>
-                        <option value="Business and Entrepreneurship" {{ old('sub_theme') == 'Business and Entrepreneurship' ? 'selected' : '' }}>
-                            Business and Entrepreneurship
-                        </option>
-                        <option value="Health and Food Security" {{ old('sub_theme') == 'Health and Food Security' ? 'selected' : '' }}>
-                            Health and Food Security
-                        </option>
-                        <option value="Digital, Creative Economy and Contemporary Societies" {{ old('sub_theme') == 'Digital, Creative Economy and Contemporary Societies' ? 'selected' : '' }}>
-                            Digital, Creative Economy and Contemporary Societies
-                        </option>
-                        <option value="Engineering, Technology and Sustainable Environment" {{ old('sub_theme') == 'Engineering, Technology and Sustainable Environment' ? 'selected' : '' }}>
-                            Engineering, Technology and Sustainable Environment
-                        </option>
-                        <option value="Blue Economy & Maritime Affairs" {{ old('sub_theme') == 'Blue Economy & Maritime Affairs' ? 'selected' : '' }}>
-                            Blue Economy & Maritime Affairs
-                        </option>
+                        @foreach ($subThemes as $theme)
+                            <option value="{{ $theme }}" {{ old('sub_theme') == $theme ? 'selected' : '' }}>
+                                {{ $theme }}
+                            </option>
+                        @endforeach
                     </select>
-                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700" aria-hidden="true">
                         <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
                             <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
                         </svg>
@@ -136,6 +126,7 @@
                 </div>
             </div>
 
+
             <!-- Abstract Input -->
             <div class="form-group">
                 <label for="abstract" class="block text-lg font-medium text-gray-700 mb-2">
@@ -145,8 +136,8 @@
                     <div id="abstract" 
                         contenteditable="true" 
                         class="w-full min-h-[200px] p-4 border border-gray-800 rounded-lg shadow-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors bg-white @error('abstract') border-red-500 @enderror"
-                        data-placeholder="Enter your abstract here..."></div>
-                    <input type="hidden" name="abstract" id="hiddenAbstract">
+                        data-placeholder="Enter your abstract here...">{{ old('abstract', $abstract['abstract'] ?? '') }}</div>
+                    <input type="hidden" name="abstract" id="hiddenAbstract" value="{{ old('abstract', $abstract['abstract'] ?? '') }}">
                     <div class="flex justify-between mt-2">
                         <p id="wordCount" class="text-sm text-gray-600">Word Count: 0/500</p>
                         <p class="text-sm text-gray-500">Maximum 500 words</p>
@@ -156,30 +147,34 @@
                     @enderror
                 </div>
             </div>
-
             <!-- Keywords Input -->
             <div class="mb-6">
-    <label class="block text-sm font-medium text-gray-700 mb-1">Keywords (3-5 keywords)</label>
-    <div id="keywords-container" class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div class="relative">
-            <input type="text" name="keywords[]" placeholder="Keyword 1" 
-                   class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500">
-        </div>
-        <div class="relative">
-            <input type="text" name="keywords[]" placeholder="Keyword 2" 
-                   class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500">
-        </div>
-        <div class="relative">
-            <input type="text" name="keywords[]" placeholder="Keyword 3" 
-                   class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500">
-        </div>
-    </div>
-    <button type="button" id="add-keyword" 
-            class="mt-4 px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-400">
-        Add Keyword
-    </button>
-    <p id="max-keyword-message" class="text-sm text-red-500 mt-2 hidden">You have reached the maximum of 5 keywords.</p>
-</div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Keywords (3-5 keywords)</label>
+                <div id="keywords-container" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <!-- Pre-fill keywords from session or previous input -->
+                    @foreach ($abstract['keywords'] as $index => $keyword)
+                        <div class="relative">
+                            <input type="text" name="keywords[]" value="{{ old('keywords.' . $index, $keyword) }}" placeholder="Keyword {{ $index + 1 }}" 
+                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500">
+                        </div>
+                    @endforeach
+
+                    <!-- Set the default to 3, if there are less than 3 pre-filled keywords -->
+                    @for ($i = count($abstract['keywords']); $i < 3; $i++)
+                        <div class="relative">
+                            <input type="text" name="keywords[]" placeholder="Keyword {{ $i + 1 }}" 
+                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500">
+                        </div>
+                    @endfor
+                </div>
+                <button type="button" id="add-keyword" 
+                        class="mt-4 px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-400">
+                    Add Keyword
+                </button>
+                <p id="max-keyword-message" class="text-sm text-red-500 mt-2 hidden">You have reached the maximum of 5 keywords.</p>
+            </div>
+
+
         
 
         <!-- Action Buttons -->
@@ -254,50 +249,56 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('step2Form').addEventListener('submit', updateWordCount);
     updateWordCount();
 
-    // Keywords Management
+  // Keywords Management
     const keywordsContainer = document.getElementById('keywords-container');
-const addKeywordBtn = document.getElementById('add-keyword');
-const maxKeywordMessage = document.getElementById('max-keyword-message');
-let keywordCount = 3;
+    const addKeywordBtn = document.getElementById('add-keyword');
+    const maxKeywordMessage = document.getElementById('max-keyword-message');
 
-addKeywordBtn.addEventListener('click', function () {
-    if (keywordCount < 5) {
-        const keywordWrapper = document.createElement('div');
-        keywordWrapper.className = 'relative';
+    // Initialize keyword count based on existing keywords, or default to 3 if empty
+    let keywordCount = keywordsContainer.querySelectorAll('input').length || 3;
 
-        const input = document.createElement('input');
-        input.type = 'text';
-        input.name = 'keywords[]';
-        input.placeholder = `Keyword ${keywordCount + 1}`;
-        input.className = 'w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500';
+    addKeywordBtn.addEventListener('click', function () {
+        if (keywordCount < 5) {
+            const keywordWrapper = document.createElement('div');
+            keywordWrapper.className = 'relative';
 
-        const deleteIcon = document.createElement('button');
-        deleteIcon.type = 'button';
-        deleteIcon.innerHTML = '&#10005;'; // "X" icon
-        deleteIcon.className = 'absolute top-2 right-2 text-red-500 hover:text-red-700 focus:outline-none';
-        deleteIcon.addEventListener('click', function () {
-            keywordWrapper.remove();
-            keywordCount--;
-            if (keywordCount < 5) {
-                addKeywordBtn.disabled = false;
-                addKeywordBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-                maxKeywordMessage.classList.add('hidden');
+            // Create input
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.name = 'keywords[]';
+            input.placeholder = `Keyword ${keywordCount + 1}`;
+            input.className = 'w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500';
+
+            // Create delete button
+            const deleteIcon = document.createElement('button');
+            deleteIcon.type = 'button';
+            deleteIcon.innerHTML = '&#10005;'; // "X" icon
+            deleteIcon.className = 'absolute top-2 right-2 text-red-500 hover:text-red-700 focus:outline-none';
+            deleteIcon.setAttribute('aria-label', 'Remove keyword'); // Accessibility
+            deleteIcon.title = 'Remove keyword'; // Tooltip
+            deleteIcon.addEventListener('click', function () {
+                keywordWrapper.remove();
+                keywordCount--;
+                if (keywordCount < 5) {
+                    addKeywordBtn.disabled = false;
+                    addKeywordBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    maxKeywordMessage.classList.add('hidden');
+                }
+            });
+
+            keywordWrapper.appendChild(input);
+            keywordWrapper.appendChild(deleteIcon);
+            keywordsContainer.appendChild(keywordWrapper);
+            keywordCount++;
+
+            // Disable button and show message if limit is reached
+            if (keywordCount >= 5) {
+                addKeywordBtn.disabled = true;
+                addKeywordBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                maxKeywordMessage.classList.remove('hidden');
             }
-        });
-
-        keywordWrapper.appendChild(input);
-        keywordWrapper.appendChild(deleteIcon);
-        keywordsContainer.appendChild(keywordWrapper);
-        keywordCount++;
-
-        if (keywordCount >= 5) {
-            addKeywordBtn.disabled = true;
-            addKeywordBtn.classList.add('opacity-50', 'cursor-not-allowed');
-            maxKeywordMessage.classList.remove('hidden');
         }
-    }
-});
-
+    });
     // Form validation
     const form = document.getElementById('step2Form');
     form.addEventListener('submit', function(event) {
@@ -378,9 +379,7 @@ addKeywordBtn.addEventListener('click', function () {
 
 
 function goBack() {
-    if (confirm('Are you sure you want to go back? Any unsaved changes will be lost.')) {
         window.history.back();
-    }
 }
 </script>
 

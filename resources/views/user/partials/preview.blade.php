@@ -3,50 +3,7 @@
 @section('user-content')
 <!-- Progress Tracker -->
 <div class="max-w-4xl mx-auto mb-8">
-    <div class="relative">
-        <!-- Progress Line -->
-        <div class="absolute top-1/2 left-0 w-full h-1 bg-gray-200 -translate-y-1/2"></div>
-        <div class="absolute top-1/2 left-0 w-3/4 h-1 bg-green-500 -translate-y-1/2 transition-all duration-500"></div>
-
-        <!-- Steps -->
-        <div class="relative flex justify-between">
-            <!-- Step 1: Complete -->
-            <div class="flex flex-col items-center">
-                <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white font-semibold mb-2 shadow-lg">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                    </svg>
-                </div>
-                <span class="text-sm font-medium text-green-600">Authors</span>
-            </div>
-
-            <!-- Step 2: Active -->
-            <div class="flex flex-col items-center">
-                <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white font-semibold mb-2 shadow-lg">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                    </svg>
-                </div>
-                <span class="text-sm font-medium text-green-600">Abstract</span>
-            </div>
-
-            <!-- Step 3: Pending -->
-            <div class="flex flex-col items-center">
-                <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white font-semibold mb-2 shadow-lg ring-4 ring-green-100">
-                    3
-                </div>
-                <span class="text-sm font-medium text-gray-500">Preview</span>
-            </div>
-
-            <!-- Step 4: Pending -->
-            <div class="flex flex-col items-center">
-                <div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-semibold mb-2">
-                    4
-                </div>
-                <span class="text-sm font-medium text-gray-500">Confirm</span>
-            </div>
-        </div>
-    </div>
+    <!-- Your existing progress tracker code here -->
 </div>
 
 <!-- Main Content -->
@@ -57,34 +14,54 @@
             <h2 class="text-2xl font-bold text-white">Abstract Preview</h2>
             <p class="text-green-100 text-sm mt-2">Please preview the details of your abstract submission</p>
         </div>
-        <form action="{{ route('submit.preview') }}" method="POST">
+        <form id="previewForm" action="{{ route('submit.preview') }}" method="POST">
             @csrf
             <div class="bg-gray-50 p-6 border border-gray-800">
                 <!-- Header -->
+                <h1 class="text-3xl font-bold text-gray-900 text-center mb-2">
+                    {{ $article_title ?? 'Untitled' }}
+                </h1>
                 <div class="p-8">
-                    <h1 class="text-3xl font-bold text-gray-900 text-center mb-2">{{ $author['first_name'] }} {{ $author['middle_name'] }} {{ $author['surname'] }}</h1>
-                    <h2 class="text-lg font-medium text-gray-700 text-center">{{ $author['university'] }}</h2>
-                    <h3 class="text-md text-gray-600 text-center">{{ $author['department'] }}</h3>
+                    <!-- Authors -->
+                    <h1 class="text-1xl font-bold text-gray-900 text-center mb-2">
+                        @if(isset($allAuthors) && is_array($allAuthors))
+                            {{ implode(', ', array_map(fn($author) => $author['first_name'] . ' ' . ($author['middle_name'] ?? '') . ' ' . $author['surname'] . (isset($author['is_correspondent']) && $author['is_correspondent'] ? '*' : ''), $allAuthors)) }}
+                        @endif
+                    </h1>
+                    
+                    <!-- Universities -->
+                    <h2 class="text-lg font-medium text-gray-700 text-center">
+                        @if(isset($allAuthors) && is_array($allAuthors))
+                            {{ implode(', ', array_map(fn($author) => $author['university'], $allAuthors)) }}
+                        @endif
+                    </h2>
+                    
+                    <!-- Departments -->
+                    <h3 class="text-md text-gray-600 text-center">
+                        @if(isset($allAuthors) && is_array($allAuthors))
+                            {{ implode(', ', array_map(fn($author) => $author['department'], $allAuthors)) }}
+                        @endif
+                    </h3>
                 </div>
 
                 <!-- Abstract Section -->
                 <div class="p-8">
                     <h2 class="text-xl font-bold text-gray-900 mb-2">Abstract</h2>
                     <p class="text-gray-700 leading-relaxed">
-                        {{ $abstract['abstract'] }}
+                        {{ $abstract['abstract'] ?? 'No abstract provided.' }}
                     </p>
                 </div>
 
                 <!-- Keywords Section -->
                 <div class="p-8">
                     <h2 class="text-xl font-bold text-gray-900 mb-2">Keywords</h2>
-                    <p class="text-gray-700 leading-relaxed">{{ implode(', ', $abstract['keywords']) }}</p>
+                    <p class="text-gray-700 leading-relaxed">{{ isset($abstract['keywords']) ? implode(', ', $abstract['keywords']) : 'No keywords provided.' }}</p>
                 </div>
 
                 <!-- Sub-Theme Section -->
                 <div class="p-8">
                     <h2 class="text-xl font-bold text-gray-900 mb-2">Sub-Theme</h2>
-                    <p class="text-gray-700 leading-relaxed">{{ $abstract['sub_theme'] }}</p>
+                    <p class="text-gray-700 leading-relaxed">{{ $abstract['sub_theme'] ?? 'No sub-theme selected.' }}</p>
                 </div>
             </div>
 
@@ -98,37 +75,7 @@
                     Previous
                 </button>
 
-                <!-- Dropdown for "Go to Step" -->
-                <div class="relative">
-                    <select id="stepNavigation" class="block w-full px-4 py-2 pr-8 text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
-                        <option value="1">Go to Step 1: Authors</option>
-                        <option value="2">Go to Step 2: Abstract</option>
-                        <option value="3">Go to Step 3: Preview</option>
-                        <option value="4" selected>Step 4: Confirm</option>
-                    </select>
-                </div>
-
-                <div class="flex space-x-4">
-                    <!-- PDF Button -->
-                    <a href="" 
-                        class="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-200 flex items-center">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
-                        </svg>
-                        PDF
-                    </a>
-
-                    <!-- Word Button -->
-                    <a href="" 
-                        class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200 flex items-center">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                        </svg>
-                        Word
-                    </a>
-                </div>
-
-                <button type="submit" class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-200 flex items-center">
+                <button type="button" onclick="openModal()" class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-200 flex items-center">
                     Continue
                     <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
@@ -139,24 +86,81 @@
     </div>
 </div>
 
-<style>
-    @media print {
-        .no-print {
-            display: none;
-        }
-        body {
-            padding: 40px;
-        }
-        .container {
-            max-width: none;
-            padding: 0;
-        }
-    }
-</style>
+<!-- Confirmation Modal -->
+<div id="confirmationModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+    <div class="bg-white rounded-lg shadow-lg p-6 w-1/3">
+        <!-- Modal Content -->
+        <div class="text-center">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
+                <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-800 mb-2">Ready for Submission</h3>
+        </div>
+
+        <!-- Important Notes -->
+        <div class="space-y-4 border-t border-gray-200 pt-6">
+        <div class="flex items-start">
+            <div class="flex-shrink-0">
+                <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                </div>
+                <div class="ml-3">
+                    <h4 class="text-sm font-medium text-gray-800">Review Process</h4>
+                    <p class="text-sm text-gray-600">Your abstract will be reviewed. You will be notified of the decision via email.</p>
+                </div>
+            </div>
+
+            <div class="flex items-start">
+                <div class="flex-shrink-0">
+                    <svg class="w-6 h-6 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <h4 class="text-sm font-medium text-gray-800">Important Notice</h4>
+                        <p class="text-sm text-gray-600">Once submitted, you cannot make changes to your abstract. Please ensure all details are correct.</p>
+                </div>
+            </div>
+
+            <div class="flex items-start">
+                <div class="flex-shrink-0">
+                    <svg class="w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path>
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <h4 class="text-sm font-medium text-gray-800">Next Steps</h4>
+                    <p class="text-sm text-gray-600">After acceptance, you will be notified to submit your full article through the system.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Buttons -->
+        <div class="mt-4 flex justify-end space-x-2">
+            <button type="button" onclick="closeModal()" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300">
+                Cancel
+            </button>
+            <button type="submit" form="previewForm" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+                Confirm
+            </button>
+        </div>
+    </div>
+</div>
 
 <script>
     function goBack() {
         window.history.back();
+    }
+
+    function openModal() {
+        document.getElementById('confirmationModal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+        document.getElementById('confirmationModal').classList.add('hidden');
     }
 </script>
 @endsection

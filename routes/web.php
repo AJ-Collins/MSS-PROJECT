@@ -116,9 +116,10 @@ Route::prefix('user')->middleware(['auth'])->group(function () {
     
     Route::get('/user/documents/proposal/{serial_number}', [UserController::class, 'viewProposal'])
                 ->name('documents.proposal.view');
-    
-    //Route::get('/reviewed', [ReviewerController::class, 'revieweddocuments'])->name('reviewer.partials.reviewed');
-    
+    //Drafts routes
+    Route::post('/drafts/save', [AbstractSubmissionController::class, 'saveDraft'])->name('user.saveDraft');
+    Route::get('/drafts', [AbstractSubmissionController::class, 'showDrafts'])->name('user.drafts');
+    Route::get('/drafts/{id}/continue', [AbstractSubmissionController::class, 'continueDraft'])->name('user.continueDraft');    
 });
 
 //Abstarct download routes

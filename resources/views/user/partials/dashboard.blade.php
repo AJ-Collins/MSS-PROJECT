@@ -86,12 +86,6 @@
             </button>
             <button 
                 class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800 border-b-2 transition-colors duration-150"
-                :class="{ 'border-indigo-500 text-indigo-600': activeTab === 'articles', 'border-transparent': activeTab !== 'articles' }"
-                @click="activeTab = 'articles'">
-                Articles
-            </button>
-            <button 
-                class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800 border-b-2 transition-colors duration-150"
                 :class="{ 'border-indigo-500 text-indigo-600': activeTab === 'proposals', 'border-transparent': activeTab !== 'proposals' }"
                 @click="activeTab = 'proposals'">
                 Research Proposals
@@ -103,6 +97,11 @@
     <div class="bg-white shadow-sm">
         <!-- Abstracts Tab -->
         <div x-show="activeTab === 'abstracts'" class="overflow-x-auto">
+            @if (session('success'))
+                <div class="bg-green-100 border border-green-500 text-green-700 p-4 mb-6 rounded-lg">
+                    <p class="font-medium">{{ session('success') }}</p>
+                </div>
+            @endif
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
@@ -139,21 +138,20 @@
                                 </span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                <a href="#" class="text-indigo-600 hover:text-indigo-900 mr-3">view</a>
+                                <a href="#" class="text-indigo-600 hover:text-indigo-900 mr-3">Continue submission</a>
                             </td>
                         </tr>
                     @endforeach                   
                 </tbody>
             </table>
         </div>
-
-        <!-- Articles Tab -->
-        <div x-show="activeTab === 'articles'" class="overflow-x-auto">
-            
-        </div>
-
         <!-- Research Proposals Tab -->
         <div x-show="activeTab === 'proposals'" class="overflow-x-auto">
+            @if (session('success'))
+                <div class="bg-green-100 border border-green-500 text-green-700 p-4 mb-6 rounded-lg">
+                    <p class="font-medium">{{ session('success') }}</p>
+                </div>
+            @endif
         <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
