@@ -6,70 +6,66 @@
     <p class="mt-2 text-sm text-gray-600">Choose your submission type to begin the application process</p>
 </div>
 
-<!-- Cards Section -->
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-    <!-- Conference Card -->
-    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-400 transition-transform transform hover:scale-[1.02]">
-        <h2 class="text-xl font-bold text-gray-800 mb-4">TUM 6TH MULTIDISCIPLINARY CONFERENCE</h2>
-        <ul class="space-y-2 text-gray-600 mb-6">
-            <li class="flex items-center">
-                <i data-lucide="calendar" class="h-5 w-5 mr-3 text-blue-500"></i>
-                Conference Date: June 15-17, 2024
-            </li>
-            <li class="flex items-center">
-                <i data-lucide="users" class="h-5 w-5 mr-3 text-blue-500"></i>
-                Expected Participants: 500+
-            </li>
-            <li class="flex items-center">
-                <i data-lucide="trophy" class="h-5 w-5 mr-3 text-blue-500"></i>
-                Best Paper Awards Available
-            </li>
-            <li class="flex items-center">
-                <i data-lucide="globe" class="h-5 w-5 mr-3 text-blue-500"></i>
-                International Participants
-            </li>
-        </ul>
-        <a href="{{route('user.step1')}}"
-            class="block w-full py-3 text-center text-white font-medium rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700">
-            Submit Conference Paper
-        </a>
+    <!-- Cards Section -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <!-- Conference Card -->
+        <!-- Conference Card -->
+        <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-300 transition-transform transform hover:scale-[1.02]">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">TUM 6TH MULTIDISCIPLINARY CONFERENCE</h2>
+            <ul class="space-y-2 text-gray-600 mb-6">
+                <li class="flex items-center">
+                    <i data-lucide="calendar" class="h-5 w-5 mr-3 text-blue-500"></i>
+                    Event Date: TBD
+                </li>
+                <li class="flex items-center">
+                    <i data-lucide="users" class="h-5 w-5 mr-3 text-blue-500"></i>
+                    Participants: TBD
+                </li>
+                <li class="flex items-center">
+                    <i data-lucide="info" class="h-5 w-5 mr-3 text-blue-500"></i>
+                    Additional Details Coming Soon
+                </li>
+            </ul>
+            <a href="{{route('user.step1')}}"
+                class="block w-full py-3 text-center text-white font-medium rounded-lg bg-blue-500 hover:bg-blue-600">
+                Learn More
+            </a>
+        </div>
+
+        <!-- Research Funding Card -->
+        <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-300 transition-transform transform hover:scale-[1.02]">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">INTERNAL RESEARCH FUNDING FOR 2024</h2>
+            <ul class="space-y-2 text-gray-600 mb-6">
+                <li class="flex items-center">
+                    <i data-lucide="calendar" class="h-5 w-5 mr-3 text-green-500"></i>
+                    Application Deadline: TBD
+                </li>
+                <li class="flex items-center">
+                    <i data-lucide="info" class="h-5 w-5 mr-3 text-green-500"></i>
+                    Details to Be Announced
+                </li>
+                <li class="flex items-center">
+                    <i data-lucide="info" class="h-5 w-5 mr-3 text-blue-500"></i>
+                    Additional Details Coming Soon
+                </li>
+            </ul>
+            <a href="{{route('user.step1_research')}}"
+                class="block w-full py-3 text-center text-white font-medium rounded-lg bg-green-500 hover:bg-green-600">
+                Learn More
+            </a>
+        </div>
+
+
+    
     </div>
 
-    <!-- Research Funding Card -->
-    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-400 transition-transform transform hover:scale-[1.02]">
-        <h2 class="text-xl font-bold text-gray-800 mb-4">INTERNAL RESEARCH FUNDING FOR 2024</h2>
-        <ul class="space-y-2 text-gray-600 mb-6">
-            <li class="flex items-center">
-                <i data-lucide="calendar" class="h-5 w-5 mr-3 text-green-500"></i>
-                Submission Deadline: March 31, 2024
-            </li>
-            <li class="flex items-center">
-                <i data-lucide="trophy" class="h-5 w-5 mr-3 text-green-500"></i>
-                Funding up to $50,000
-            </li>
-            <li class="flex items-center">
-                <i data-lucide="users" class="h-5 w-5 mr-3 text-green-500"></i>
-                Open to All Departments
-            </li>
-            <li class="flex items-center">
-                <i data-lucide="file-check" class="h-5 w-5 mr-3 text-green-500"></i>
-                Multiple Grants Available
-            </li>
-        </ul>
-        <a href="{{route('user.step1_research')}}"
-            class="block w-full py-3 text-center text-white font-medium rounded-lg bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700">
-            Submit Funding Proposal
-        </a>
+    <!-- Help Section -->
+    <div class="text-center mt-8">
+        <p class="text-sm text-gray-600">
+            Need help? Contact our support team at 
+            <a href="mailto:support@tum.ac.ke" class="text-blue-600 hover:text-blue-700">support@tum.ac.ke</a>
+        </p>
     </div>
-</div>
-
-<!-- Help Section -->
-<div class="text-center mt-8">
-    <p class="text-sm text-gray-600">
-        Need help? Contact our support team at 
-        <a href="mailto:support@tum.ac.ke" class="text-blue-600 hover:text-blue-700">support@tum.ac.ke</a>
-    </p>
-</div>
 
 <script>
     lucide.createIcons();

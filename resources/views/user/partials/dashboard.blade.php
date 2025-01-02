@@ -2,7 +2,7 @@
 
 @section('user-content')
 <div class="mb-8">
-    <h1 class="text-3xl font-bold text-gray-900">Dashboard</h1>
+    <h1 class="text-3xl font-bold text-gray-900">| Dashboard</h1>
     <!--<p class="mt-2 text-sm text-gray-600">Welcome back to your research dashboard</p>-->
 </div>
 
@@ -159,7 +159,7 @@
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Score</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        <!--<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>-->
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
@@ -187,9 +187,9 @@
                                     {{ $researchSubmission->final_status ?? 'Pending' }}
                                 </span>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <!--<td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                 <a href="#" class="text-indigo-600 hover:text-indigo-900 mr-3">view</a>
-                            </td>
+                            </td>-->
                         </tr>
                     @endforeach                   
                 </tbody>
