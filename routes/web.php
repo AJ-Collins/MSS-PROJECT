@@ -129,13 +129,16 @@ Route::prefix('user')->middleware(['auth'])->group(function () {
     Route::get('/user/documents/proposal/{serial_number}', [UserController::class, 'viewProposal'])
                 ->name('documents.proposal.view');
     //Drafts routes
-    Route::post('/drafts/save', [AbstractSubmissionController::class, 'saveDraft'])->name('user.saveDraft');
-    Route::get('/drafts', [AbstractSubmissionController::class, 'showDrafts'])->name('user.drafts');
-    Route::get('/drafts/{id}/continue', [AbstractSubmissionController::class, 'continueDraft'])->name('user.continueDraft');    
-    //Draft routes
+    Route::post('/drafts/save', [AbstractSubmissionController::class, 'saveDraft'])->name('user.saveDraft');   
     Route::get('/resume-draft/{serialNumber}', [AbstractSubmissionController::class, 'resumeDraft'])->where('serialNumber', '.+')->name('user.resume-draft');
     Route::get('/drafts', [AbstractSubmissionController::class, 'viewDrafts'])->name('user.drafts');
     Route::delete('/drafts/delete/{serialNumber}', [AbstractSubmissionController::class, 'deleteDraft'])->where('serialNumber', '.+')->name('user.delete-draft');
+
+    //Proposal Draft routes
+    Route::post('/proposal-drafts/save', [ResearchSubmissionController::class, 'saveProposalDraft'])->name('user.save.proposal.draft');    
+    Route::get('/resume-proposal-draft/{serialNumber}', [ResearchSubmissionController::class, 'resumeProposalDraft'])->where('serialNumber', '.+')->name('user.resume.proposal.draft');
+    Route::get('/proposal-view-drafts', [ResearchSubmissionController::class, 'viewProposalDrafts'])->name('user.proposal.drafts');
+    Route::delete('/proposal-drafts/delete/{serialNumber}', [ResearchSubmissionController::class, 'deleteProposalDraft'])->where('serialNumber', '.+')->name('user.delete.proposal.draft');
 });
 
 //Abstarct download routes

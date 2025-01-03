@@ -5,7 +5,7 @@
     <h2 class="text-2xl font-semibold text-gray-800 tracking-tight">My Submissions</h2>
 </div>
 <!-- Document Management Section -->
-<div x-data="{ activeTab: 'abstracts' }">
+<div x-data="{ activeTab: 'articles' }">
     <div class="border-b border-gray-200 shadow-sm bg-white">
         <h2 class="text-2xl font-semibold text-gray-800 tracking-tight p-4">Recents</h2>
     </div>
@@ -13,12 +13,6 @@
     <!-- Tabs -->
     <div class="bg-white border-b border-gray-200">
         <div class="flex">
-            <button 
-                class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800 border-b-2 transition-colors duration-150"
-                :class="{ 'border-indigo-500 text-indigo-600': activeTab === 'abstracts', 'border-transparent': activeTab !== 'abstracts' }"
-                @click="activeTab = 'abstracts'">
-                Abstracts
-            </button>
             <button 
                 class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800 border-b-2 transition-colors duration-150"
                 :class="{ 'border-indigo-500 text-indigo-600': activeTab === 'articles', 'border-transparent': activeTab !== 'articles' }"
@@ -37,7 +31,7 @@
     <!-- Tab Contents -->
     <div class="bg-white shadow-sm">
         <!-- Abstracts Tab -->
-        <div x-show="activeTab === 'abstracts'" class="overflow-x-auto">
+        <div x-show="activeTab === 'articles'" class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>

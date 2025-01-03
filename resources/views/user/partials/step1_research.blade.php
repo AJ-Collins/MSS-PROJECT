@@ -159,6 +159,11 @@
                     </svg>
                     Previous
                 </button>
+                <button type="button" 
+                    onclick="saveDraft(event, 1)" 
+                    class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                    Save as Draft
+                </button>
                 <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
                     Next
                     <svg class="ml-2 -mr-1 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
@@ -179,6 +184,8 @@
 </div>
 
 <script>
+
+    
 document.addEventListener('DOMContentLoaded', function() {
     const authorsContainer = document.getElementById('authorsContainer');
     const addAuthorBtn = document.getElementById('addAuthorBtn');
@@ -388,8 +395,110 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 200);
         });
     });
+
+    // Attach the event listener to the "Save Draft" button
+    const saveDraftBtn = document.querySelector('[data-action="save-draft"]');
+    if (saveDraftBtn) {
+        saveDraftBtn.addEventListener('click', function(e) {
+            const currentStep = saveDraftBtn.dataset.step;
+            saveDraft(e, currentStep); // Pass the event object
+        });
+    }
+});
+function showNotification(message, type = 'success') {
+    const alert = document.createElement('div');
+    alert.className = `fixed top-4 right-4 px-6 py-3 rounded shadow-lg z-50 transition-all duration-500 ${
+        type === 'success' ? 'bg-green-500' : 'bg-red-500'
+    } text-white`;
+    alert.textContent = message;
+    document.body.appendChild(alert);
+    
+    setTimeout(() => {
+        alert.remove();
+    }, 3000);
+}
+async function saveDraft(event, currentStep) {
+    const saveButton = event.target;
+    const originalText = saveButton.innerHTML;
+
+    try {
+        saveButton.innerHTML = '<span class="spinner-border spinner-border-sm mr-2"></span>Saving...';
+        saveButton.disabled = true;
+
+        const form = document.getElementById('authorForm');
+        if (!form) throw new Error('Form not found');
+
+        const formData = new FormData(form);
+        const serialNumber = localStorage.getItem('draft_serial_number');
+        const authors = [];
+        let currentAuthor = {};
+        let currentIndex = -1;
+
+        for (const [key, value] of formData.entries()) {
+            const matches = key.match(/authors\[(\d+)\]\[([^\]]+)\]/);
+            if (!matches) continue;
+
+            const [, index, field] = matches;
+            const numIndex = parseInt(index);
+
+            if (numIndex !== currentIndex) {
+                if (Object.keys(currentAuthor).length > 0) {
+                    authors.push(currentAuthor);
+                }
+                currentAuthor = {};
+                currentIndex = numIndex;
+            }
+
+            currentAuthor[field] = field === 'is_correspondent' ? value === '1' : value.trim();
+        }
+
+        if (Object.keys(currentAuthor).length > 0) {
+            authors.push(currentAuthor);
+        }
+
+        const response = await fetch('{{ route('user.save.proposal.draft') }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({
+                current_step: currentStep,
+                serial_number: serialNumber,
+                authors: authors
+            })
+        });
+
+        const data = await response.json();
+        if (!data.success) throw new Error(data.message);
+
+        // Store new serial number
+        if (data.serial_number) {
+            localStorage.setItem('draft_serial_number', data.serial_number);
+        }
+
+        showNotification('Draft saved successfully!', 'success');
+    } catch (error) {
+        console.error('Save Draft Error:', error);
+        showNotification(error.message, 'error');
+    } finally {
+        saveButton.innerHTML = originalText;
+        saveButton.disabled = false;
+    }
+}
+// Event listener setup
+document.addEventListener('DOMContentLoaded', () => {
+    const saveDraftBtn = document.querySelector('[data-action="save-draft"]');
+    if (saveDraftBtn) {
+        saveDraftBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const currentStep = saveDraftBtn.dataset.step;
+            saveDraft(currentStep);
+        });
+    }
 });
 </script>
+
 
 <style>
 .author-section {
