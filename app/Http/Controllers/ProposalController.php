@@ -25,11 +25,12 @@ class ProposalController extends Controller
         // Generate the HTML content for the PDF
         $html = '<html><head><title>' . $title . '</title>';
         $html .= '<style>';
-        $html .= 'body { font-family: "Times New Roman", Times, serif; }';
-        $html .= 'h1 { text-align: center; font-weight: bold; }';
+        $html .= 'body { font-family: "Times New Roman", Times, serif; font-size: 14px; line-height: 1.6; }';
+        $html .= 'h1 { text-align: center; font-weight: bold; font-size: 20px; }';
         $html .= 'p, ul { text-align: justify; }';
-        $html .= '.author-list { text-align: center; margin-bottom: 10px; }';
-        $html .= '.author-email { color: blue; }';
+        $html .= '.author-list { text-align: center; margin-bottom: 20px; }'; // Center container
+        $html .= '.author-list p { margin: 5px 0; }'; // Center paragraphs
+        $html .= '.author-email { color: blue; font-style: italic; }';
         $html .= '</style>';
         $html .= '</head><body>';
 
@@ -41,13 +42,34 @@ class ProposalController extends Controller
         if ($authors->isEmpty()) {
             $html .= '<p>No authors available</p>'; // Handle case where no authors exist
         } else {
+            $authorNames = [];
             foreach ($authors as $author) {
-                $html .= '<p>' . $author->first_name . ' ' . $author->middle_name . ' ' . $author->surname;
-                if ($author->is_correspondent) {
-                    $html .= '*'; // Mark correspondent authors with an asterisk
+                $name = $author->surname . ', ' . $author->first_name;
+                if (!empty($author->middle_name)) {
+                    $name .= ' ' . $author->middle_name; // Add middle name if present
                 }
-                $html .= '</p>';
+                if ($author->is_correspondent) {
+                    $name .= '*'; // Mark correspondent authors with an asterisk
+                }
+                $authorNames[] = $name; // Add the complete name to the array
             }
+             // Display all authors in a single line
+             $html .= '<p style="text-align: center; margin: 5px 0;">' . implode(', ', $authorNames) . '</p>';
+
+
+             // Display all authors in a single line
+            $html .= '<p style="text-align: center; margin: 5px 0;">' . implode(', ', $authorNames) . '</p>';
+
+            // Unique universities and departments
+            $universities = $authors->pluck('university')->unique()->toArray();
+            $departments = $authors->pluck('department')->unique()->toArray();
+
+            // Add universities and departments to the HTML on separate lines
+            $uniqueUniversities = implode(', ', $universities);
+            $uniqueDepartments = implode(', ', $departments);
+
+            $html .= '<p style="text-align: center; margin-bottom: 5px; font-size: 14px;">' . $uniqueUniversities . '</p>';
+            $html .= '<p style="text-align: center; margin-top: 0; font-size: 13px;">' . $uniqueDepartments . '</p>';
         }
         $html .= '</div>';
 
@@ -76,50 +98,97 @@ class ProposalController extends Controller
     }
     public function downloadProposalWord($serial_number)
     {
-        // Fetch the abstract submission by serial number with the authors relationship
+        // Fetch the research submission by serial number with the authors relationship
         $researchSubmission = ResearchSubmission::with('authors')->findOrFail($serial_number);
 
         // Initialize PhpWord
         $phpWord = new PhpWord();
-        $section = $phpWord->addSection();
 
         // Define styles
-        $phpWord->addTitleStyle(1, ['bold' => true, 'size' => 16, 'alignment' => 'center']);
-        $phpWord->addTitleStyle(2, ['bold' => true, 'size' => 14]);
-        $phpWord->addParagraphStyle('Normal', ['alignment' => 'both']);
-        $phpWord->addParagraphStyle('Center', ['alignment' => 'center']);
+        $phpWord->addTitleStyle(1, [
+            'bold' => true, 
+            'size' => 14,
+            'spaceAfter' => 120
+        ], [
+            'alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER
+        ]);
+
+        $phpWord->addTitleStyle(2, [
+            'bold' => true, 
+            'size' => 12,
+            'spaceAfter' => 120
+        ], [
+            'alignment' => \PhpOffice\PhpWord\SimpleType\Jc::BOTH
+        ]);
+
+        // Define paragraph styles
+        $phpWord->addParagraphStyle('Normal', [
+            'alignment' => \PhpOffice\PhpWord\SimpleType\Jc::BOTH,
+            'lineHeight' => 1.15,
+            'spaceAfter' => 120
+        ]);
+
+        $phpWord->addParagraphStyle('Center', [
+            'alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER,
+            'spaceAfter' => 120
+        ]);
+
+        // Create single section with margins
+        $section = $phpWord->addSection([
+            'marginLeft' => 1440,   // 1 inch in twips
+            'marginRight' => 1440,
+            'marginTop' => 1440,
+            'marginBottom' => 1440
+        ]);
 
         // Title
         $section->addTitle($researchSubmission->article_title, 1);
 
         // Authors
         if ($researchSubmission->authors->isEmpty()) {
-            $section->addText('No authors available', null, 'Center');
+            $section->addText('No authors available', ['size' => 11], 'Center');
         } else {
+            $authorNames = [];
             foreach ($researchSubmission->authors as $author) {
-                $authorText = $author->first_name . ' ' . $author->middle_name . ' ' . $author->surname;
-                if ($author->is_correspondent) {
-                    $authorText .= ' *'; // Mark correspondent authors with an asterisk
+                $name = $author->surname . ', ' . $author->first_name;
+                if (!empty($author->middle_name)) {
+                    $name .= ' ' . $author->middle_name;
                 }
-                $section->addText($authorText, null, 'Center');
+                if ($author->is_correspondent) {
+                    $name .= ' *'; // Mark correspondent authors with an asterisk
+                }
+                $authorNames[] = $name;
             }
+            // Add authors with appropriate spacing
+            $authorNamesText = implode(', ', $authorNames);
+            $section->addText($authorNamesText, ['size' => 11], 'Center');
         }
+
+        // Universities and departments
+        $universities = $researchSubmission->authors->pluck('university')->unique()->toArray();
+        $departments = $researchSubmission->authors->pluck('department')->unique()->toArray();
+
+        $universitiesText = !empty($universities) ? implode(', ', $universities) : '';
+        $departmentsText = !empty($departments) ? implode(', ', $departments) : '';
+
+        $section->addText($universitiesText, ['size' => 11], 'Center');
+        $section->addText($departmentsText, ['size' => 10], 'Center');
 
         // Abstract
         $section->addTitle('ABSTRACT', 2);
-        $section->addText($researchSubmission->abstract, null, 'Normal');
+        $section->addText($researchSubmission->abstract, ['size' => 11], 'Normal');
 
         // Keywords
         $keywords = json_decode($researchSubmission->keywords, true) ?? [];
         $section->addTitle('Keywords', 2);
-        $section->addText(implode(', ', $keywords), null, 'Normal');
+        $section->addText(implode(', ', $keywords), ['size' => 11], 'Normal');
 
         // Sub-theme
         $section->addTitle('Sub-Theme', 2);
-        $section->addText($researchSubmission->sub_theme, null, 'Normal');
+        $section->addText($researchSubmission->sub_theme, ['size' => 11], 'Normal');
 
         // Generate the Word document
-        $fileName = 'abstract_' . $researchSubmission->serial_number . '.docx';
+        $fileName = 'proposal_' . $researchSubmission->serial_number . '.docx';
         $tempFilePath = storage_path($fileName);
         $writer = IOFactory::createWriter($phpWord, 'Word2007');
         $writer->save($tempFilePath);
@@ -127,6 +196,7 @@ class ProposalController extends Controller
         // Return the Word document as a downloadable response
         return response()->download($tempFilePath)->deleteFileAfterSend(true);
     }
+
     public function downloadAllProposalAbstracts()
     {
         // Fetch all abstract submissions with authors relationship
@@ -139,7 +209,7 @@ class ProposalController extends Controller
         $html .= 'h1 { text-align: center; font-weight: bold; margin-bottom: 20px; }';
         $html .= 'h3 { margin-top: 20px; }';
         $html .= 'p, ul { text-align: justify; }';
-        $html .= '.author-list { text-align: left; margin-bottom: 10px; }';
+        $html .= '.author-list { text-align: center; margin-bottom: 10px; }';
         $html .= '.author-email { color: blue; }';
         $html .= '.abstract-container { margin-bottom: 40px; }';
         $html .= '.page-break { page-break-before: always; }'; // CSS for page break
@@ -159,7 +229,7 @@ class ProposalController extends Controller
 
             // Extract relevant data for each submission
             $authors = $researchSubmission->authors;
-            $title = $researchSubmission->title;
+            $title = $researchSubmission->article_title;
             $abstract = $researchSubmission->abstract;
             $keywords = json_decode($researchSubmission->keywords, true) ?? [];
             $subTheme = $researchSubmission->sub_theme;
@@ -173,13 +243,33 @@ class ProposalController extends Controller
             if ($authors->isEmpty()) {
                 $html .= '<p>No authors available</p>';
             } else {
-                foreach ($authors as $author) {
-                    $html .= '<p>' . $author->first_name . ' ' . $author->middle_name . ' ' . $author->surname;
-                    if ($author->is_correspondent) {
-                        $html .= '*';
-                    }
-                    $html .= '</p>';
+                $authorNames = [];
+            foreach ($authors as $author) {
+                $name = $author->surname . ', ' . $author->first_name;
+                if (!empty($author->middle_name)) {
+                    $name .= ' ' . $author->middle_name; // Add middle name if present
                 }
+                if ($author->is_correspondent) {
+                    $name .= '*'; // Mark correspondent authors with an asterisk
+                }
+                $authorNames[] = $name; // Add the complete name to the array
+            }
+                // Display all authors in a single line
+                $html .= '<p style="text-align: center; margin: 5px 0;">' . implode(', ', $authorNames) . '</p>';
+
+                // Display all authors in a single line
+                $html .= '<p style="text-align: center; margin: 5px 0;">' . implode(', ', $authorNames) . '</p>';
+
+                // Unique universities and departments
+                $universities = $authors->pluck('university')->unique()->toArray();
+                $departments = $authors->pluck('department')->unique()->toArray();
+
+                // Add universities and departments to the HTML on separate lines
+                $uniqueUniversities = implode(', ', $universities);
+                $uniqueDepartments = implode(', ', $departments);
+
+                $html .= '<p style="text-align: center; margin-bottom: 5px; font-size: 14px;">' . $uniqueUniversities . '</p>';
+                $html .= '<p style="text-align: center; margin-top: 0; font-size: 13px;">' . $uniqueDepartments . '</p>';
             }
             $html .= '</div>';
 
@@ -215,13 +305,43 @@ class ProposalController extends Controller
 
         // Initialize PhpWord
         $phpWord = new PhpWord();
-        $section = $phpWord->addSection();
 
         // Define styles
-        $phpWord->addTitleStyle(1, ['bold' => true, 'size' => 16, 'alignment' => 'center']);
-        $phpWord->addTitleStyle(2, ['bold' => true, 'size' => 14]);
-        $phpWord->addParagraphStyle('Normal', ['alignment' => 'both']);
-        $phpWord->addParagraphStyle('Center', ['alignment' => 'center']);
+        $phpWord->addTitleStyle(1, [
+            'bold' => true, 
+            'size' => 14,
+            'spaceAfter' => 120
+        ], [
+            'alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER
+        ]);
+        
+        $phpWord->addTitleStyle(2, [
+            'bold' => true, 
+            'size' => 12,
+            'spaceAfter' => 120
+        ], [
+            'alignment' => \PhpOffice\PhpWord\SimpleType\Jc::BOTH
+        ]);
+        
+        // Define paragraph styles
+        $phpWord->addParagraphStyle('Normal', [
+            'alignment' => \PhpOffice\PhpWord\SimpleType\Jc::BOTH,
+            'lineHeight' => 1.15,
+            'spaceAfter' => 120
+        ]);
+        
+        $phpWord->addParagraphStyle('Center', [
+            'alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER,
+            'spaceAfter' => 120
+        ]);
+    
+        // Create single section with margins
+        $section = $phpWord->addSection([
+            'marginLeft' => 1440,   // 1 inch in twips
+            'marginRight' => 1440,
+            'marginTop' => 1440,
+            'marginBottom' => 1440
+        ]);
 
         // Loop through each abstract and add to the Word document
         foreach ($researchSubmissions as $researchSubmission) {
@@ -230,33 +350,49 @@ class ProposalController extends Controller
 
             // Authors
             if ($researchSubmission->authors->isEmpty()) {
-                $section->addText('No authors available', null, 'Center');
+                $section->addText('No authors available', ['size' => 11], 'Center');
             } else {
+                $authorNames = [];
                 foreach ($researchSubmission->authors as $author) {
-                    $authorText = $author->first_name . ' ' . $author->middle_name . ' ' . $author->surname;
-                    if ($author->is_correspondent) {
-                        $authorText .= ' *'; // Mark correspondent authors with an asterisk
+                    $name = $author->surname . ', ' . $author->first_name;
+                    if (!empty($author->middle_name)) {
+                        $name .= ' ' . $author->middle_name;
                     }
-                    $section->addText($authorText, null, 'Center');
+                    if ($author->is_correspondent) {
+                        $name .= ' *';
+                    }
+                    $authorNames[] = $name;
                 }
             }
+        }
+            // Add authors with appropriate spacing
+            $section->addText(implode(', ', $authorNames), ['size' => 11], 'Center');
+        
+            // Universities and departments
+            $universities = $researchSubmission->authors->pluck('university')->unique()->toArray();
+            $departments = $researchSubmission->authors->pluck('department')->unique()->toArray();
+        
+            $section->addText(implode(', ', $universities), ['size' => 11], 'Center');
+            $section->addText(implode(', ', $departments), ['size' => 10], 'Center');
+
+            // Add some space before abstract
+            $section->addTextBreak(1);
 
             // Add abstract content
             $section->addTitle('ABSTRACT', 2);
-            $section->addText($researchSubmission->abstract, null, 'Normal');
+            $section->addText($researchSubmission->abstract, ['size' => 11], 'Normal');
 
             // Add keywords
             $keywords = json_decode($researchSubmission->keywords, true) ?? [];
             $section->addTitle('Keywords', 2);
-            $section->addText(implode(', ', $keywords), null, 'Normal');
+            $section->addText(implode(', ', $keywords), ['size' => 11], 'Normal');
 
             // Add sub-theme
             $section->addTitle('Sub-Theme', 2);
-            $section->addText($researchSubmission->sub_theme, null, 'Normal');
+            $section->addText($researchSubmission->sub_theme, ['size' => 11], 'Normal');
 
             // Add a page break after each abstract
             $section->addPageBreak();
-        }
 
         // Generate the Word document
         $fileName = 'all_abstracts.docx';

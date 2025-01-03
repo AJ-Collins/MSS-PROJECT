@@ -230,10 +230,6 @@
     </div>
 </div>
 <script>
-    function goBack() {
-        window.history.back();
-    }
-
     function openModal() {
         document.getElementById('confirmationModal').classList.remove('hidden');
     }

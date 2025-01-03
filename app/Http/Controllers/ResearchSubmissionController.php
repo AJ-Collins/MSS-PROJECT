@@ -239,7 +239,7 @@ class ResearchSubmissionController extends Controller
 
         // Save authors
         foreach ($allAuthors as $author) {
-            $author['research_submission_id'] = $researchSubmission->id;  // Associate with the correct research_submission
+            $author['research_submission_id'] = $serialNumber;  // Associate with the correct research_submission
             $author = new Author($author);
             $author->save();
         }
