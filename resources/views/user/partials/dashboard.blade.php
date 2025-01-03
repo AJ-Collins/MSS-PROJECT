@@ -90,8 +90,14 @@
                 @click="activeTab = 'proposals'">
                 Research Proposals
             </button>
+            <a href="{{ route('user.drafts') }}"
+                class="text-indigo-600 hover:text-indigo-900 mr-3">
+                Continue submission
+            </a>
         </div>
+        
     </div>
+    
 
     <!-- Tab Contents -->
     <div class="bg-white shadow-sm">
@@ -138,10 +144,17 @@
                                 </span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                <a href="#" class="text-indigo-600 hover:text-indigo-900 mr-3">Continue submission</a>
+                                @if($draft && $draft->serial_number)
+                                    <a href="{{ route('user.drafts', ['serialNumber' => $draft->serial_number]) }}"
+                                    class="text-indigo-600 hover:text-indigo-900 mr-3">
+                                        Continue submission
+                                    </a>
+                                @else
+                                    <span class="text-gray-500">No draft available</span>
+                                @endif
                             </td>
                         </tr>
-                    @endforeach                   
+                    @endforeach                  
                 </tbody>
             </table>
         </div>

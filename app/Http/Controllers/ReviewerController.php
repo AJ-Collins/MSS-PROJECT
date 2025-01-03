@@ -44,6 +44,7 @@ class ReviewerController extends Controller
         $newAbstractCount = $submissions->count();
         $newProposalCount = $researchSubmissions->count();
         
+        
         return view('reviewer.partials.dashboard', compact(
             'submissions', 
             'researchSubmissions', 

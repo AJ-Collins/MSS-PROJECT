@@ -67,13 +67,13 @@
 
             <!-- Action Buttons -->
             <div class="mt-8 flex justify-between items-center">
-                <button type="button" onclick="goBack()" 
+                <a href="{{ route('user.step2') }}" 
                     class="px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition duration-200 flex items-center">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                     </svg>
                     Previous
-                </button>
+                </a>
 
                 <button type="button" onclick="openModal()" class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-200 flex items-center">
                     Continue

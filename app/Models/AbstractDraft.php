@@ -23,4 +23,9 @@ class AbstractDraft extends Model
         'keywords' => 'array',
         'authors' => 'array',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_reg_no', 'reg_no');
+    }
 }

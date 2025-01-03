@@ -153,11 +153,16 @@
 
             <!-- Navigation Buttons -->
             <div class="flex justify-between mt-8 pt-6 border-t border-gray-200">
-                <button type="button" onclick="window.history.back()" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                <a href="{{ route('user.submit') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
                     <svg class="-ml-1 mr-2 h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
                     </svg>
                     Previous
+                </a>
+                <button type="button" 
+                    onclick="saveDraft(event, 1)" 
+                    class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                    Save as Draft
                 </button>
                 <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
                     Next
@@ -388,6 +393,120 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 200);
         });
     });
+});
+function validateAuthorData(author) {
+    if (!author) return false;
+    const requiredFields = ['first_name', 'surname', 'email', 'university', 'department'];
+    return requiredFields.every(field => author[field] && typeof author[field] === 'string' && author[field].trim() !== '');
+}
+
+function showNotification(message, type = 'success') {
+    const alert = document.createElement('div');
+    alert.className = `fixed top-4 right-4 px-6 py-3 rounded shadow-lg z-50 transition-all duration-500 ${
+        type === 'success' ? 'bg-green-500' : 'bg-red-500'
+    } text-white`;
+    alert.textContent = message;
+    document.body.appendChild(alert);
+    
+    setTimeout(() => {
+        alert.remove();
+    }, 3000);
+}
+
+async function saveDraft(currentStep) {
+    try {
+        const saveButton = event.target;
+        const originalText = saveButton.innerHTML;
+        
+        // Update button state
+        saveButton.innerHTML = '<span class="spinner-border spinner-border-sm mr-2"></span>Saving...';
+        saveButton.disabled = true;
+
+        // Get form data
+        const form = document.querySelector('#authorForm');
+        if (!form) throw new Error('Form not found');
+        
+        const formData = new FormData(form);
+        const authors = [];
+        let currentAuthor = {};
+        let currentIndex = -1;
+
+        // Process form data
+        for (const [key, value] of formData.entries()) {
+            const matches = key.match(/authors\[(\d+)\]\[([^\]]+)\]/);
+            if (!matches) continue;
+
+            const [, index, field] = matches;
+            const numIndex = parseInt(index);
+
+            if (numIndex !== currentIndex) {
+                if (Object.keys(currentAuthor).length > 0 && validateAuthorData(currentAuthor)) {
+                    authors.push(currentAuthor);
+                }
+                currentAuthor = {};
+                currentIndex = numIndex;
+            }
+
+            currentAuthor[field] = field === 'is_correspondent' ? value === '1' : value.trim();
+        }
+
+        // Add last author if valid
+        if (Object.keys(currentAuthor).length > 0 && validateAuthorData(currentAuthor)) {
+            authors.push(currentAuthor);
+        }
+
+        if (authors.length === 0) {
+            throw new Error('No valid authors found');
+        }
+
+        // Prepare request data
+        const requestData = {
+            current_step: currentStep,
+            authors,
+            _token: document.querySelector('meta[name="csrf-token"]')?.content
+        };
+
+        // Send request
+        const response = await fetch('{{ route("user.saveDraft") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content
+            },
+            body: JSON.stringify(requestData)
+        });
+
+        const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(data.message || 'Error saving draft');
+        }
+
+        if (data.serial_number) {
+            localStorage.setItem('draft_serial_number', data.serial_number);
+        }
+
+        showNotification('Draft saved successfully!', 'success');
+        
+    } catch (error) {
+        showNotification(error.message || 'Error saving draft', 'error');
+    } finally {
+        // Restore button state
+        saveButton.innerHTML = originalText;
+        saveButton.disabled = false;
+    }
+}
+
+// Event listener setup
+document.addEventListener('DOMContentLoaded', () => {
+    const saveDraftBtn = document.querySelector('[data-action="save-draft"]');
+    if (saveDraftBtn) {
+        saveDraftBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const currentStep = saveDraftBtn.dataset.step;
+            saveDraft(currentStep);
+        });
+    }
 });
 </script>
 

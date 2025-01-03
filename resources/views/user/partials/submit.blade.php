@@ -28,7 +28,7 @@
             </ul>
             <a href="{{route('user.step1')}}"
                 class="block w-full py-3 text-center text-white font-medium rounded-lg bg-blue-500 hover:bg-blue-600">
-                Learn More
+                Submit Conference Paper
             </a>
         </div>
 
@@ -51,7 +51,7 @@
             </ul>
             <a href="{{route('user.step1_research')}}"
                 class="block w-full py-3 text-center text-white font-medium rounded-lg bg-green-500 hover:bg-green-600">
-                Learn More
+                Submit Proposal Paper
             </a>
         </div>
 

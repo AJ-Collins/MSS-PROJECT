@@ -29,8 +29,11 @@ class AbstractSubmissionController extends Controller
         // Check if there's existing session data
         $author = session('author', []);
         $submissionType = session('submission_type', 'abstract');
+        $draft = $this->getCurrentDraft();
 
-        return view('user.partials.step1', compact('author', 'submissionType'));
+        $allAuthors = session('all_authors', [['is_correspondent' => false]]);
+
+        return view('user.partials.step1', compact('author', 'submissionType', 'draft', 'allAuthors'));
     }
 
     public function postStep1(Request $request)
@@ -96,8 +99,9 @@ class AbstractSubmissionController extends Controller
             });
             Session::put('abstract', $abstract);
         }
+        $draft = $this->getCurrentDraft();
 
-        return view('user.partials.step2', compact('abstract', 'subThemes'));
+        return view('user.partials.step2', compact('abstract', 'subThemes', 'draft'));
     }
 
 
@@ -126,7 +130,6 @@ class AbstractSubmissionController extends Controller
     public function preview(Request $request)
     {
         // Retrieve session data
-        $article_title = $request->session()->get('article_title');
         $author = $request->session()->get('author');
         $abstract = $request->session()->get('abstract');
         $allAuthors = $request->session()->get('all_authors');
@@ -136,6 +139,7 @@ class AbstractSubmissionController extends Controller
             return redirect()->route('user.step1')->with('error', 'Required data is missing. Please complete all steps.');
         }
         
+        $article_title = $abstract['article_title'] ?? 'Untitled';
         $correspondingAuthor = collect($allAuthors)->firstWhere('is_correspondent', true);
 
         // If abstract data is an array, convert it to an AbstractSubmission object for consistency
@@ -143,52 +147,56 @@ class AbstractSubmissionController extends Controller
             $abstract['keywords'] = [];
         }
     
+        $draft = $this->getCurrentDraft();
         // Passing data to the preview view
-        return view('user.partials.preview', compact('author', 'abstract', 'allAuthors', 'article_title', 'correspondingAuthor'));
+        return view('user.partials.preview', compact('author', 'abstract', 'allAuthors', 'article_title', 'correspondingAuthor', 'draft'));
     }
     
 
 
     public function postPreview(Request $request)
     {
+        // Retrieve session data
         $authorData = $request->session()->get('author');
         $abstractData = $request->session()->get('abstract');
         $allAuthors = $request->session()->get('all_authors');
+        $serialNumber = $request->session()->get('serial_number'); // Retrieve existing serial number
     
         if (!$authorData || !$abstractData) {
             return redirect()->route('user.step1')->with('error', 'No author or abstract data available.');
         }
     
-        // Save author(s)
-        foreach ($allAuthors as $authorData) {
-            $author = new Author($authorData);
-            $author->save();
+        // If no serial number exists, generate it
+        if (!$serialNumber) {
+            $subTheme = $abstractData['sub_theme'];
+            $acronyms = [
+                'Transformative Education' => 'TE',
+                'Business and Entrepreneurship' => 'BE',
+                'Health and Food Security' => 'HFS',
+                'Digital, Creative Economy and Contemporary Societies' => 'DCECS',
+                'Engineering, Technology and Sustainable Environment' => 'ETSE',
+                'Blue Economy & Maritime Affairs' => 'BEMA',
+            ];
+    
+            $acronym = $acronyms[$subTheme] ?? 'N/A';
+            $serialCode = mb_strtoupper(Str::random(mt_rand(4, 5)) . Str::random(mt_rand(3, 5)));
+            $serialNumber = "{$acronym}-{$serialCode}-" . date('y');
+    
+            // Store the serial number in the session for reuse
+            $request->session()->put('serial_number', $serialNumber);
         }
     
-        // Generate serial number
-        $subTheme = $abstractData['sub_theme'];
-        $acronyms = [
-            'Transformative Education' => 'TE',
-            'Business and Entrepreneurship' => 'BE',
-            'Health and Food Security' => 'HFS',
-            'Digital, Creative Economy and Contemporary Societies' => 'DCECS',
-            'Engineering, Technology and Sustainable Environment' => 'ETSE',
-            'Blue Economy & Maritime Affairs' => 'BEMA',
-        ];
+        // Check if a draft exists with the same serial number and delete it
+        $this->deleteDraft($serialNumber);
     
-        $acronym = $acronyms[$subTheme] ?? 'N/A';
-        $serialCode = mb_strtoupper(Str::random(mt_rand(4, 5)) . Str::random(mt_rand(3, 5)));
-        $serialNumber = "{$acronym}-{$serialCode}-" . date('y');
-    
-        $user = auth()->user();
-        // Save abstract
+        // Save abstract submission (using the same serial number as the draft)
         $abstractSubmission = new AbstractSubmission();
         $abstractSubmission->serial_number = $serialNumber;
         $abstractSubmission->title = $abstractData['article_title'];
         $abstractSubmission->sub_theme = $abstractData['sub_theme'];
         $abstractSubmission->abstract = $abstractData['abstract'];
         $abstractSubmission->keywords = json_encode($abstractData['keywords']);
-        $abstractSubmission->user_reg_no = $user->reg_no;
+        $abstractSubmission->user_reg_no = auth()->user()->reg_no;
         $abstractSubmission->final_status = "Pending";
         $abstractSubmission->save();
     
@@ -202,7 +210,152 @@ class AbstractSubmissionController extends Controller
         // Clear all session data related to the submission process
         $request->session()->forget(self::SESSION_KEYS);
     
-        return redirect()->route('user.dashboard')->with('success', 'Submission successfully.');
-    }    
+        return redirect()->route('user.dashboard')->with('success', 'Submission successful.');
+    }
+    
+    
+    public function saveDraft(Request $request)
+    {
+        $user = auth()->user();
+        $currentStep = $request->input('current_step', 1);
+        $serialNumber = $request->input('serial_number');
+
+        if (!$serialNumber) {
+            // Generate a preliminary serial number without sub_theme
+            $serialCode = mb_strtoupper(Str::random(mt_rand(4, 5)) . Str::random(mt_rand(3, 5)));
+            $serialNumber = "DRAFT-{$serialCode}-" . date('y');
+        }
+
+        try {
+            $draft = AbstractDraft::firstOrNew(['serial_number' => $serialNumber]);
+
+            if (!$draft->exists) {
+                $draft->user_reg_no = $user->reg_no;
+                $draft->serial_number = $serialNumber;
+            }
+
+            // Save authors
+            if ($currentStep >= 1 || $request->has('authors')) {
+                $authors = $request->input('authors') ?? session('all_authors');
+                if ($authors) {
+                    foreach ($authors as &$author) {
+                        $author['is_correspondent'] = $author['is_correspondent'] ?? false;
+                    }
+                    $draft->authors = json_encode($authors);
+                }
+            }
+
+            // Save abstract details
+            if ($currentStep >= 2) {
+                $abstract = $request->only(['article_title', 'sub_theme', 'abstract', 'keywords']);
+                $draft->title = $abstract['article_title'] ?? $draft->title;
+                $draft->sub_theme = $abstract['sub_theme'] ?? $draft->sub_theme;
+                $draft->abstract = $abstract['abstract'] ?? $draft->abstract;
+                $draft->keywords = isset($abstract['keywords']) ? json_encode($abstract['keywords']) : $draft->keywords;
+
+                // Update serial number with sub_theme if available
+                if (isset($abstract['sub_theme'])) {
+                    $subTheme = $abstract['sub_theme'];
+                    $acronyms = [
+                        'Transformative Education' => 'TE',
+                        'Business and Entrepreneurship' => 'BE',
+                        'Health and Food Security' => 'HFS',
+                        'Digital, Creative Economy and Contemporary Societies' => 'DCECS',
+                        'Engineering, Technology and Sustainable Environment' => 'ETSE',
+                        'Blue Economy & Maritime Affairs' => 'BEMA',
+                    ];
+
+                    $acronym = $acronyms[$subTheme] ?? 'N/A';
+                    $serialCode = mb_strtoupper(Str::random(mt_rand(4, 5)) . Str::random(mt_rand(3, 5)));
+                    $newSerialNumber = "{$acronym}-{$serialCode}-" . date('y');
+
+                    // Update the draft's serial number
+                    $draft->serial_number = $newSerialNumber;
+
+                    // Store the new serial number in the session
+                    $request->session()->put('serial_number', $newSerialNumber);
+                }
+            }
+
+            $draft->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Draft saved successfully',
+                'serial_number' => $draft->serial_number,
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error saving draft: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function resumeDraft($serialNumber)
+    {
+        $draft = AbstractDraft::where('serial_number', $serialNumber)
+            ->where('user_reg_no', auth()->user()->reg_no)
+            ->firstOrFail();
+
+        // Restore session data
+        if ($draft->authors) {
+            $authors = json_decode($draft->authors, true);
+            session([
+                'all_authors' => $authors,
+                'author' => $authors[0] ?? []
+            ]);
+        }
+
+        if ($draft->title || $draft->abstract) {
+            session([
+                'abstract' => [
+                    'article_title' => $draft->title,
+                    'sub_theme' => $draft->sub_theme,
+                    'abstract' => $draft->abstract,
+                    'keywords' => json_decode($draft->keywords, true) ?? []
+                ]
+            ]);
+        }
+
+        // Determine which step to resume to
+        if (!$draft->authors) {
+            return redirect()->route('user.step1');
+        } elseif (!$draft->title || !$draft->abstract) {
+            return redirect()->route('user.step2');
+        } else {
+            return redirect()->route('user.preview');
+        }
+    }
+
+    private function getCurrentDraft()
+    {
+        return AbstractDraft::where('user_reg_no', auth()->user()->reg_no)
+            ->first();
+    }
+
+    public function viewDrafts()
+    {
+        $drafts = AbstractDraft::where('user_reg_no', auth()->user()->reg_no)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('user.partials.drafts', compact('drafts'));
+    }
+
+    public function deleteDraft($serialNumber)
+    {
+        $draft = AbstractDraft::where('serial_number', $serialNumber)
+            ->where('user_reg_no', auth()->user()->reg_no)
+            ->first();
+
+        if ($draft) {
+            $draft->delete();
+            return response()->json(['success' => true]);
+        }
+
+        return response()->json(['success' => false, 'message' => 'Draft not found'], 404);
+    }
 
 }

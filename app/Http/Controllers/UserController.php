@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\AbstractSubmission;
 use App\Models\ResearchSubmission;
+use App\Models\AbstractDraft;
 
 class UserController extends Controller
 {
@@ -29,9 +30,11 @@ class UserController extends Controller
 
         $submissions = AbstractSubmission::where('user_reg_no', $user->reg_no)->get();
         $researchSubmissions = ResearchSubmission::where('user_reg_no', $user->reg_no)->get();
+
+        $draft = $this->getCurrentDraft();
         
         return view('user.partials.dashboard', compact('submissions', 'researchSubmissions', 'totalAbstracts',
-            'totalPendingCount', 'totalResearchSubmissions'));
+            'totalPendingCount', 'totalResearchSubmissions', 'draft'));
     }
     public function documents()
     {
@@ -99,5 +102,15 @@ class UserController extends Controller
 
         // Redirect to dashboard
         return redirect()->route('user.dashboard');
+    }
+
+    private function getCurrentDraft()
+    {
+        return AbstractDraft::where('user_reg_no', auth()->user()->reg_no)
+            ->first();
+
+        if (!$draft) {
+            return redirect()->route('user.dashboard')->withErrors('No draft available.');
+        }
     }
 }

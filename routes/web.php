@@ -132,6 +132,10 @@ Route::prefix('user')->middleware(['auth'])->group(function () {
     Route::post('/drafts/save', [AbstractSubmissionController::class, 'saveDraft'])->name('user.saveDraft');
     Route::get('/drafts', [AbstractSubmissionController::class, 'showDrafts'])->name('user.drafts');
     Route::get('/drafts/{id}/continue', [AbstractSubmissionController::class, 'continueDraft'])->name('user.continueDraft');    
+    //Draft routes
+    Route::get('/resume-draft/{serialNumber}', [AbstractSubmissionController::class, 'resumeDraft'])->where('serialNumber', '.+')->name('user.resume-draft');
+    Route::get('/drafts', [AbstractSubmissionController::class, 'viewDrafts'])->name('user.drafts');
+    Route::delete('/drafts/delete/{serialNumber}', [AbstractSubmissionController::class, 'deleteDraft'])->where('serialNumber', '.+')->name('user.delete-draft');
 });
 
 //Abstarct download routes

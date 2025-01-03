@@ -179,12 +179,17 @@
 
         <!-- Action Buttons -->
         <div class="flex justify-between mt-12">
-            <button type="button" onclick="goBack()" 
+            <a href="{{ route('user.step1') }}" 
                 class="inline-flex items-center px-6 py-3 border border-gray-300 shadow-sm text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
                 <svg class="-ml-1 mr-2 h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
                 </svg>
                 Previous
+            </a>
+            <button type="button" 
+                onclick="saveDraft(event, 2)" 
+                class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                Save as Draft
             </button>
             <button 
                 type="submit" 
@@ -380,6 +385,91 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function goBack() {
         window.history.back();
+}
+function showNotification(message, type = 'success') {
+    const alert = document.createElement('div');
+    alert.className = `fixed top-4 right-4 px-6 py-3 rounded shadow-lg z-50 transition-all duration-500 ${
+        type === 'success' ? 'bg-green-500' : 'bg-red-500'
+    } text-white`;
+    alert.textContent = message;
+    document.body.appendChild(alert);
+    
+    setTimeout(() => {
+        alert.remove();
+    }, 3000);
+}
+async function saveDraft(event, currentStep) {
+    let saveButton = null;
+    const originalText = 'Save as Draft';
+
+    try {
+        // Ensure we have the event
+        if (!event || !event.target) {
+            throw new Error('Invalid event');
+        }
+
+        // Get the button and store it
+        saveButton = event.target;
+        
+        // Update button state
+        saveButton.innerHTML = '<span class="spinner-border spinner-border-sm mr-2"></span>Saving...';
+        saveButton.disabled = true;
+
+        // Get form data
+        const form = document.querySelector('#step2Form');
+        if (!form) throw new Error('Form not found');
+        
+        const formData = new FormData(form);
+        formData.append('current_step', currentStep);
+
+        // Add serial number if exists
+        const serialNumber = localStorage.getItem('draft_serial_number');
+        if (serialNumber) {
+            formData.append('serial_number', serialNumber);
+        }
+
+        // Get CSRF token
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+        if (!csrfToken) {
+            throw new Error('CSRF token not found');
+        }
+
+        // Send request
+        const response = await fetch('{{ route("user.saveDraft") }}', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken
+            },
+            body: formData
+        });
+
+        // Check if response is JSON
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            throw new Error('Server returned an invalid response');
+        }
+
+        const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(data.message || 'Error saving draft');
+        }
+
+        if (data.serial_number) {
+            localStorage.setItem('draft_serial_number', data.serial_number);
+        }
+
+        showNotification('Draft saved successfully!', 'success');
+        
+    } catch (error) {
+        showNotification(error.message || 'Error saving draft', 'error');
+    } finally {
+        // Ensure button exists before resetting it
+        if (saveButton) {
+            saveButton.disabled = false;
+            saveButton.innerHTML = originalText;
+        }
+    }
 }
 </script>
 
