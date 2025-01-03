@@ -71,32 +71,34 @@
 
 <!-- Document Management Section -->
 <div x-data="{ activeTab: 'abstracts' }">
-    <div class="border-b border-gray-200 shadow-sm bg-white">
-        <h2 class="text-2xl font-semibold text-gray-800 tracking-tight p-4">Recents</h2>
-    </div>
-
-    <!-- Tabs -->
-    <div class="bg-white border-b border-gray-200">
-        <div class="flex">
-            <button 
-                class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800 border-b-2 transition-colors duration-150"
-                :class="{ 'border-indigo-500 text-indigo-600': activeTab === 'abstracts', 'border-transparent': activeTab !== 'abstracts' }"
-                @click="activeTab = 'abstracts'">
-                Abstracts
-            </button>
-            <button 
-                class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800 border-b-2 transition-colors duration-150"
-                :class="{ 'border-indigo-500 text-indigo-600': activeTab === 'proposals', 'border-transparent': activeTab !== 'proposals' }"
-                @click="activeTab = 'proposals'">
-                Research Proposals
-            </button>
-            <a href="{{ route('user.drafts') }}"
-                class="text-indigo-600 hover:text-indigo-900 mr-3">
-                Continue submission
-            </a>
+        <div class="border-b border-gray-200 shadow-sm bg-white">
+            <h2 class="text-2xl font-semibold text-gray-800 tracking-tight p-4">Recents</h2>
         </div>
-        
+
+        <!-- Tabs -->
+        <div class="bg-white border-b border-gray-200">
+        <div class="flex items-center space-x-4">
+        <button 
+            class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800 border-b-2 transition-colors duration-150"
+            :class="{ 'border-indigo-500 text-indigo-600': activeTab === 'abstracts', 'border-transparent': activeTab !== 'abstracts' }"
+            @click="activeTab = 'abstracts'">
+            Abstracts
+        </button>
+        <button 
+            class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800 border-b-2 transition-colors duration-150"
+            :class="{ 'border-indigo-500 text-indigo-600': activeTab === 'proposals', 'border-transparent': activeTab !== 'proposals' }"
+            @click="activeTab = 'proposals'">
+            Research Proposals
+        </button>
+        <a href="{{ route('user.drafts') }}" class="flex items-center text-indigo-600 hover:text-indigo-900 text-sm font-medium" title="Continue to submit your drafts">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M12 5l7 7-7 7"></path>
+            </svg>
+            Continue submission
+        </a>
     </div>
+        
+</div>
     
 
     <!-- Tab Contents -->
@@ -115,7 +117,7 @@
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Score</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        <!--<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>-->
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
@@ -143,7 +145,7 @@
                                     {{ $submission->final_status ?? 'Pending' }}
                                 </span>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <!--<td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                 @if($draft && $draft->serial_number)
                                     <a href="{{ route('user.drafts', ['serialNumber' => $draft->serial_number]) }}"
                                     class="text-indigo-600 hover:text-indigo-900 mr-3">
@@ -152,7 +154,7 @@
                                 @else
                                     <span class="text-gray-500">No draft available</span>
                                 @endif
-                            </td>
+                            </td>-->
                         </tr>
                     @endforeach                  
                 </tbody>
