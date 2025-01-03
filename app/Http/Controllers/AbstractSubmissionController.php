@@ -337,11 +337,11 @@ class AbstractSubmissionController extends Controller
 
     public function viewDrafts()
     {
-        $drafts = AbstractDraft::where('user_reg_no', auth()->user()->reg_no)
+        $abstractDrafts = AbstractDraft::where('user_reg_no', auth()->user()->reg_no)
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return view('user.partials.drafts', compact('drafts'));
+        return view('user.partials.drafts', compact('abstractDrafts'))->with('type', 'abstract');
     }
 
     public function deleteDraft($serialNumber)

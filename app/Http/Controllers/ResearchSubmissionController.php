@@ -357,11 +357,11 @@ class ResearchSubmissionController extends Controller
 
         // Determine which step to resume to
         if (!$draft->authors) {
-            return redirect()->route('user.step1');
+            return redirect()->route('user.step1_research');
         } elseif (!$draft->title || !$draft->abstract) {
-            return redirect()->route('user.step2');
+            return redirect()->route('user.step2_research');
         } else {
-            return redirect()->route('user.preview');
+            return redirect()->route('user.preview_research');
         }
     }
 
@@ -373,12 +373,13 @@ class ResearchSubmissionController extends Controller
 
     public function viewProposalDrafts()
     {
-        $drafts = AbstractDraft::where('user_reg_no', auth()->user()->reg_no)
+        $proposalDrafts = AbstractDraft::where('user_reg_no', auth()->user()->reg_no)
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return view('user.partials.drafts', compact('drafts'));
+        return view('user.partials.drafts', compact('proposalDrafts'))->with('type', 'proposal');
     }
+
 
     public function deleteProposalDraft($serialNumber)
     {
