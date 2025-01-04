@@ -27,12 +27,6 @@ class LoginController extends Controller
         return 'reg_no';
     }
 
-    /**
-     * Where to redirect users after login.
-     *
-     * @var string
-     */
-    protected $redirectTo = '/home';
 
     /**
      * Create a new controller instance.
@@ -64,6 +58,6 @@ class LoginController extends Controller
             return redirect()->route('user.dashboard');
         }
 
-        return redirect()->route('home'); // Default fallback
+        return redirect()->route('login'); // Default fallback
     }
 }
