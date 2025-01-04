@@ -41,6 +41,7 @@ Route::get('/', function () {
     return redirect()->route('login');
 });
 
+Route::middleware(['preventBackHistory'])->group(function () {
 //Admin routes
 Route::prefix('admin')->middleware(['auth'])->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
@@ -162,3 +163,4 @@ Route::get('/proposals/{serial_number}/word', [ProposalController::class, 'downl
 //Download all Proposal Abstarct routes
 Route::get('/proposals/download-all', [ProposalController::class, 'downloadAllProposalAbstracts'])->name('proposal.downloadAll');
 Route::get('/proposals/download-word', [ProposalController::class, 'downloadAllProposalAbstractsWord'])->name('proposal.downloadAllWord');
+});
