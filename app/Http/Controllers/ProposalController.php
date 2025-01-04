@@ -44,7 +44,7 @@ class ProposalController extends Controller
         } else {
             $authorNames = [];
             foreach ($authors as $author) {
-                $name = $author->surname . ', ' . $author->first_name;
+                $name = $author->first_name . ', ' . $author->surname;
                 if (!empty($author->middle_name)) {
                     $name .= ' ' . $author->middle_name; // Add middle name if present
                 }
@@ -55,10 +55,6 @@ class ProposalController extends Controller
             }
              // Display all authors in a single line
              $html .= '<p style="text-align: center; margin: 5px 0;">' . implode(', ', $authorNames) . '</p>';
-
-
-             // Display all authors in a single line
-            $html .= '<p style="text-align: center; margin: 5px 0;">' . implode(', ', $authorNames) . '</p>';
 
             // Unique universities and departments
             $universities = $authors->pluck('university')->unique()->toArray();
@@ -245,7 +241,7 @@ class ProposalController extends Controller
             } else {
                 $authorNames = [];
             foreach ($authors as $author) {
-                $name = $author->surname . ', ' . $author->first_name;
+                $name = $author->first_name . ' ' . $author->surname;
                 if (!empty($author->middle_name)) {
                     $name .= ' ' . $author->middle_name; // Add middle name if present
                 }
@@ -254,9 +250,6 @@ class ProposalController extends Controller
                 }
                 $authorNames[] = $name; // Add the complete name to the array
             }
-                // Display all authors in a single line
-                $html .= '<p style="text-align: center; margin: 5px 0;">' . implode(', ', $authorNames) . '</p>';
-
                 // Display all authors in a single line
                 $html .= '<p style="text-align: center; margin: 5px 0;">' . implode(', ', $authorNames) . '</p>';
 
@@ -354,7 +347,7 @@ class ProposalController extends Controller
             } else {
                 $authorNames = [];
                 foreach ($researchSubmission->authors as $author) {
-                    $name = $author->surname . ', ' . $author->first_name;
+                    $name = $author->first_name . ' ' . $author->surname;
                     if (!empty($author->middle_name)) {
                         $name .= ' ' . $author->middle_name;
                     }
@@ -364,7 +357,7 @@ class ProposalController extends Controller
                     $authorNames[] = $name;
                 }
             }
-        }
+        
             // Add authors with appropriate spacing
             $section->addText(implode(', ', $authorNames), ['size' => 11], 'Center');
         
@@ -393,6 +386,7 @@ class ProposalController extends Controller
 
             // Add a page break after each abstract
             $section->addPageBreak();
+        }
 
         // Generate the Word document
         $fileName = 'all_abstracts.docx';

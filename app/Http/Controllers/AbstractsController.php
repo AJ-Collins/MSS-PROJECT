@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\AbstractSubmission;
 use Dompdf\Dompdf;
-use PhpOffice\PhpWord\PhpWord; // Import the PhpWord class
+use PhpOffice\PhpWord\PhpWord;
 use PhpOffice\PhpWord\IOFactory;
 
 class AbstractsController extends Controller
@@ -44,14 +44,14 @@ class AbstractsController extends Controller
         } else {
             $authorNames = [];
             foreach ($authors as $author) {
-                $name = $author->surname . ', ' . $author->first_name;
+                $name = $author->first_name . ' ' . $author->surname;
                 if (!empty($author->middle_name)) {
                     $name .= ' ' . $author->middle_name; // Add middle name if present
                 }
                 if ($author->is_correspondent) {
-                    $name .= '*'; // Mark correspondent authors with an asterisk
+                    $name .= '*';
                 }
-                $authorNames[] = $name; // Add the complete name to the array
+                $authorNames[] = $name;
             }
 
             // Display all authors in a single line
@@ -143,7 +143,7 @@ class AbstractsController extends Controller
             } else {
                 $authorNames = [];
             foreach ($authors as $author) {
-                $name = $author->surname . ', ' . $author->first_name;
+                $name = $author->first_name . ' ' . $author->surname;
                 if (!empty($author->middle_name)) {
                     $name .= ' ' . $author->middle_name; // Add middle name if present
                 }
@@ -152,9 +152,6 @@ class AbstractsController extends Controller
                 }
                 $authorNames[] = $name; // Add the complete name to the array
             }
-                // Display all authors in a single line
-                $html .= '<p style="text-align: center; margin: 5px 0;">' . implode(', ', $authorNames) . '</p>';
-
                 // Display all authors in a single line
                 $html .= '<p style="text-align: center; margin: 5px 0;">' . implode(', ', $authorNames) . '</p>';
 
@@ -351,7 +348,7 @@ class AbstractsController extends Controller
             } else {
                 $authorNames = [];
                 foreach ($submission->authors as $author) {
-                    $name = $author->surname . ', ' . $author->first_name;
+                    $name = $author->first_name . ' ' . $author->surname;
                     if (!empty($author->middle_name)) {
                         $name .= ' ' . $author->middle_name;
                     }
@@ -361,7 +358,7 @@ class AbstractsController extends Controller
                     $authorNames[] = $name;
                 }
             }
-        }
+        
             // Add authors with appropriate spacing
             $section->addText(implode(', ', $authorNames), ['size' => 11], 'Center');
             
@@ -390,6 +387,7 @@ class AbstractsController extends Controller
 
             // Add a page break after each abstract
             $section->addPageBreak();
+        }
         // Generate the Word document
         $fileName = 'all_abstracts.docx';
         $tempFilePath = storage_path($fileName);
