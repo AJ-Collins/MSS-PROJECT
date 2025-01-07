@@ -5,7 +5,7 @@
 <div x-data="{ activeTab: 'articles', searchQuery: '', showFilters: false, statusFilter: 'all' }">
     <div class="border-b border-gray-200 shadow-sm bg-white">
         <div class="flex justify-between items-center p-4">
-            <h2 class="text-2xl font-semibold text-gray-800 tracking-tight">Review Documents</h2>
+            <h2 class="text-2xl font-semibold text-gray-800 tracking-tight">Completed</h2>
             <div class="flex items-center gap-4">
                 <div class="relative">
                     <input 

@@ -7,10 +7,14 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use App\Models\AbstractSubmission;
 use App\Models\ResearchSubmission;
+use App\Models\ResearchAssessment;
+use App\Models\ProposalAssessment;
 use Illuminate\Support\Facades\DB;
 use App\Models\Role;
 use Livewire\Attributes\Validate;
 use Illuminate\Validation\Rule;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 
 
 class AdminController extends Controller
@@ -25,8 +29,8 @@ class AdminController extends Controller
         $totalAbstracts = AbstractSubmission::distinct('serial_number')->count();
         $totalProposals = ResearchSubmission::distinct('serial_number')->count();
 
-        $submissions = AbstractSubmission::all();
-        $researchSubmissions = ResearchSubmission::all();
+        $submissions = AbstractSubmission::where('reviewer_status', Null)->get();
+        $researchSubmissions = ResearchSubmission::where('reviewer_status', Null)->get();
 
         return view('admin.partials.dashboard', compact('totalUsers', 'totalAbstracts',
                     'totalProposals', 'totalReviewers', 'submissions', 'researchSubmissions'));
@@ -122,8 +126,29 @@ class AdminController extends Controller
 
     public function reports()
     {
-        return view('admin.partials.reports');
+        $submissions = AbstractSubmission::with('user')->get();
+        $researchSubmissions = ResearchSubmission::with('user')->get();
+
+        return view('admin.partials.reports', compact('submissions', 'researchSubmissions'));
     }
+
+    public function showAssessments($serial_number)
+    {
+        $assessments = ResearchAssessment::where('abstract_submission_id', $serial_number)
+            ->with('reviewer', 'user') // Load related reviewer and user
+            ->get();
+
+        return view('admin.partials.research_assessments', compact('assessments', 'serial_number'));
+    }
+    public function showProposalAssessments($serial_number)
+    {
+        $proposalAssessments = ProposalAssessment::where('abstract_submission_id', $serial_number)
+            ->with('reviewer', 'user') // Load related reviewer and user
+            ->get();
+
+        return view('admin.partials.research_assessments', compact('proposalAssessments', 'serial_number'));
+    }
+    
 
     public function documents()
     {   
@@ -378,8 +403,157 @@ class AdminController extends Controller
         return view('admin.partials.profile');
     }
 
-    public function settings()
+
+    public function downloadAssessmentPDF($serial_number)
     {
-        return view('admin.partials.settings');
+        $assessment = ResearchAssessment::with(['abstractSubmission', 'reviewer', 'user'])->findOrFail($serial_number);
+        
+        // Configure DomPDF options
+        $options = new Options();
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('isPhpEnabled', true);
+        
+        // Initialize DomPDF
+        $dompdf = new Dompdf($options);
+        
+        // Generate HTML content
+        $html = '
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+            <title>Research Assessment Report</title>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    line-height: 1.6;
+                    color: #333;
+                }
+                .header {
+                    text-align: center;
+                    margin-bottom: 30px;
+                    border-bottom: 2px solid #333;
+                    padding-bottom: 10px;
+                }
+                .section {
+                    margin-bottom: 20px;
+                }
+                .section-title {
+                    background-color: #f5f5f5;
+                    padding: 5px 10px;
+                    font-weight: bold;
+                    margin-bottom: 10px;
+                }
+                .score-box {
+                    border: 1px solid #ddd;
+                    padding: 10px;
+                    margin-bottom: 10px;
+                }
+                .score {
+                    font-size: 18px;
+                    font-weight: bold;
+                    color: #2c5282;
+                }
+                .comments {
+                    margin-top: 5px;
+                    padding: 10px;
+                    background-color: #f8f8f8;
+                }
+                .meta-info {
+                    margin-bottom: 20px;
+                    padding: 10px;
+                    background-color: #f0f4f8;
+                }
+                .correction-section {
+                    margin-top: 20px;
+                    padding: 10px;
+                    border: 1px solid #e2e8f0;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <h1>Research Assessment Report</h1>
+                <p>Generated on: ' . date('F d, Y') . '</p>
+            </div>
+            
+            <div class="meta-info">
+                <p><strong>Abstract ID:</strong> ' . $assessment->abstract_submission_id . '</p>
+                <p><strong>Reviewer:</strong> ' . $assessment->reviewer->name . '</p>
+                <p><strong>Author:</strong> ' . $assessment->user->name . '</p>
+            </div>
+            
+            <div class="section">
+                <div class="section-title">Thematic Assessment</div>
+                <div class="score-box">
+                    <div class="score">Score: ' . $assessment->thematic_score . '/10</div>
+                    <div class="comments">' . nl2br($assessment->thematic_comments) . '</div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <div class="section-title">Title Assessment</div>
+                <div class="score-box">
+                    <div class="score">Score: ' . $assessment->title_score . '/10</div>
+                    <div class="comments">' . nl2br($assessment->title_comments) . '</div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <div class="section-title">Objectives Assessment</div>
+                <div class="score-box">
+                    <div class="score">Score: ' . $assessment->objectives_score . '/10</div>
+                    <div class="comments">' . nl2br($assessment->objectives_comments) . '</div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <div class="section-title">Methodology Assessment</div>
+                <div class="score-box">
+                    <div class="score">Score: ' . $assessment->methodology_score . '/10</div>
+                    <div class="comments">' . nl2br($assessment->methodology_comments) . '</div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <div class="section-title">Output Assessment</div>
+                <div class="score-box">
+                    <div class="score">Score: ' . $assessment->output_score . '/10</div>
+                    <div class="comments">' . nl2br($assessment->output_comments) . '</div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <div class="section-title">General Comments</div>
+                <div class="comments">' . nl2br($assessment->general_comments) . '</div>
+            </div>
+            
+            <div class="correction-section">
+                <h3>Correction Requirements</h3>
+                <p><strong>Type:</strong> ' . ucfirst($assessment->correction_type) . '</p>
+                <div class="comments">' . nl2br($assessment->correction_comments) . '</div>
+            </div>
+            
+            <div style="margin-top: 30px; text-align: center; font-size: 12px;">
+                <p>This is an official assessment report. Please maintain confidentiality.</p>
+            </div>
+        </body>
+        </html>';
+        
+        // Load HTML content
+        $dompdf->loadHtml($html);
+        
+        // Set paper size and orientation
+        $dompdf->setPaper('A4', 'portrait');
+        
+        // Render PDF
+        $dompdf->render();
+        
+        // Generate file name
+        $fileName = 'Research_Assessment_' . $assessment->abstract_submission_id . '_' . date('Y-m-d') . '.pdf';
+        
+        // Download PDF
+        return $dompdf->stream($fileName, ['Attachment' => true]);
     }
+
 }

@@ -70,6 +70,11 @@ Route::middleware(['preventBackHistory'])->group(function () {
         Route::post('/reject-abstract', [AdminController::class, 'rejectAbstract'])->name('reject.abstract');
         Route::post('/approve-proposal', [AdminController::class, 'approveProposal'])->name('approve.proposal');
         Route::post('/reject-proposal', [AdminController::class, 'rejectProposal'])->name('reject.proposal');
+
+        Route::get('/research-assessments/{serial_number}', [AdminController::class, 'showAssessments'])->name('admin.showAssessments');
+        Route::get('/proposal-assessments/{serial_number}', [AdminController::class, 'showProposalAssessments'])->name('admin.proposal.showAssessments');
+
+        Route::get('/research-assessment/{serial_number}/pdf', [AdminController::class, 'downloadAssessmentPDF'])->name('download.AssessmentPDF');
     });
 
     //Reviewer routes
@@ -163,4 +168,8 @@ Route::middleware(['preventBackHistory'])->group(function () {
     //Download all Proposal Abstarct routes
     Route::get('/proposals/download-all', [ProposalController::class, 'downloadAllProposalAbstracts'])->name('proposal.downloadAll');
     Route::get('/proposals/download-word', [ProposalController::class, 'downloadAllProposalAbstractsWord'])->name('proposal.downloadAllWord');
+
+
+    Route::get('/download/{serialNumber}', [ResearchSubmissionController::class, 'downloadFile'])->name('download.file');
+
 });

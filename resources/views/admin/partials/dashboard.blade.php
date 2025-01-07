@@ -135,7 +135,7 @@
                                         ]
                                     ];
 
-                                    $currentStatus = $submission->final_status;
+                                    $currentStatus = $submission->reviewer_status;
                                     $style = $statusStyles[$currentStatus] ?? [
                                         'text' => 'text-gray-800',
                                         'bg' => 'bg-gray-100'
@@ -147,7 +147,7 @@
                                 </span>
                             </td>
                             <td class="px-4 py-3 text-center space-x-2">
-                            <button class="px-2 py-1 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-full">View</button>                            
+                            <!--<button class="px-2 py-1 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-full">View</button>                            -->
                                 <div class="relative inline-block text-left">
                                     <button onclick="toggleDropdown(event)" class="inline-flex justify-center w-full px-2 py-1 text-xs font-medium text-white bg-gray-600 rounded-full hover:bg-gray-700 focus:outline-none">
                                         Download
@@ -214,7 +214,7 @@
                                         ]
                                     ];
 
-                                    $currentStatus = $researchSubmission->final_status;
+                                    $currentStatus = $researchSubmission->reviewer_status;
                                     $style = $statusStyles[$currentStatus] ?? [
                                         'text' => 'text-gray-800',
                                         'bg' => 'bg-gray-100'
@@ -222,11 +222,11 @@
                                 @endphp
 
                                 <span class="px-3 py-1 text-xs font-medium {{ $style['text'] }} {{ $style['bg'] }} rounded-full">
-                                    {{ $currentStatus ?: 'Unknown' }}
+                                    {{ $currentStatus ?: 'Not Assigned' }}
                                 </span>
                             </td>
                             <td class="px-4 py-3 text-center space-x-2">
-                            <button class="px-2 py-1 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-full">View</button>                            
+                            <!--<button class="px-2 py-1 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-full">View</button>                            -->
                                 <div class="relative inline-block text-left">
                                     <button onclick="toggleDropdown(event)" class="inline-flex justify-center w-full px-2 py-1 text-xs font-medium text-white bg-gray-600 rounded-full hover:bg-gray-700 focus:outline-none">
                                         Download

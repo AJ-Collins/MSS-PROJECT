@@ -31,4 +31,13 @@ class AbstractSubmission extends Model
     {
         return $this->hasMany(ResearchAssessment::class, 'abstract_submission_id', 'serial_number');
     }
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_reg_no', 'reg_no');
+    }
+    public function reviewer()
+    {
+        return $this->belongsTo(User::class, 'reviewer_reg_no', 'reg_no');
+    }
+    
 }

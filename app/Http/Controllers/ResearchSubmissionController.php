@@ -490,4 +490,32 @@ class ResearchSubmissionController extends Controller
         // Stream the PDF to the browser for download
         return $dompdf->stream('abstract_info.pdf', ['Attachment' => 1]);
     }
+
+
+    public function downloadFile($serialNumber)
+    {
+        // Find the research submission by serial number
+        $researchSubmission = ResearchSubmission::where('serial_number', $serialNumber)->first();
+
+        if (!$researchSubmission || !$researchSubmission->pdf_document_path) {
+            return redirect()->back()->with('error', 'File not found.');
+        }
+
+        // Remove 'storage/' prefix if it exists in the stored path
+        $filePath = str_replace('storage/', '', $researchSubmission->pdf_document_path);
+
+        // Check if file exists
+        if (!Storage::disk('public')->exists($filePath)) {
+            return redirect()->back()->with('error', 'File not found in storage.');
+        }
+
+        // Get the full physical path
+        $fullPath = storage_path('app/public/' . $filePath);
+
+        // Get original filename (optional)
+        $originalName = basename($filePath);
+
+        // Return file download response
+        return response()->download($fullPath, $originalName);
+    }
 }
