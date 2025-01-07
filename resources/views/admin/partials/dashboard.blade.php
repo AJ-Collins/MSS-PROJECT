@@ -143,7 +143,7 @@
                                 @endphp
 
                                 <span class="px-3 py-1 text-xs font-medium {{ $style['text'] }} {{ $style['bg'] }} rounded-full">
-                                    {{ $currentStatus ?: 'Unknown' }}
+                                    {{ $currentStatus ?: 'Not Assigned' }}
                                 </span>
                             </td>
                             <td class="px-4 py-3 text-center space-x-2">

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+use Illuminate\Validation\ValidationException;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -19,6 +20,35 @@ class AuthenticatedSessionController extends Controller
     }
 
     /**
+     * Handle an incoming authentication request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function store(Request $request)
+    {
+        // Validate the request data
+        $request->validate([
+            'reg_no' => 'required|string',
+            'password' => 'required|string',
+        ]);
+
+        // Attempt to authenticate the user
+        if (!Auth::attempt($request->only('reg_no', 'password'), $request->boolean('remember'))) {
+            throw ValidationException::withMessages([
+                'reg_no' => __('The provided credentials are incorrect.'),
+            ]);
+        }
+
+        // Regenerate session to avoid session fixation
+        $request->session()->regenerate();
+
+        // Redirect to the intended location or a default route
+        return redirect()->intended($this->redirectTo());
+    }
+
+    /**
      * Destroy an authenticated session (log out).
      *
      * @param  \Illuminate\Http\Request  $request
@@ -26,35 +56,35 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request)
     {
-        // Log the user out
         Auth::guard('web')->logout();
 
-        // Invalidate the session and regenerate the CSRF token
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        // Redirect the user to the homepage or another route after logout
-        return redirect('/');
+        // Add a flash message for debugging
+        $request->session()->flash('status', 'Logged out successfully');
+
+        return redirect()->route('login');
     }
 
     protected function redirectTo(): string
     {
         $user = Auth::user();
-        $user->load('roles');
-        $roles = $user->roles->pluck('name');
 
         if (!$user) {
             return '/'; // Fallback to home if no user is authenticated
         }
 
+        $roles = $user->roles->pluck('name');
+
         if ($roles->contains('admin')) {
-            return redirect()->route('admin.dashboard');
+            return route('admin.dashboard');
         } elseif ($roles->contains('reviewer')) {
-            return redirect()->route('reviewer.partials.dashboard');
+            return route('reviewer.partials.dashboard');
         } elseif ($roles->contains('user')) {
-            return redirect()->route('user.dashboard');
+            return route('user.dashboard');
         }
 
-        return redirect()->route('login');
+        return route('login'); // Fallback to login if no specific role is found
     }
 }

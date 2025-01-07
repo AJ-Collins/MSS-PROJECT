@@ -126,33 +126,15 @@
 
                 <div class="w-full lg:w-1/2 p-6 border border-gray-800 flex flex-col h-full">
                     <h3 class="text-lg font-semibold text-gray-800 mb-4">Document Preview</h3>
-                        <div class="bg-gray-50 rounded-lg flex-1">
-                            @if($documentPath)
-                                @if(pathinfo($documentPath, PATHINFO_EXTENSION) === 'pdf')
-                                    <embed src="{{ asset($documentPath) }}"
-                                        type="application/pdf"
-                                        class="w-full h-full rounded-lg"
-                                        style="min-height: 800px;">
-                                @else
-                                    <div class="flex flex-col items-center justify-center h-full p-6">
-                                        <svg class="w-16 h-16 text-gray-400 mb-4" fill="currentColor" viewBox="0 0 24 24">
-                                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/>
-                                        </svg>
-                                        <p class="text-gray-900 font-medium mb-2">{{ basename($documentPath) }}</p>
-                                        <a href="{{ asset($documentPath) }}"
-                                        target="_blank"
-                                        class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
-                                            Open Document
-                                        </a>
-                                    </div>
-                                @endif
-                                <input type="hidden" name="document_path" value="{{ $documentPath }}">
-                            @else
-                                <div class="flex items-center justify-center h-full">
-                                    <p class="text-gray-500">No document uploaded</p>
-                                </div>
-                            @endif
-                        </div>
+                    <div class="bg-gray-50 rounded-lg flex-1">
+                    @if($documentPath)
+                        @if(pathinfo($documentPath, PATHINFO_EXTENSION) === 'pdf')
+                            <embed src="{{ asset('storage/research_proposals/' . basename($documentPath)) }}" type="application/pdf" class="w-full h-full rounded-lg" style="min-height: 800px;">                            
+                        @else
+                            <p class="text-gray-500">No document uploaded</p>
+                        @endif
+                    @endif
+                    </div>
                     </div>
                 </div>
 

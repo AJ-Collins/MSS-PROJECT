@@ -111,6 +111,8 @@ class ResearchSubmissionController extends Controller
             'keywords' => 'required|array|min:3|max:5',
             'keywords.*' => 'required|string|max:255',
             'pdf_document' => [
+                'file',
+                'mimes:pdf',
                 function ($attribute, $value, $fail) {
                     if (!$value && !session()->has('abstract.pdf_document_path')) {
                         $fail('The pdf document field is required.');
@@ -125,7 +127,7 @@ class ResearchSubmissionController extends Controller
                 $file = $request->file('pdf_document');
                 $filename = uniqid('research_') . '.' . $file->getClientOriginalExtension();
                 $path = $file->storeAs('research_proposals', $filename, 'public');
-                $pdfPath = 'storage/' . $path;
+                $pdfPath = Storage::url($path);
             } else {
                 $pdfPath = session('abstract.pdf_document_path');
             }
@@ -152,13 +154,14 @@ class ResearchSubmissionController extends Controller
         // Retrieve session data
         $author = $request->session()->get('author');
         $allAuthors = $request->session()->get('all_authors');
-        $abstract = $request->session()->get('abstract');
+        $abstract = $request->session()->get('abstract', []);
         
         // Handle case where abstract data may not be complete
         $articleTitle = $abstract['article_title'] ?? 'Untitled';
         $subTheme = $abstract['sub_theme'] ?? '';
-        $keywords = $abstract['keywords'] ?? [];
+        $keywords = is_array($abstract['keywords'] ?? []) ? $abstract['keywords'] : [];
         $documentPath = $abstract['pdf_document_path'] ?? null;
+        
 
         if (!$author || !$abstract || !$allAuthors) {
             return redirect()->route('user.step1')->with('error', 'Required data is missing. Please complete all steps.');

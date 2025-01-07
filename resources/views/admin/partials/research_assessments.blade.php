@@ -18,7 +18,7 @@
                         <th class="px-6 py-4 text-sm font-medium text-gray-600">Output Score</th>
                         <th class="px-6 py-4 text-sm font-medium text-gray-600">Correction Type</th>
                         <th class="px-6 py-4 text-sm font-medium text-gray-600">General Comments</th>
-                        <th class="px-6 py-4 text-sm font-medium text-gray-600">Action</th>
+                        <th class="px-6 py-4 text-sm font-medium text-gray-600">Total Score</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -58,7 +58,7 @@
                         <th class="px-6 py-4 text-sm font-medium text-gray-600">Output Score</th>
                         <th class="px-6 py-4 text-sm font-medium text-gray-600">Correction Type</th>
                         <th class="px-6 py-4 text-sm font-medium text-gray-600">General Comments</th>
-                        <th class="px-6 py-4 text-sm font-medium text-gray-600">Action</th>
+                        <th class="px-6 py-4 text-sm font-medium text-gray-600">Score</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -82,14 +82,7 @@
                                 @endif
                             </td>
                             <td class="px-6 py-4 text-sm text-gray-700">{{ $assessment->general_comments ?: 'No comments' }}</td>
-                            <td class="px-6 py-4 text-sm text-gray-700">
-                                <a href="{{ route('download.AssessmentPDF', ['serial_number' => $serial_number]) }}" class="flex items-center space-x-2 p-2 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8l-8 8-8-8"/>
-                                    </svg>
-                                    <span>Download Report</span>
-                                </a>
-                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-700">{{ $assessment->total_score }}</td>
                         </tr>
                     @endforeach
                 </tbody>

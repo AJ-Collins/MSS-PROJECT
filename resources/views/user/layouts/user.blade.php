@@ -99,7 +99,7 @@
                                  alt="{{ Auth::user()->name }}">
                             <div class="hidden md:block text-left">
                                 <div class="text-sm font-semibold text-gray-800">{{ Auth::user()->name }}</div>
-                                <div class="text-xs text-gray-500">Administrator</div>
+                                <div class="text-xs text-gray-500">User</div>
                             </div>
                             <svg class="h-5 w-5 text-black-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
