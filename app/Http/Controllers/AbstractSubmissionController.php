@@ -9,6 +9,8 @@ use App\Models\Author;
 use Illuminate\Support\Str;
 use App\Models\User;
 use Illuminate\Support\Facades\Session;
+use App\Notifications\NewUserNotification;
+use Illuminate\Support\Facades\Notification;
 
 class AbstractSubmissionController extends Controller
 {
@@ -156,40 +158,31 @@ class AbstractSubmissionController extends Controller
 
     public function postPreview(Request $request)
     {
-        // Retrieve session data
+        $user = auth()->user();
         $authorData = $request->session()->get('author');
         $abstractData = $request->session()->get('abstract');
         $allAuthors = $request->session()->get('all_authors');
-        $serialNumber = $request->session()->get('serial_number'); // Retrieve existing serial number
-    
+        
         if (!$authorData || !$abstractData) {
             return redirect()->route('user.step1')->with('error', 'No author or abstract data available.');
         }
     
-        // If no serial number exists, generate it
-        if (!$serialNumber) {
-            $subTheme = $abstractData['sub_theme'];
-            $acronyms = [
-                'Transformative Education' => 'TE',
-                'Business and Entrepreneurship' => 'BE',
-                'Health and Food Security' => 'HFS',
-                'Digital, Creative Economy and Contemporary Societies' => 'DCECS',
-                'Engineering, Technology and Sustainable Environment' => 'ETSE',
-                'Blue Economy & Maritime Affairs' => 'BEMA',
-            ];
+        $subTheme = $abstractData['sub_theme'];
+        $acronyms = [
+            'Transformative Education' => 'TE',
+            'Business and Entrepreneurship' => 'BE',
+            'Health and Food Security' => 'HFS',
+            'Digital, Creative Economy and Contemporary Societies' => 'DCECS',
+            'Engineering, Technology and Sustainable Environment' => 'ETSE',
+            'Blue Economy & Maritime Affairs' => 'BEMA',
+        ];
     
-            $acronym = $acronyms[$subTheme] ?? 'N/A';
-            $serialCode = mb_strtoupper(Str::random(mt_rand(4, 5)) . Str::random(mt_rand(3, 5)));
-            $serialNumber = "{$acronym}-{$serialCode}-" . date('y');
+        $acronym = $acronyms[$subTheme] ?? 'N/A';
+        $uniquePrefix = substr(Str::uuid()->toString(), 0, 8);
+        $serialNumber = "{$acronym}-{$uniquePrefix}-" . date('y');
     
-            // Store the serial number in the session for reuse
-            $request->session()->put('serial_number', $serialNumber);
-        }
-    
-        // Check if a draft exists with the same serial number and delete it
         $this->deleteDraft($serialNumber);
     
-        // Save abstract submission (using the same serial number as the draft)
         $abstractSubmission = new AbstractSubmission();
         $abstractSubmission->serial_number = $serialNumber;
         $abstractSubmission->title = $abstractData['article_title'];
@@ -197,22 +190,25 @@ class AbstractSubmissionController extends Controller
         $abstractSubmission->abstract = $abstractData['abstract'];
         $abstractSubmission->keywords = json_encode($abstractData['keywords']);
         $abstractSubmission->user_reg_no = auth()->user()->reg_no;
-        $abstractSubmission->final_status = "Pending";
+        $abstractSubmission->final_status = "submitted";
         $abstractSubmission->save();
     
-        // Save all authors and associate with abstract submission
         foreach ($allAuthors as $authorData) {
-            $authorData['abstract_submission_id'] = $serialNumber; // Associate the serial number
+            $authorData['abstract_submission_id'] = $serialNumber;
             $author = new Author($authorData);
             $author->save();
         }
     
-        // Clear all session data related to the submission process
+        $data = [
+            'message' => 'This is a new notification',
+            'link' => '/some-link',
+        ];
+        
+        $user->notify(new NewUserNotification($data));
         $request->session()->forget(self::SESSION_KEYS);
     
         return redirect()->route('user.dashboard')->with('success', 'Submission successful.');
     }
-    
     
     public function saveDraft(Request $request)
     {
@@ -357,5 +353,6 @@ class AbstractSubmissionController extends Controller
 
         return response()->json(['success' => false, 'message' => 'Draft not found'], 404);
     }
+
 
 }

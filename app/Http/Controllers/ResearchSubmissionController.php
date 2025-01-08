@@ -11,6 +11,9 @@ use Illuminate\Support\Facades\Session;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use App\Models\AbstractDraft;
+use Illuminate\Support\Facades\Mail;
+use App\Notifications\NewUserNotification;
+use Illuminate\Support\Facades\Notification;
 
 
 class ResearchSubmissionController extends Controller
@@ -159,9 +162,8 @@ class ResearchSubmissionController extends Controller
         // Handle case where abstract data may not be complete
         $articleTitle = $abstract['article_title'] ?? 'Untitled';
         $subTheme = $abstract['sub_theme'] ?? '';
-        $keywords = is_array($abstract['keywords'] ?? []) ? $abstract['keywords'] : [];
+        $keywords = $abstract['keywords'] ?? [];
         $documentPath = $abstract['pdf_document_path'] ?? null;
-        
 
         if (!$author || !$abstract || !$allAuthors) {
             return redirect()->route('user.step1')->with('error', 'Required data is missing. Please complete all steps.');
@@ -237,7 +239,7 @@ class ResearchSubmissionController extends Controller
         $researchSubmission->keywords = json_encode($submissionData['keywords']);
         $researchSubmission->pdf_document_path = $submissionData['pdf_document_path'] ?? null;
         $researchSubmission->user_reg_no = $user->reg_no;
-        $researchSubmission->final_status = "Pending";  // Ensure the final status is set
+        $researchSubmission->final_status = "submitted";  // Ensure the final status is set
         $researchSubmission->save();
 
         // Save authors
@@ -246,6 +248,8 @@ class ResearchSubmissionController extends Controller
             $author = new Author($author);
             $author->save();
         }
+
+        $user->notify(new NewUserNotification('This is a new notification', '/some-link'));
 
         // Clear session data after submission
         $request->session()->forget(['author', 'abstract', 'all_authors']);  // Remove session keys after saving
@@ -521,4 +525,6 @@ class ResearchSubmissionController extends Controller
         // Return file download response
         return response()->download($fullPath, $originalName);
     }
+
+    
 }

@@ -9,6 +9,19 @@ use App\Models\AbstractDraft;
 
 class UserController extends Controller
 {
+    protected $notifications;
+    protected $unreadCount;
+
+    public function __construct()
+    {
+        $user = auth()->user();
+
+        if ($user) {
+            // Fetch notifications and unread count
+            $this->notifications = $user->notifications;
+            $this->unreadCount = $user->unreadNotifications->count();
+        }
+    }
     public function profile()
     {
         return view('user.partials.profile');
@@ -33,8 +46,16 @@ class UserController extends Controller
 
         $draft = $this->getCurrentDraft();
         
-        return view('user.partials.dashboard', compact('submissions', 'researchSubmissions', 'totalAbstracts',
-            'totalPendingCount', 'totalResearchSubmissions', 'draft'));
+        return view('user.partials.dashboard', [
+            'submissions' => $submissions,
+            'researchSubmissions' => $researchSubmissions,
+            'totalAbstracts' => $totalAbstracts,
+            'totalPendingCount' => $totalPendingCount,
+            'totalResearchSubmissions' => $totalResearchSubmissions,
+            'draft' => $draft,
+            'notifications' => $this->notifications,
+            'unreadCount' => $this->unreadCount
+        ]);
     }
     public function documents()
     {

@@ -13,6 +13,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\AbstractsController;
 use App\Http\Controllers\ProposalController;
+use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Storage;
 
 Route::get('email/verify', [App\Http\Controllers\Auth\VerificationController::class, 'show'])->name('verification.notice');
@@ -131,7 +132,6 @@ Route::middleware(['preventBackHistory'])->group(function () {
                 Storage::disk('public')->delete(session('abstract.pdf_document_path'));
                 // Forget the file path from the session
                 session()->forget('abstract.pdf_document_path');
-                session()->forget('abstract.pdf_document_path');
                 return response()->json(['success' => true]);
             }
             return response()->json(['success' => false, 'message' => 'No file found']);
@@ -154,6 +154,10 @@ Route::middleware(['preventBackHistory'])->group(function () {
         Route::get('/resume-proposal-draft/{serialNumber}', [ResearchSubmissionController::class, 'resumeProposalDraft'])->where('serialNumber', '.+')->name('user.resume.proposal.draft');
         Route::get('/proposal-view-drafts', [ResearchSubmissionController::class, 'viewProposalDrafts'])->name('user.proposal.drafts');
         Route::delete('/proposal-drafts/delete/{serialNumber}', [ResearchSubmissionController::class, 'deleteProposalDraft'])->where('serialNumber', '.+')->name('user.delete.proposal.draft');
+
+        Route::get('/notifications', [NotificationController::class, 'getNotifications']);
+        Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
+        Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead']);
     });
 
     //Abstarct download routes
