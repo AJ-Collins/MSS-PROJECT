@@ -214,7 +214,6 @@ document.addEventListener('DOMContentLoaded', function() {
             updateNotificationUI(data.notifications, data.unread_count);
         })
         .catch(error => {
-            console.error('Error fetching notifications:', error);
             notificationDropdown.innerHTML = `
                 <div class="p-4 text-center text-red-500">
                     Failed to load notifications
