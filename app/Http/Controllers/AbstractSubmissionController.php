@@ -386,6 +386,14 @@ class AbstractSubmissionController extends Controller
                 throw new \Exception('Failed to update the database record.');
             }
 
+            $user = auth()->user();
+            $data = [
+                'message' => $fileName['serial_number'] . ' Submitted successfully. View status',
+                'link' => '/some-link',
+            ];
+            
+            $user->notify(new NewUserNotification($data));
+
             // Redirect with success message
             return redirect()->route('user.dashboard')->with('success', 'Article uploaded successfully.');
 

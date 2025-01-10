@@ -157,7 +157,12 @@
                         </span>
                     </td>                    
                     <td class="px-4 py-3 text-center">
-                        @if($submission->score)
+                        @if($submission->score && $submission->pdf_path)
+                            <a href="{{ Storage::url($submission->pdf_path) }}" target="_blank" 
+                            class="text-xs text-blue-600 hover:text-blue-800 hover:underline">
+                                View Article
+                            </a>
+                        @elseif($submission->score)
                             <form action="{{ route('request.article.upload', $submission->serial_number) }}" method="POST" class="inline">
                                 @csrf
                                 <button type="submit" 
@@ -165,8 +170,8 @@
                                     Request Article
                                 </button>
                             </form>
-                        @elseif($submission->article)
-                            <a href="" target="_blank" 
+                        @elseif($submission->pdf_path)
+                            <a href="{{ Storage::url($submission->pdf_path) }}" target="_blank" 
                             class="text-xs text-blue-600 hover:text-blue-800 hover:underline">
                                 View Article
                             </a>

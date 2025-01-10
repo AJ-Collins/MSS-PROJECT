@@ -159,7 +159,12 @@
                         </span>
                     </td>                    
                     <td class="px-4 py-3 text-center">
-                        <?php if($submission->score): ?>
+                        <?php if($submission->score && $submission->pdf_path): ?>
+                            <a href="<?php echo e(Storage::url($submission->pdf_path)); ?>" target="_blank" 
+                            class="text-xs text-blue-600 hover:text-blue-800 hover:underline">
+                                View Article
+                            </a>
+                        <?php elseif($submission->score): ?>
                             <form action="<?php echo e(route('request.article.upload', $submission->serial_number)); ?>" method="POST" class="inline">
                                 <?php echo csrf_field(); ?>
                                 <button type="submit" 
@@ -167,8 +172,8 @@
                                     Request Article
                                 </button>
                             </form>
-                        <?php elseif($submission->article): ?>
-                            <a href="" target="_blank" 
+                        <?php elseif($submission->pdf_path): ?>
+                            <a href="<?php echo e(Storage::url($submission->pdf_path)); ?>" target="_blank" 
                             class="text-xs text-blue-600 hover:text-blue-800 hover:underline">
                                 View Article
                             </a>

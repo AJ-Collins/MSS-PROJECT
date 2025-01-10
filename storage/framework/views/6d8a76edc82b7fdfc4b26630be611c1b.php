@@ -36,7 +36,7 @@
 
                 <!-- Right Header Section -->
                 <div class="flex items-center space-x-4">
-                    <!-- Search Bar -->
+                    <!-- Search Bar 
                     <div class="hidden md:block">
                         <div class="relative">
                             <input type="text" 
@@ -48,7 +48,7 @@
                                 </svg>
                             </div>
                         </div>
-                    </div>
+                    </div>-->
 
                     <!-- Notifications with Badge -->
                     <div class="relative" x-data="{ open: false }">
