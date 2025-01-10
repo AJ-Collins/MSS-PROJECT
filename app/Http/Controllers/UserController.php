@@ -134,4 +134,12 @@ class UserController extends Controller
             return redirect()->route('user.dashboard')->withErrors('No draft available.');
         }
     }
+    public function submitArticle($serial_number)
+    {
+        $submission = AbstractSubmission::where('serial_number', $serial_number)->firstOrFail();
+
+        // Pass the submission record to the view
+        return view('user.partials.article_upload', compact('submission'));
+    }
+    
 }

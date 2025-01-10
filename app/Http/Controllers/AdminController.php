@@ -427,7 +427,7 @@ class AdminController extends Controller
 
         if ($submission) {
             // Approve the abstract by setting the 'approved' field to true
-            $submission->final_status = "Approved";
+            $submission->final_status = "Accepted";
             $submission->admin_comments = null;
             $submission->save();
     
@@ -632,6 +632,29 @@ class AdminController extends Controller
         
         // Download PDF
         return $dompdf->stream($fileName, ['Attachment' => true]);
+    }
+
+    public function returnRevision ()
+    {
+
+    }
+    public function requestArticleUpload (Request $request, $serial_number)
+    {
+        // Find the abstract submission by serial number
+        $submission = AbstractSubmission::where('serial_number', $serial_number)->firstOrFail();
+
+        // Find the user associated with the submission
+        $user = User::where('reg_no', $submission->user_reg_no)->first();
+
+        // Prepare data for the notification
+        $dataForUser = [
+            'message' => 'Your abstract ' . $submission->serial_number . ' was reviewed. Please upload your article.',
+            'link' => route('user.submit.article', ['serial_number' => $submission->serial_number]),
+        ];
+        
+        $user->notify(new NewUserNotification($dataForUser));
+
+        return redirect()->back()->with('success', 'User has been notified to upload article.');
     }
 
 }

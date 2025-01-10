@@ -352,6 +352,45 @@ class AbstractSubmissionController extends Controller
 
         return response()->json(['success' => false, 'message' => 'Draft not found'], 404);
     }
+    public function PostSubmitArticle(Request $request)
+    {
+        try {
+            // Validate the request
+            $request->validate([
+                'document' => 'required|file|mimes:pdf,doc,docx|max:512000',
+            ]);
 
+            // Get the uploaded file
+            $file = $request->file('document');
 
+            // Retrieve the serial number from the request (ensure it's passed in the form)
+            $serialNumber = $request->input('serial_number');
+            if (!$serialNumber) {
+                throw new \Exception('Serial number is missing.');
+            }
+
+            // Generate a unique file name
+            $fileName = $serialNumber . '.' . $file->getClientOriginalExtension();
+
+            // Store the file
+            $filePath = $file->storeAs('articles', $fileName, 'public');
+            if (!$filePath) {
+                throw new \Exception('Failed to store the file.');
+            }
+
+            // Update the database record where the serial number matches
+            $updated = AbstractSubmission::where('serial_number', $serialNumber)
+                ->update(['pdf_path' => $filePath]);
+
+            if (!$updated) {
+                throw new \Exception('Failed to update the database record.');
+            }
+
+            // Redirect with success message
+            return redirect()->route('user.dashboard')->with('success', 'Article uploaded successfully.');
+
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Failed to upload article. Please try again.');
+        }
+    }
 }

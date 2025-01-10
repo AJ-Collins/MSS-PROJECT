@@ -100,8 +100,6 @@
                     <td class="px-4 py-3 text-sm text-gray-700">
                         @if(!$submission->score)
                             Not reviewed
-                        @elseif($submission->score < 30)
-                            <span class="text-orange-800 font-semibold">Need revision</span>
                         @else
                             {{ $submission->score }}
                         @endif
@@ -127,25 +125,25 @@
                     <td class="px-4 py-3 text-center">
                         @php
                             $statusStyles = [
-                                'Pending' => [
+                                'submitted' => [
                                     'text' => 'text-yellow-800',
                                     'bg' => 'bg-yellow-100'
                                 ],
-                                'Approved' => [
-                                    'text' => 'text-green-800',
-                                    'bg' => 'bg-green-100'
-                                ],
-                                'Under Review' => [
+                                'under_review' => [
                                     'text' => 'text-blue-800',
                                     'bg' => 'bg-blue-100'
                                 ],
-                                'Rejected' => [
+                                'rejected' => [
                                     'text' => 'text-red-800',
                                     'bg' => 'bg-red-100'
                                 ],
-                                'Needs Revision' => [
+                                'revision_required' => [
                                     'text' => 'text-orange-800',
                                     'bg' => 'bg-orange-100'
+                                ],
+                                'accepted' => [
+                                    'text' => 'text-green-800',
+                                    'bg' => 'bg-green-100'
                                 ]
                             ];
                             $currentStatus = $submission->final_status;
@@ -159,16 +157,16 @@
                         </span>
                     </td>                    
                     <td class="px-4 py-3 text-center">
-                        @if($submission->final_status === 'Approved' && !$submission->article)
-                            <form action="" method="POST" class="inline">
+                        @if($submission->score)
+                            <form action="{{ route('request.article.upload', $submission->serial_number) }}" method="POST" class="inline">
                                 @csrf
                                 <button type="submit" 
                                         class="inline-block px-3 py-1 text-xs font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-full">
-                                    Request Article Upload
+                                    Request Article
                                 </button>
                             </form>
                         @elseif($submission->article)
-                            <a href="{{ route('article.view', $submission->article->id) }}" 
+                            <a href="" target="_blank" 
                             class="text-xs text-blue-600 hover:text-blue-800 hover:underline">
                                 View Article
                             </a>
@@ -195,7 +193,7 @@
                                             <input type="hidden" name="serial_number" value="{{ $submission->serial_number }}">
                                             <button type="submit" 
                                                     class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                                Approve
+                                                Accept
                                             </button>
                                         </form>
                                         <a href="{{ route('research.abstract.download', $submission->serial_number) }}" 

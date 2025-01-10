@@ -73,6 +73,7 @@ Route::middleware(['preventBackHistory'])->group(function () {
         Route::post('/reject-abstract', [AdminController::class, 'rejectAbstract'])->name('reject.abstract');
         Route::post('/approve-proposal', [AdminController::class, 'approveProposal'])->name('approve.proposal');
         Route::post('/reject-proposal', [AdminController::class, 'rejectProposal'])->name('reject.proposal');
+        Route::post('/request-article-upload/{serial_number}', [AdminController::class, 'requestArticleUpload'])->name('request.article.upload');
 
         Route::get('/research-assessments/{serial_number}', [AdminController::class, 'showAssessments'])->name('admin.showAssessments');
         Route::get('/proposal-assessments/{serial_number}', [AdminController::class, 'showProposalAssessments'])->name('admin.proposal.showAssessments');
@@ -120,6 +121,9 @@ Route::middleware(['preventBackHistory'])->group(function () {
         Route::get('/submit/preview', [AbstractSubmissionController::class, 'preview'])->name('user.preview');
         Route::post('/submit/preview', [AbstractSubmissionController::class, 'postPreview'])->name('submit.preview');
         Route::get('/submit/confirm', [UserController::class, 'confirm'])->name('submit.confirm');
+        
+        Route::get('/submit-article/{serial_number}', [UserController::class, 'submitArticle'])->name('user.submit.article');
+        Route::post('/upload-article', [AbstractSubmissionController::class, 'PostSubmitArticle'])->name('user.upload.article');
 
         //
         Route::get('/submit/step1_research', [ResearchSubmissionController::class, 'step1_research'])->name('user.step1_research');

@@ -244,6 +244,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="flex-1">
                         <p class="text-sm text-gray-800">${escapeHtml(notification.message)}</p>
                         <p class="text-xs text-gray-500 mt-1">${escapeHtml(notification.created_at)}</p>
+                        <a href="${escapeHtml(notification.link)}" 
+                            class="text-sm text-blue-600 hover:text-blue-800 underline mt-2 block">
+                            View Details
+                        </a>
                     </div>
                     ${!notification.read_at ? `
                         <button onclick="markAsRead('${notification.id}')" 
