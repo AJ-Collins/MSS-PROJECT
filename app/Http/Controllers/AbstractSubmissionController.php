@@ -10,7 +10,6 @@ use Illuminate\Support\Str;
 use App\Models\User;
 use Illuminate\Support\Facades\Session;
 use App\Notifications\NewUserNotification;
-use Illuminate\Support\Facades\Notification;
 
 class AbstractSubmissionController extends Controller
 {
@@ -200,7 +199,7 @@ class AbstractSubmissionController extends Controller
         }
     
         $data = [
-            'message' => 'This is a new notification',
+            'message' => $abstractData['article_title'] . ' Abstract Submitted successfully',
             'link' => '/some-link',
         ];
         

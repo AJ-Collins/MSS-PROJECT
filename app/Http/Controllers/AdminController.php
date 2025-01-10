@@ -11,10 +11,9 @@ use App\Models\ResearchAssessment;
 use App\Models\ProposalAssessment;
 use Illuminate\Support\Facades\DB;
 use App\Models\Role;
-use Livewire\Attributes\Validate;
-use Illuminate\Validation\Rule;
 use Dompdf\Dompdf;
 use Dompdf\Options;
+use App\Notifications\NewUserNotification;
 
 
 class AdminController extends Controller
@@ -171,6 +170,7 @@ class AdminController extends Controller
     }
     public function assignAbstractReviewer(Request $request, $serial_number)
     {
+
         // Validate the reviewer_reg_no
         $request->validate([
             'reg_no' => [
@@ -195,17 +195,57 @@ class AdminController extends Controller
         $submission->reviewer_reg_no = $request->reg_no;
         $submission->save();
 
+        $user = User::where('reg_no', $submission->user_reg_no)->first();
+
+        $reviewer = User::where('reg_no', $request->reg_no)
+                    ->whereHas('roles', function ($query) {
+                        $query->where('name', 'reviewer');
+                    })->first();
+
+        $dataForUser = [
+            'message' => 'Abstract ' . $submission['serial_number'] . ' is under review',
+            'link' => '/some-link',
+        ];
+        
+        $user->notify(new NewUserNotification($dataForUser));
+
+        $dataForReviewer = [
+            'message' => 'You have been assigned to review Abstract ' . $submission['serial_number'],
+            'link' => '/some-link',
+        ];
+
+        $reviewer->notify(new NewUserNotification($dataForReviewer));
+
+
         return redirect()->back()->with('success', 'Reviewer assigned successfully.');
     }
     public function removeAbstractReviewer(Request $request, $serial_number)
     {
-        // Find the abstract submission by serial number
         $submission = AbstractSubmission::where('serial_number', $serial_number)->firstOrFail();
-
+        
+        $oldReviewerRegNo = $submission->reviewer_reg_no;
+        
         // Remove the reviewer assignment
         $submission->reviewer_reg_no = null;
         $submission->save();
-
+        
+        // Only attempt to notify if there was a reviewer assigned
+        if ($oldReviewerRegNo) {
+            $reviewer = User::where('reg_no', $oldReviewerRegNo)
+                        ->whereHas('roles', function ($query) {
+                            $query->where('name', 'reviewer');
+                        })->first();
+            
+            if ($reviewer) {
+                $dataForReviewer = [
+                    'message' => 'You have lost ' . $submission['serial_number'],
+                    'link' => '/some-link',
+                ];
+                
+                $reviewer->notify(new NewUserNotification($dataForReviewer));
+            }
+        }
+        
         return redirect()->back()->with('success', 'Reviewer removed successfully.');
     }
     public function assignAbstractMassReviewer(Request $request)
@@ -231,13 +271,44 @@ class AdminController extends Controller
 
         try {
             DB::transaction(function () use ($request) {
-                foreach ($request->submissions as $serialNumber) {
-                    AbstractSubmission::where('serial_number', $serialNumber)
-                        ->update(['reviewer_reg_no' => $request->reviewer]);
+                // Get the list of serial numbers before updating
+                $submissions = AbstractSubmission::whereIn('serial_number', $request->submissions)->get();
+
+                // Update all abstract submissions with the assigned reviewer's reg_no
+                AbstractSubmission::whereIn('serial_number', $request->submissions)
+                    ->update(['reviewer_reg_no' => $request->reviewer]);
+
+                // Fetch the reviewer user
+                $reviewer = User::where('reg_no', $request->reviewer)->first();
+
+                // Prepare the list of serial numbers for notification
+                $serialNumbersList = $submissions->pluck('serial_number')->implode(', ');
+
+                // Notification data
+                $dataForReviewer = [
+                    'message' => 'You have been assigned the following abstracts for review: ' . $serialNumbersList,
+                    'link' => '/some-link', // Add the actual link where the reviewer can see the abstracts
+                ];
+                foreach ($submissions as $submission) {
+                    $user = User::where('reg_no', $submission->user_reg_no)->first();
+    
+                    if ($user) {
+                        // Notification data for user
+                        $dataForUser = [
+                            'message' => 'Abstracts ' . $serialNumbersList . ' are under review',
+                            'link' => '/some-link', // Add the link where the user can track review status
+                        ];
+    
+                        // Notify the user
+                        $user->notify(new NewUserNotification($dataForUser));
+                    }
                 }
+
+                // Notify the reviewer
+                $reviewer->notify(new NewUserNotification($dataForReviewer));
             });
 
-            return response()->json(['message' => 'Reviewers assigned successfully!'], 200);
+            return response()->json(['message' => 'Reviewers assigned and notified successfully!'], 200);
         } catch (\Exception $e) {
             return response()->json(['error' => 'An error occurred while assigning reviewers.'], 500);
         }
@@ -318,8 +389,6 @@ class AdminController extends Controller
     }
     public function rejectAbstract(Request $request)
     {
-        $user = auth()->user();
-
         $request->validate([
             'serial_number' => 'required|exists:abstract_submissions,serial_number',
             'comments' => 'required|string|max:1000',
@@ -328,11 +397,20 @@ class AdminController extends Controller
         $submission = AbstractSubmission::where('serial_number', $request->serial_number)->first();
 
         if ($submission) {
-            // Reject the abstract by setting the 'approved' field to true
+            // Reject the abstract
             $submission->final_status = "Rejected";
             $submission->admin_comments = $request->comments;
             $submission->save();
-    
+
+            $user = User::where('reg_no', $submission->user_reg_no)->first();
+
+            $data = [
+                'message' => 'Abstract ' . $submission['serial_number'] . ' Rejected. ' . 'Reason: ' . $submission->admin_comments = $request->comments,
+                'link' => '/some-link',
+            ];
+            
+            $user->notify(new NewUserNotification($data));
+
             return redirect()->back()->with('success', 'Abstract rejected successfully.');
         }
         return redirect()->back()->with('error', 'Abstract not found.');
