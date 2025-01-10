@@ -155,6 +155,7 @@ Route::middleware(['preventBackHistory'])->group(function () {
         Route::get('/proposal-view-drafts', [ResearchSubmissionController::class, 'viewProposalDrafts'])->name('user.proposal.drafts');
         Route::delete('/proposal-drafts/delete/{serialNumber}', [ResearchSubmissionController::class, 'deleteProposalDraft'])->where('serialNumber', '.+')->name('user.delete.proposal.draft');
 
+        //Notifications
         Route::get('/notifications', [NotificationController::class, 'getNotifications']);
         Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
         Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead']);

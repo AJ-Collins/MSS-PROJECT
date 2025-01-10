@@ -249,7 +249,12 @@ class ResearchSubmissionController extends Controller
             $author->save();
         }
 
-        $user->notify(new NewUserNotification('This is a new notification', '/some-link'));
+        $data = [
+            'message' => 'This is a new notification',
+            'link' => '/some-link',
+        ];
+        
+        $user->notify(new NewUserNotification($data));
 
         // Clear session data after submission
         $request->session()->forget(['author', 'abstract', 'all_authors']);  // Remove session keys after saving
