@@ -64,6 +64,7 @@ class ReviewerController extends Controller
         $submission = AbstractSubmission::find($request->serial_number);
         if ($submission) {
             $submission->reviewer_status = $request->reviewer_status;
+            $submission->final_status = 'accepted';
             $submission->save();
         }
 
@@ -417,5 +418,28 @@ class ReviewerController extends Controller
             'message' => 'Proposal assessment submitted successfully',
             'redirect' => route('reviewer.partials.documents')
         ]);
+    }
+
+    public function requestAbstractRevision (Request $request, $serial_number)
+    {
+        try {
+            // Find the abstract submission
+            $submission = AbstractSubmission::where('serial_number', $serial_number)->firstOrFail();
+    
+            // Ensure that the current user is the assigned reviewer
+            $reviewerRegNo = auth()->user()->reg_no;
+            if ($submission->reviewer_reg_no !== $reviewerRegNo) {
+                return redirect()->back()->with('error', 'You are not authorized to request a revision for this abstract.');
+            }
+    
+            // Update the abstract submission status and other relevant fields
+            $submission->final_status = 'revision_required';
+            $submission->score = Null;
+            $submission->save();
+    
+            return response()->json(['message' => 'Revision requested successfully.']);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'An error occurred: ' . $e->getMessage()], 500);
+        }
     }
 }

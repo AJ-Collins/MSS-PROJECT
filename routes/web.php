@@ -109,6 +109,8 @@ Route::middleware(['preventBackHistory', 'auth'])->group(function () {
         Route::get('/abstracts/{serial_number}', [ReviewerController::class, 'getAbstract']);
         Route::get('/proposals/{serial_number}', [ReviewerController::class, 'getProposal']);
 
+        Route::post('/abstract/revision/{serial_number}', [ReviewerController::class, 'requestAbstractRevision'])->name('reviewer.abstract.revision');
+
     });
     //User routes
     Route::prefix('user')->group(function () {

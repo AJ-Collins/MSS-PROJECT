@@ -101,12 +101,15 @@
                                         </span>
                                     <?php else: ?>
                                         <!-- Display button to request revision if score is below 30 -->
-                                        <a href="" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-all">
+                                        <button
+                                            data-request-revision 
+                                            data-serial-number="<?php echo e($submission->serial_number); ?>"
+                                            class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-all">
                                             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
                                             </svg>
                                             Request Revision
-                                        </a>
+                                        </button>
                                     <?php endif; ?>
                                 </div>
                             </td>
@@ -238,8 +241,6 @@
         </div>
     </div>
 </div>
-
-<!-- Enhanced Document Review Form -->
 <!-- Enhanced Document Review Form -->
 <div class="mt-8 bg-white p-6 rounded-lg shadow-sm" x-data="{ rating: 0, feedbackType: 'general', showGuide: false }">
     <div class="flex justify-between items-center mb-6">
@@ -278,6 +279,85 @@
         </ul>
     </div>
 </div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('[data-request-revision]').forEach(button => {
+        button.addEventListener('click', async (event) => {
+            event.preventDefault();
+            
+            // Disable button and show loading state
+            const originalText = button.textContent;
+            button.textContent = 'Requesting...';
+            button.disabled = true;
 
+            const serialNumber = button.getAttribute('data-serial-number');
+            
+            try {
+                const response = await fetch(`/reviewer/abstract/revision/${serialNumber}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    },
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showNotification('success', result.message || 'Revision requested successfully.');
+                    updateUIStatus(serialNumber, 'revision_required');
+                    
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000);
+                } else {
+                    showNotification('error', result.error || 'Failed to request revision.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showNotification('error', 'An unexpected error occurred.');
+            } finally {
+                // Reset button state
+                button.textContent = originalText;
+                button.disabled = false;
+            }
+        });
+    });
+
+    function showNotification(type, message) {
+        // Remove any existing notifications first
+        const existingNotifications = document.querySelectorAll('.notification');
+        existingNotifications.forEach(notification => notification.remove());
+        
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type} fixed top-4 right-4 p-4 rounded shadow-lg`;
+        notification.style.zIndex = '1000';
+        
+        // Set background color based on type
+        notification.style.backgroundColor = type === 'success' ? '#4CAF50' : '#f44336';
+        notification.style.color = 'white';
+        
+        notification.textContent = message;
+        
+        // Add to document
+        document.body.appendChild(notification);
+        
+        // Remove after 3 seconds
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
+    }
+
+    function updateUIStatus(serialNumber, newStatus) {
+        // Find and update status display element
+        const statusElement = document.querySelector(`[data-status="${serialNumber}"]`);
+        if (statusElement) {
+            statusElement.textContent = newStatus.replace('_', ' ').toUpperCase();
+            statusElement.className = `status-badge status-${newStatus}`;
+        }
+    }
+});
+</script>
 <?php $__env->stopSection(); ?>
 <?php echo $__env->make('reviewer.layouts.reviewer', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH D:\MSS\email-verification-app\resources\views/reviewer/partials/revieweddocuments.blade.php ENDPATH**/ ?>

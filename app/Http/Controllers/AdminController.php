@@ -634,10 +634,6 @@ class AdminController extends Controller
         return $dompdf->stream($fileName, ['Attachment' => true]);
     }
 
-    public function returnRevision ()
-    {
-    
-    }
     public function requestArticleUpload (Request $request, $serial_number)
     {
         // Find the abstract submission by serial number
@@ -655,6 +651,11 @@ class AdminController extends Controller
         $user->notify(new NewUserNotification($dataForUser));
 
         return redirect()->back()->with('success', 'User has been notified to upload article.');
+    }
+    
+    public function returnRevision ()
+    {
+    
     }
 
 }
