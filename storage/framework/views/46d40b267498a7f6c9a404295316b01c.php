@@ -60,7 +60,7 @@
                                 </svg>
                             </div>
                             <div class="ml-4">
-                                <p class="text-sm text-gray-500">Rivisions</p>
+                                <p class="text-sm text-gray-500">Revisions</p>
                                 <p class="text-2xl font-semibold text-gray-700">3</p>
                             </div>
                         </div>
@@ -121,11 +121,12 @@
                         </td>
                         <td class="px-4 py-3 text-center space-x-2">
                             <button 
+                                aria-label="Preview abstract"
                                 class="px-2 py-1 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-full"
                                 
                                 @click="$store.modal.open({ serial_number: '<?php echo e($submission->serial_number); ?>' })"
                             >
-                                Review
+                                Preview
                             </button>
                             <a href="<?php echo e(route('research.abstract.download', $submission->serial_number)); ?>" class="px-2 py-1 text-xs font-medium text-white bg-gray-600 hover:bg-gray-700 rounded-full">
                                 Download
@@ -144,23 +145,24 @@
                 x-data="{ zoomLevel: 100 }"
                 x-show="$store.modal.isOpen"
                 @keydown.escape.window="$store.modal.close()"
-                class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden bg-black bg-opacity-50"
+                class="fixed inset-0 z-50 overflow-hidden bg-black bg-opacity-50"
                 style="display: none;"
             >
-                <div class="min-h-screen w-full flex items-center justify-center p-4">
+                <!-- Main container with padding -->
+                <div class="min-h-screen w-full p-4 md:p-6">
+                    <!-- Modal container with max height -->
                     <div 
-                        class="w-full md:w-1/2 max-h-[90vh] flex flex-col bg-gray-50 rounded-lg shadow-lg relative"
+                        class="mx-auto max-w-4xl bg-white shadow-xl flex flex-col"
                         @click.away="$store.modal.close()"
+                        style="max-height: calc(100vh - 2rem);"
                     >
-                        <!-- Header -->
-                        <div class="flex-none bg-white border-b border-gray-200 sticky top-0 z-10">
-                            <div class="px-6 py-4 flex items-center justify-between">
-                                <div>
-                                    <h2 class="text-lg font-semibold text-gray-900">Abstract Preview</h2>
-                                </div>
+                        <!-- Header - Fixed -->
+                        <div class="flex-none bg-white px-6 py-4 border-b border-gray-200 rounded-t-lg">
+                            <div class="flex items-center justify-between">
+                                <h2 class="text-lg font-semibold text-gray-900">Proposal Preview</h2>
                                 <button 
                                     @click="$store.modal.close()" 
-                                    class="p-2 text-gray-500 hover:bg-gray-100 rounded-lg" 
+                                    class="p-2 text-gray-500 hover:bg-gray-100 rounded-lg"
                                     title="Close"
                                 >
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -170,63 +172,96 @@
                             </div>
                         </div>
 
-                        <!-- Document Viewer -->
-                        <div class="flex-1 overflow-y-auto p-8 bg-white">
-                            <div class="max-w-3xl mx-auto space-y-6">
-                                <template x-if="$store.modal.abstract">
-                                    <div class="space-y-6  pt-10">
-                                        <h1 
-                                            x-text="$store.modal.abstract.title"
-                                            class="text-2xl font-bold text-center text-gray-900"
-                                        ></h1>
-                                        <ul class="list-none text-center text-sm text-gray-700">
-                                            <template x-for="author in $store.modal.abstract?.authors || []" :key="author.email">
-                                                <li x-text="`${author.first_name} ${author.middle_name || ''} ${author.surname}`"></li>
-                                            </template>
-                                        </ul>
-                                        <h2 class="text-lg font-bold text-gray-900 mt-8">ABSTRACT</h2>
-                                        <p 
-                                            x-text="$store.modal.abstract.content"
-                                            class="text-gray-700 leading-relaxed text-justify"
-                                        ></p>
-                                        <div class="mt-6">
-                                            <h3 class="font-bold text-gray-900">Keywords</h3>
-                                            <p x-text="$store.modal.abstract.keywords || 'Not available'" class="text-gray-700"></p>
+                        <!-- Content - Scrollable -->
+                        <div class="flex-1 overflow-y-auto">
+                            <div class="p-6 md:p-8">
+                                <div class="max-w-3xl mx-auto space-y-6">
+                                    <template x-if="$store.modal.abstract">
+                                        <div class="space-y-6">
+                                            <!-- Title -->
+                                            <h1 
+                                                x-text="$store.modal.abstract.title"
+                                                class="text-2xl font-bold text-center text-gray-900"
+                                            ></h1>
+
+                                            <!-- Authors -->
+                                            <div class="text-center space-y-4">
+                                                <template x-if="$store.modal.abstract?.authors?.length">
+                                                    <div>
+                                                        <!-- Authors List -->
+                                                        <div class="flex flex-wrap justify-center gap-2 mb-3">
+                                                            <template x-for="(author, index) in $store.modal.abstract.authors" :key="index">
+                                                                <span class="inline-flex items-center">
+                                                                    <span x-text="`${author.first_name} ${author.middle_name || ''} ${author.surname}`"></span>
+                                                                    <span x-show="author.is_correspondent" class="ml-1 text-black-600">*</span>
+                                                                    <span x-show="index < $store.modal.abstract.authors.length - 1">,</span>
+                                                                </span>
+                                                            </template>
+                                                        </div>
+                                                        <!-- Affiliations -->
+                                                        <div class="text-sm text-gray-600">
+                                                            <template x-if="$store.modal.abstract.authors[0]?.university">
+                                                                <p x-text="$store.modal.abstract.authors[0].university"></p>
+                                                            </template>
+                                                            <template x-if="$store.modal.abstract.authors[0]?.department">
+                                                                <p x-text="$store.modal.abstract.authors[0].department"></p>
+                                                            </template>
+                                                        </div>
+                                                    </div>
+                                                </template>
+                                            </div>
+
+                                            <!-- Abstract -->
+                                            <div class="space-y-4">
+                                                <h2 class="text-lg font-bold text-gray-900">Abstract</h2>
+                                                <p 
+                                                    x-text="$store.modal.abstract.content"
+                                                    class="text-gray-700 leading-relaxed text-justify"
+                                                ></p>
+                                            </div>
+
+                                            <!-- Keywords -->
+                                            <div class="space-y-2">
+                                                <h3 class="font-bold text-gray-900">Keywords</h3>
+                                                <p x-text="$store.modal.abstract.keywords || 'Not available'" class="text-gray-700"></p>
+                                            </div>
+
+                                            <!-- Sub-Theme -->
+                                            <div class="space-y-2">
+                                                <h3 class="font-bold text-gray-900">Sub-Theme</h3>
+                                                <p x-text="$store.modal.abstract.sub_theme || 'Not available'" class="text-gray-700"></p>
+                                            </div>
                                         </div>
-                                        <div class="mt-4">
-                                            <h3 class="font-bold text-gray-900">Sub-Theme</h3>
-                                            <p x-text="$store.modal.abstract.sub_theme || 'Not available'" class="text-gray-700"></p>
+                                    </template>
+
+                                    <!-- Loading State -->
+                                    <template x-if="!$store.modal.abstract">
+                                        <div class="flex justify-center items-center py-12">
+                                            <p class="text-gray-500">Loading...</p>
                                         </div>
-                                    </div>
-                                </template>
-                                <template x-if="!$store.modal.abstract">
-                                    <div class="text-center">
-                                        <p class="text-sm text-gray-500">Loading...</p>
-                                    </div>
-                                </template>
+                                    </template>
+                                </div>
                             </div>
                         </div>
 
-                        <!-- Footer -->
-                        <div class="flex-none bg-white border-t border-gray-200 px-6 py-4 sticky bottom-0 z-10">
+                        <!-- Footer - Fixed -->
+                        <div class="flex-none bg-gray-50 px-6 py-4 border-t border-gray-200 rounded-b-lg">
                             <div class="flex justify-end space-x-2">
-                            <?php $__currentLoopData = $submissions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $submission): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                            <form action="<?php echo e(route('update.abstract.reviewer.status')); ?>" method="POST">
-                                <?php echo csrf_field(); ?>
-                                <input type="hidden" name="serial_number" value="<?php echo e($submission->serial_number); ?>">
-                                <input type="hidden" name="reviewer_status" value="accepted">
-                                <button type="submit" class="px-2 py-1 text-xs font-medium text-white bg-green-600 hover:bg-green-700 rounded-full">
-                                    Accept
-                                </button>
-                            </form>
-                            <form action="<?php echo e(route('reviewer.abstract.reject')); ?>" method="POST">
-                                <?php echo csrf_field(); ?>
-                                <input type="hidden" name="serial_number" value="<?php echo e($submission->serial_number); ?>">
-                                <button type="submit" class="px-2 py-1 text-xs font-medium text-white bg-red-600 hover:bg-red-700 rounded-full">
-                                    Reject
-                                </button>
-                            </form>
-                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                <form action="<?php echo e(route('update.abstract.reviewer.status')); ?>" method="POST" class="inline-block">
+                                    <?php echo csrf_field(); ?>
+                                    <input type="hidden" name="serial_number" x-bind:value="$store.modal.abstract?.serial_number">
+                                    <input type="hidden" name="reviewer_status" value="accepted">
+                                    <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-full">
+                                        Accept
+                                    </button>
+                                </form>
+                                <form action="<?php echo e(route('reviewer.abstract.reject')); ?>" method="POST" class="inline-block">
+                                    <?php echo csrf_field(); ?>
+                                    <input type="hidden" name="serial_number" x-bind:value="$store.modal.abstract?.serial_number">
+                                    <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-full">
+                                        Reject
+                                    </button>
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -260,10 +295,11 @@
                         </td>
                         <td class="px-4 py-3 text-center space-x-2">
                             <button 
+                                aria-label="Preview abstract"
                                 class="px-2 py-1 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-full"
                                 @click="$store.proposalModal.open({ serial_number: '<?php echo e($researchSubmission->serial_number); ?>' })"
                             >
-                                Review
+                                Preview
                             </button>
                             <a href="<?php echo e(route('proposal.abstract.download', $researchSubmission->serial_number)); ?>" class="px-2 py-1 text-xs font-medium text-white bg-gray-600 hover:bg-gray-700 rounded-full">
                                 Download
@@ -280,23 +316,24 @@
                 x-data="{ zoomLevel: 100 }"
                 x-show="$store.proposalModal.isOpen"
                 @keydown.escape.window="$store.proposalModal.close()"
-                class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden bg-black bg-opacity-50"
+                class="fixed inset-0 z-50 overflow-hidden bg-black bg-opacity-50"
                 style="display: none;"
             >
-                <div class="min-h-screen w-full flex items-center justify-center p-4">
+                <!-- Main container with padding -->
+                <div class="min-h-screen w-full p-4 md:p-6">
+                    <!-- Modal container with max height -->
                     <div 
-                        class="w-full md:w-1/2 max-h-[90vh] flex flex-col bg-gray-50 rounded-lg shadow-lg relative"
+                        class="mx-auto max-w-4xl bg-white shadow-xl flex flex-col"
                         @click.away="$store.proposalModal.close()"
+                        style="max-height: calc(100vh - 2rem);"
                     >
-                        <!-- Header -->
-                        <div class="flex-none bg-white border-b border-gray-200 sticky top-0 z-10">
-                            <div class="px-6 py-4 flex items-center justify-between">
-                                <div>
-                                    <h2 class="text-lg font-semibold text-gray-900">Proposal Preview</h2>
-                                </div>
+                        <!-- Header - Fixed -->
+                        <div class="flex-none bg-white px-6 py-4 border-b border-gray-200 rounded-t-lg">
+                            <div class="flex items-center justify-between">
+                                <h2 class="text-lg font-semibold text-gray-900">Proposal Preview</h2>
                                 <button 
                                     @click="$store.proposalModal.close()" 
-                                    class="p-2 text-gray-500 hover:bg-gray-100 rounded-lg" 
+                                    class="p-2 text-gray-500 hover:bg-gray-100 rounded-lg"
                                     title="Close"
                                 >
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -306,63 +343,96 @@
                             </div>
                         </div>
 
-                        <!-- Document Viewer -->
-                        <div class="flex-1 overflow-y-auto p-8 bg-white">
-                        <div class="max-w-3xl mx-auto space-y-6">
-                                <template x-if="$store.proposalModal.proposal">
-                                    <div class="space-y-6  pt-10">
-                                        <h1 
-                                            x-text="$store.proposalModal.proposal.title"
-                                            class="text-2xl font-bold text-center text-gray-900"
-                                        ></h1>
-                                        <ul class="list-none text-center text-sm text-gray-700">
-                                            <template x-for="author in $store.proposalModal.proposal?.authors || []" :key="author.email">
-                                                <li x-text="`${author.first_name} ${author.middle_name || ''} ${author.surname}`"></li>
-                                            </template>
-                                        </ul>
-                                        <h2 class="text-lg font-bold text-gray-900 mt-8">PROPOSAL ABSTRACT</h2>
-                                        <p 
-                                            x-text="$store.proposalModal.proposal.content"
-                                            class="text-gray-700 leading-relaxed text-justify"
-                                        ></p>
-                                        <div class="mt-6">
-                                            <h3 class="font-bold text-gray-900">Keywords</h3>
-                                            <p x-text="$store.proposalModal.proposal.keywords || 'Not available'" class="text-gray-700"></p>
+                        <!-- Content - Scrollable -->
+                        <div class="flex-1 overflow-y-auto">
+                            <div class="p-6 md:p-8">
+                                <div class="max-w-3xl mx-auto space-y-6">
+                                    <template x-if="$store.proposalModal.proposal">
+                                        <div class="space-y-6">
+                                            <!-- Title -->
+                                            <h1 
+                                                x-text="$store.proposalModal.proposal.title"
+                                                class="text-2xl font-bold text-center text-gray-900"
+                                            ></h1>
+
+                                            <!-- Authors -->
+                                            <div class="text-center space-y-4">
+                                                <template x-if="$store.proposalModal.proposal?.authors?.length">
+                                                    <div>
+                                                        <!-- Authors List -->
+                                                        <div class="flex flex-wrap justify-center gap-2 mb-3">
+                                                            <template x-for="(author, index) in $store.proposalModal.proposal.authors" :key="index">
+                                                                <span class="inline-flex items-center">
+                                                                    <span x-text="`${author.first_name} ${author.middle_name || ''} ${author.surname}`"></span>
+                                                                    <span x-show="author.is_correspondent" class="ml-1 text-black-600">*</span>
+                                                                    <span x-show="index < $store.proposalModal.proposal.authors.length - 1">,</span>
+                                                                </span>
+                                                            </template>
+                                                        </div>
+                                                        <!-- Affiliations -->
+                                                        <div class="text-sm text-gray-600">
+                                                            <template x-if="$store.proposalModal.proposal.authors[0]?.university">
+                                                                <p x-text="$store.proposalModal.proposal.authors[0].university"></p>
+                                                            </template>
+                                                            <template x-if="$store.proposalModal.proposal.authors[0]?.department">
+                                                                <p x-text="$store.proposalModal.proposal.authors[0].department"></p>
+                                                            </template>
+                                                        </div>
+                                                    </div>
+                                                </template>
+                                            </div>
+
+                                            <!-- Abstract -->
+                                            <div class="space-y-4">
+                                                <h2 class="text-lg font-bold text-gray-900">Abstract</h2>
+                                                <p 
+                                                    x-text="$store.proposalModal.proposal.content"
+                                                    class="text-gray-700 leading-relaxed text-justify"
+                                                ></p>
+                                            </div>
+
+                                            <!-- Keywords -->
+                                            <div class="space-y-2">
+                                                <h3 class="font-bold text-gray-900">Keywords</h3>
+                                                <p x-text="$store.proposalModal.proposal.keywords || 'Not available'" class="text-gray-700"></p>
+                                            </div>
+
+                                            <!-- Sub-Theme -->
+                                            <div class="space-y-2">
+                                                <h3 class="font-bold text-gray-900">Sub-Theme</h3>
+                                                <p x-text="$store.proposalModal.proposal.sub_theme || 'Not available'" class="text-gray-700"></p>
+                                            </div>
                                         </div>
-                                        <div class="mt-4">
-                                            <h3 class="font-bold text-gray-900">Sub-Theme</h3>
-                                            <p x-text="$store.proposalModal.proposal.sub_theme || 'Not available'" class="text-gray-700"></p>
+                                    </template>
+
+                                    <!-- Loading State -->
+                                    <template x-if="!$store.proposalModal.proposal">
+                                        <div class="flex justify-center items-center py-12">
+                                            <p class="text-gray-500">Loading...</p>
                                         </div>
-                                    </div>
-                                </template>
-                                <template x-if="!$store.proposalModal.proposal">
-                                    <div class="text-center">
-                                        <p class="text-sm text-gray-500">Loading...</p>
-                                    </div>
-                                </template>
+                                    </template>
+                                </div>
                             </div>
                         </div>
 
-                        <!-- Footer -->
-                        <div class="flex-none bg-white border-t border-gray-200 px-6 py-4 sticky bottom-0 z-10">
+                        <!-- Footer - Fixed -->
+                        <div class="flex-none bg-gray-50 px-6 py-4 border-t border-gray-200 rounded-b-lg">
                             <div class="flex justify-end space-x-2">
-                            <?php $__empty_1 = true; $__currentLoopData = $researchSubmissions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $researchSubmission): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
-                                <form action="<?php echo e(route('update.proposal.reviewer.status')); ?>" method="POST">
+                                <form action="<?php echo e(route('update.proposal.reviewer.status')); ?>" method="POST" class="inline-block">
                                     <?php echo csrf_field(); ?>
-                                    <input type="hidden" name="serial_number" value="<?php echo e($researchSubmission->serial_number); ?>">
+                                    <input type="hidden" name="serial_number" x-bind:value="$store.proposalModal.proposal?.serial_number">
                                     <input type="hidden" name="reviewer_status" value="accepted">
-                                    <button type="submit" class="px-2 py-1 text-xs font-medium text-white bg-green-600 hover:bg-green-700 rounded-full">
+                                    <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-full">
                                         Accept
                                     </button>
                                 </form>
-                                <form action="<?php echo e(route('reviewer.proposal.reject')); ?>" method="POST">
+                                <form action="<?php echo e(route('reviewer.proposal.reject')); ?>" method="POST" class="inline-block">
                                     <?php echo csrf_field(); ?>
-                                    <input type="hidden" name="serial_number" value="<?php echo e($researchSubmission->serial_number); ?>">
-                                    <button type="submit" class="px-2 py-1 text-xs font-medium text-white bg-red-600 hover:bg-red-700 rounded-full">
+                                    <input type="hidden" name="serial_number" x-bind:value="$store.proposalModal.proposal?.serial_number">
+                                    <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-full">
                                         Reject
                                     </button>
                                 </form>
-                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </div>
                         </div>
                     </div>
@@ -392,6 +462,7 @@ document.addEventListener('alpine:init', () => {
                 }
                 const data = await response.json();
                 this.abstract = {
+                    serial_number: serial_number,
                     title: data.title,
                     content: data.abstract,
                     keywords: data.keywords,
@@ -401,8 +472,8 @@ document.addEventListener('alpine:init', () => {
             } catch (error) {
                 console.error('Error fetching abstract:', error);
                 this.abstract = {
-                    title: 'Error',
-                    content: 'Failed to load abstract. Please try again.',
+                    title: 'Error Loading Abstract',
+                    content: 'There was a problem loading this abstract. Please try again or contact support.',
                     keywords: '',
                     sub_theme: '',
                     authors: []
@@ -433,11 +504,12 @@ document.addEventListener('alpine:init', () => {
                 }
                 const data = await response.json();
                 this.proposal = {
+                    serial_number: serial_number,
                     title: data.title,
                     content: data.abstract,
                     keywords: data.keywords,
                     sub_theme: data.sub_theme,
-                    authors: data.authors
+                    authors: data.authors || []
                 };
             } catch (error) {
                 console.error('Error fetching proposal:', error);
