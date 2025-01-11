@@ -156,25 +156,135 @@
                             {{ $currentStatus ?: 'Unknown' }}
                         </span>
                     </td>                    
-                    <td class="px-4 py-3 text-center">
+                    <td class="px-4 py-3 text-center relative" x-data="{ isOpen: false }">
                         @if($submission->score && $submission->pdf_path)
                             <a href="{{ Storage::url($submission->pdf_path) }}" target="_blank" 
-                            class="text-xs text-blue-600 hover:text-blue-800 hover:underline">
+                                class="text-xs text-blue-600 hover:text-blue-800 hover:underline">
                                 View Article
                             </a>
                         @elseif($submission->score)
-                            <form action="{{ route('request.article.upload', $submission->serial_number) }}" method="POST" class="inline">
-                                @csrf
-                                <button type="submit" 
+                            <div class="flex flex-col items-center space-y-2">
+                                <form action="{{ route('request.article.upload', $submission->serial_number) }}" method="POST">
+                                    @csrf
+                                    <button type="submit" 
                                         class="inline-block px-3 py-1 text-xs font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-full">
-                                    Request Article
+                                        Request Article
+                                    </button>  
+                                </form>
+                                
+                                <button @click="isOpen = true" 
+                                    class="inline-flex items-center space-x-1 px-3 py-1 text-xs text-gray-700 hover:text-gray-900 rounded-md hover:bg-gray-100 transition-colors duration-200">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    </svg>
+                                    <span>Preview Abstract</span>
                                 </button>
-                            </form>
+                            </div>
+
+                            <!-- Modal Backdrop -->
+                            <div x-show="isOpen"
+                                x-cloak 
+                                x-transition:enter="transition ease-out duration-300"
+                                x-transition:enter-start="opacity-0"
+                                x-transition:enter-end="opacity-100"
+                                x-transition:leave="transition ease-in duration-200"
+                                x-transition:leave-start="opacity-100"
+                                x-transition:leave-end="opacity-0"
+                                class="fixed inset-0 bg-black bg-opacity-50 z-40"
+                                @click="isOpen = false">
+                            </div>
+
+                            <!-- Modal Container -->
+                            <div x-show="isOpen"
+                                x-cloak
+                                x-transition:enter="transition ease-out duration-300"
+                                x-transition:enter-start="opacity-0 translate-y-4"
+                                x-transition:enter-end="opacity-100 translate-y-0"
+                                x-transition:leave="transition ease-in duration-200"
+                                x-transition:leave-start="opacity-100 translate-y-0"
+                                x-transition:leave-end="opacity-0 translate-y-4"
+                                class="fixed inset-0 z-50 overflow-y-auto"
+                                @click.away="isOpen = false">
+                                
+                                <div class="min-h-screen px-4 text-center">
+                                    <!-- Modal Panel -->
+                                    <div class="inline-block w-full max-w-4xl p-6 my-8 text-left align-middle bg-white rounded-lg shadow-xl transform transition-all">
+                                        <!-- Header -->
+                                        <div class="flex justify-between items-center pb-3 border-b">
+                                            <h3 class="text-lg font-medium text-gray-900">Research Abstract Preview</h3>
+                                            <button @click="isOpen = false" class="text-gray-400 hover:text-gray-500 focus:outline-none">
+                                                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                                </svg>
+                                            </button>
+                                        </div>
+
+                                        <!-- Content -->
+                                        <div class="mt-4 max-h-[70vh] overflow-y-auto">
+                                            <!-- Title -->
+                                            <h1 class="text-2xl font-serif text-center font-bold mb-6">
+                                                {{ $submission->title }}
+                                            </h1>
+
+                                            <!-- Authors -->
+                                            <div class="text-center mb-8">
+                                                @php
+                                                    $authors = json_decode($submission->authors, true);
+                                                @endphp
+                                                @if($authors && is_array($authors))
+                                                    <div class="flex flex-wrap justify-center gap-1 mb-2">
+                                                        @foreach($authors as $author)
+                                                            <span class="font-serif text-sm">
+                                                                {{ $author['first_name'] }} {{ $author['middle_name'] ?? '' }} {{ $author['surname'] }}
+                                                                @if($author['is_correspondent'])
+                                                                    <span class="text-blue-600">*</span>
+                                                                @endif
+                                                                @if(!$loop->last), @endif
+                                                            </span>
+                                                        @endforeach
+                                                    </div>
+                                                    <!-- Affiliation -->
+                                                    <div class="space-y-1 text-gray-600">
+                                                        <p class="font-serif text-xs">{{ $author['university'] }}</p>
+                                                        <p class="font-serif text-xs">{{ $author['department'] }}</p>
+                                                    </div>
+                                                @else
+                                                    <p class="text-gray-500 italic text-sm">No authors available</p>
+                                                @endif
+                                            </div>
+
+                                            <!-- Abstract -->
+                                            <div class="space-y-4">
+                                                <h2 class="text-lg font-bold text-gray-900">Abstract</h2>
+                                                <p class="text-sm text-gray-700 leading-relaxed text-justify">
+                                                    {{ $submission->abstract }}
+                                                </p>
+                                            </div>
+
+                                            <!-- Keywords -->
+                                            <div class="mt-6">
+                                                <h3 class="text-sm font-bold text-gray-900">Keywords</h3>
+                                                <p class="text-sm text-gray-700">
+                                                    {{ implode(', ', json_decode($submission->keywords)) }}
+                                                </p>
+                                            </div>
+
+                                            <!-- Sub-Theme -->
+                                            <div class="mt-4">
+                                                <h3 class="text-sm font-bold text-gray-900">Sub-Theme</h3>
+                                                <p class="text-sm text-gray-700">{{ $submission->sub_theme }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         @elseif($submission->pdf_path)
                             <a href="{{ Storage::url($submission->pdf_path) }}" target="_blank" 
-                            class="text-xs text-blue-600 hover:text-blue-800 hover:underline">
+                                class="text-xs text-blue-600 hover:text-blue-800 hover:underline">
                                 View Article
                             </a>
+                            
                         @else
                             <span class="text-xs text-gray-500">No article submitted yet</span>
                         @endif
@@ -209,9 +319,14 @@
                                             class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                                 Download Word
                                         </a>
-                                        <button class="block w-full text-left px-4 py-2 text-sm text-green-900 hover:bg-gray-100">
-                                            Return for Revision
-                                        </button>
+                                        <a href="" 
+                                            class="block w-full text-left px-4 py-2 text-sm text-green-900 hover:bg-gray-100">
+                                            User Revision
+                                        </a>
+                                        <a href="" 
+                                            class="block w-full text-left px-4 py-2 text-sm text-green-900 hover:bg-gray-100">
+                                            Reviewer Revision
+                                        </a>
                                         <button class="block w-full text-left px-4 py-2 text-sm text-red-700 hover:bg-gray-100" 
                                                 onclick="openModal('add-comments-modal-{{ $submission->serial_number }}')">
                                             Reject
@@ -429,167 +544,119 @@
                         </span>
                     </td>
                     <td class="relative" x-data="{ isOpen: false }">
-                        <style>
-                            .modal-backdrop {
-                            position: fixed;
-                            inset: 0;
-                            background-color: rgba(0, 0, 0, 0.5);
-                            backdrop-filter: blur(4px);
-                            z-index: 40;
-                            }
+                        <div class="flex flex-col items-center space-y-2">
+                            <a href="{{ asset('storage/' . $researchSubmission->pdf_document_path) }}" target="_blank" class="text-sm text-blue-600 hover:text-blue-800 hover:underline">
+                                View Proposal
+                            </a>
 
-                            .modal-container {
-                            position: fixed;
-                            inset: 0;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            padding: 1rem;
-                            z-index: 50;
-                            }
+                            <!-- Preview Button -->
+                            <button @click="isOpen = true" class="flex items-center space-x-2 px-3 py-2 text-sm text-gray-700 hover:text-gray-900 rounded-md hover:bg-gray-100 transition-colors duration-200">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                </svg>
+                                <span>Preview Abstract</span>
+                            </button>
+                        </div>
 
-                            .modal-content {
-                            background: white;
-                            border-radius: 0.5rem;
-                            width: 100%;
-                            max-width: 900px;
-                            max-height: 90vh;
-                            overflow-y: auto;
-                            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-                            }
-
-                            .preview-button {
-                            display: inline-flex;
-                            align-items: center;
-                            gap: 0.25rem;
-                            color: #2563eb;
-                            font-size: 0.875rem;
-                            cursor: pointer;
-                            background: none;
-                            border: none;
-                            padding: 0;
-                            }
-
-                            .preview-button:hover {
-                            color: #1e40af;
-                            text-decoration: underline;
-                            }
-
-                            .modal-header {
-                            padding: 1rem;
-                            border-bottom: 1px solid #e5e7eb;
-                            display: flex;
-                            justify-content: space-between;
-                            align-items: center;
-                            background-color: #f9fafb;
-                            }
-
-                            .modal-body {
-                            padding: 1.5rem;
-                            }
-
-                            .close-button {
-                            color: #6b7280;
-                            cursor: pointer;
-                            background: none;
-                            border: none;
-                            padding: 0;
-                            }
-
-                            .close-button:hover {
-                            color: #374151;
-                            }
-                        </style>
-
-                        <!-- Preview Button -->
-                        <button @click="isOpen = true" class="preview-button">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                            </svg>
-                            Preview Document
-                        </button>
-
-                        <!-- Modal -->
-                        <div x-show="isOpen" class="modal-backdrop" @click="isOpen = false"></div>
+                        <!-- Modal Backdrop -->
+                        <div x-show="isOpen" 
+                            x-cloak
+                            x-transition:enter="transition ease-out duration-300"
+                            x-transition:enter-start="opacity-0"
+                            x-transition:enter-end="opacity-100"
+                            x-transition:leave="transition ease-in duration-200"
+                            x-transition:leave-start="opacity-100"
+                            x-transition:leave-end="opacity-0"
+                            class="fixed inset-0 bg-black bg-opacity-50 z-40"
+                            @click="isOpen = false">
+                        </div>
 
                         <!-- Modal Container -->
-                        <div x-show="isOpen" @click.away="isOpen = false" class="modal-container">
-                            <div class="modal-content" @click.stop>
-                            <!-- Header -->
-                            <div class="modal-header">
-                                <span class="text-sm text-gray-600">Research Abstract Preview</span>
-                                <button @click="isOpen = false" class="close-button" aria-label="Close preview">
-                                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                                </button>
-                            </div>
+                        <div x-show="isOpen"
+                            x-cloak
+                            x-transition:enter="transition ease-out duration-300"
+                            x-transition:enter-start="opacity-0 translate-y-4"
+                            x-transition:enter-end="opacity-100 translate-y-0"
+                            x-transition:leave="transition ease-in duration-200"
+                            x-transition:leave-start="opacity-100 translate-y-0"
+                            x-transition:leave-end="opacity-0 translate-y-4"
+                            class="fixed inset-0 z-50 overflow-y-auto"
+                            @click.away="isOpen = false">
+                            
+                            <div class="min-h-screen px-4 text-center">
+                                <!-- Modal Panel -->
+                                <div class="inline-block w-full max-w-4xl p-6 my-8 text-left align-middle bg-white shadow-xl transform transition-all">
+                                    <!-- Header -->
+                                    <div class="flex justify-between items-center pb-3 border-b">
+                                        <h3 class="text-lg font-medium text-gray-900">Research Abstract Preview</h3>
+                                        <button @click="isOpen = false" class="text-gray-400 hover:text-gray-500 focus:outline-none">
+                                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </button>
+                                    </div>
 
-                            <!-- Content -->
-                            <div class="modal-body">
-                                <!-- Replace this section with your actual document content -->
-                                <div class="space-y-4">
-                                <div class="flex-1 overflow-y-auto p-8 bg-white">
-                                    <div class="max-w-3xl mx-auto space-y-6">
-                                    <!-- Title -->
-                                    <h1 class="text-2xl font-serif text-center font-bold mb-6 leading-tight">
-                                        {{ $researchSubmission->article_title }}
-                                    </h1>
+                                    <!-- Content -->
+                                    <div class="mt-4 max-h-[70vh] overflow-y-auto">
+                                        <!-- Title -->
+                                        <h1 class="text-2xl font-serif text-center font-bold mb-6">
+                                            {{ $researchSubmission->article_title }}
+                                        </h1>
 
-                                    <!-- Authors -->
-                                    <div class="text-center mb-8 space-y-2">
-                                        @php
-                                            $authors = json_decode($researchSubmission->authors, true);
-                                        @endphp
-                                        @if($authors && is_array($authors))
-                                            <div class="flex justify-center space-x-4 mb-4">
-                                            @foreach($authors as $author)
-                                                <span class="font-serif">
-                                                    {{ $author['first_name'] }} {{ $author['middle_name'] ?? '' }} {{ $author['surname'] }}
-                                                    @if($author['is_correspondent'])
-                                                        <span>*</span>
-                                                    @endif
-                                                </span>
-                                                @if(!$loop->last)
-                                                    <span>,</span>
-                                                @endif
-                                            @endforeach
-                                            </div>
-                                            <!-- University/Affiliation -->
-                                                <div class="flex flex-col items-center space-y-1">
-                                                    <p class="font-serif">{{ $author['university'] }}</p>
-                                                    <p class="font-serif">{{ $author['department'] }}</p>
+                                        <!-- Authors -->
+                                        <div class="text-center mb-8">
+                                            @php
+                                                $authors = json_decode($researchSubmission->authors, true);
+                                            @endphp
+                                            @if($authors && is_array($authors))
+                                                <div class="flex flex-wrap justify-center gap-1 mb-2">
+                                                    @foreach($authors as $author)
+                                                        <span class="font-serif text-sm">
+                                                            {{ $author['first_name'] }} {{ $author['middle_name'] ?? '' }} {{ $author['surname'] }}
+                                                            @if($author['is_correspondent'])
+                                                                <span class="text-black-600">*</span>
+                                                            @endif
+                                                            @if(!$loop->last), @endif
+                                                        </span>
+                                                    @endforeach
                                                 </div>
-                                        @else
-                                            <p class="text-gray-600 italic">No authors available</p>
-                                        @endif
-                                    </div>
+                                                <!-- Affiliation -->
+                                                <div class="space-y-1 text-gray-600">
+                                                    <p class="font-serif text-xs">{{ $author['university'] }}</p>
+                                                    <p class="font-serif text-xs">{{ $author['department'] }}</p>
+                                                </div>
+                                            @else
+                                                <p class="text-gray-500 italic">No authors available</p>
+                                            @endif
+                                        </div>
 
-                                    <!-- Abstract -->
-                                    <h2 class="text-lg font-bold text-gray-900 mt-8">Abstract</h2>
-                                    <p class="text-gray-700 leading-relaxed text-justify">
-                                        {{ $researchSubmission->abstract }}
-                                    </p>
+                                        <!-- Abstract -->
+                                        <div class="space-y-4">
+                                            <h2 class="text-lg font-bold text-gray-900">Abstract</h2>
+                                            <p class="text-gray-700 leading-relaxed text-justify">
+                                                {{ $researchSubmission->abstract }}
+                                            </p>
+                                        </div>
 
-                                    <!-- Keywords -->
-                                    <div class="mt-6">
-                                        <h3 class="font-bold text-gray-900">Keywords</h3>
-                                        <p class="text-gray-700">{{ implode(', ', json_decode($researchSubmission->keywords)) }}</p>
-                                    </div>
+                                        <!-- Keywords -->
+                                        <div class="mt-6">
+                                            <h3 class="font-bold text-gray-900">Keywords</h3>
+                                            <p class="text-gray-700">
+                                                {{ implode(', ', json_decode($researchSubmission->keywords)) }}
+                                            </p>
+                                        </div>
 
-                                    <!-- Sub-Theme -->
-                                    <div class="mt-4">
-                                        <h3 class="font-bold text-gray-900">Sub-Theme</h3>
-                                        <p class="text-gray-700">{{ $researchSubmission->sub_theme }}</p>
-                                    </div>
+                                        <!-- Sub-Theme -->
+                                        <div class="mt-4">
+                                            <h3 class="font-bold text-gray-900">Sub-Theme</h3>
+                                            <p class="text-gray-700">{{ $researchSubmission->sub_theme }}</p>
+                                        </div>
                                     </div>
                                 </div>
-                                </div>
-                            </div>
                             </div>
                         </div>
-                        </td>
+                    </td>
                     <td class="px-4 py-3">
                         <div class="flex flex-wrap gap-2 justify-center">
                             <div class="dropdown relative">
@@ -623,12 +690,20 @@
                                         </a>
                                         <a href="{{ route('download.file', ['serialNumber' => $researchSubmission->serial_number]) }}" 
                                             class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                                Download File
+                                                Download Proposal
                                         </a>
-                                        <button class="block w-full text-left px-4 py-2 text-sm text-green-900 hover:bg-gray-100">Return for Revision</button>
+                                        <a href="" 
+                                            class="block w-full text-left px-4 py-2 text-sm text-green-900 hover:bg-gray-100">
+                                            User Revision
+                                        </a>
+                                        <a href="" 
+                                            class="block w-full text-left px-4 py-2 text-sm text-green-900 hover:bg-gray-100">
+                                            Reviewer Revision
+                                        </a>
                                         <button class="block w-full text-left px-4 py-2 text-sm text-red-700 hover:bg-gray-100"
                                                 onclick="openModal('add-comments-modal-{{ $researchSubmission->serial_number }}')">
-                                                Reject</button>
+                                                Reject
+                                        </button>
                                     </div>
                                 </div>
                             </div>

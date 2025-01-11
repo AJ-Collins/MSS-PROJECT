@@ -177,9 +177,11 @@ class AbstractSubmissionController extends Controller
         ];
     
         $acronym = $acronyms[$subTheme] ?? 'N/A';
-        $uniquePrefix = mb_strtoupper(Str::uuid()->toString());
-        $uniquePrefix = mb_substr($uniquePrefix, 0, 8);
-        $serialNumber = "{$acronym}-{$uniquePrefix}-" . date('y');
+        $year = date('y');
+        
+        // Generate unique identifier using timestamp and uniqid
+        $uniqueCode = mb_strtoupper(Str::random(mt_rand(4, 5)) . Str::random(mt_rand(3, 5)));
+        $serialNumber = "{$acronym}-{$uniqueCode}-{$year}";
     
         $this->deleteDraft($serialNumber);
     

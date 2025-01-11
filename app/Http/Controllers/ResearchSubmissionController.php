@@ -130,7 +130,7 @@ class ResearchSubmissionController extends Controller
                 $file = $request->file('pdf_document');
                 $filename = uniqid('research_') . '.' . $file->getClientOriginalExtension();
                 $path = $file->storeAs('research_proposals', $filename, 'public');
-                $pdfPath = Storage::url($path);
+                $pdfPath = $path;
             } else {
                 $pdfPath = session('abstract.pdf_document_path');
             }
@@ -215,10 +215,11 @@ class ResearchSubmissionController extends Controller
         ];
 
         $acronym = $acronyms[$subTheme] ?? 'N/A';
+        $year = date('y');
         
         // Generate unique identifier using timestamp and uniqid
-        $uniqueCode = strtoupper(substr(uniqid(date('YmdHis')), 0, 8));
-        $serialNumber = "{$acronym}-{$uniqueCode}-" . date('y');
+        $uniqueCode = mb_strtoupper(Str::random(mt_rand(4, 5)) . Str::random(mt_rand(3, 5)));
+        $serialNumber = "{$acronym}-{$uniqueCode}-{$year}";
 
         try {
             $user = auth()->user();

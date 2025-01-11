@@ -636,7 +636,7 @@ class AdminController extends Controller
 
     public function returnRevision ()
     {
-
+    
     }
     public function requestArticleUpload (Request $request, $serial_number)
     {

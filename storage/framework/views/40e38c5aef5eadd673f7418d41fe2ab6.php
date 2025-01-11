@@ -323,7 +323,7 @@ unset($__errorArgs, $__bag); ?>
     // Function to show notifications
     function showNotification(message, type = 'info') {
         const notification = document.createElement('div');
-        notification.className = `fixed bottom-4 right-4 px-6 py-3 rounded-lg shadow-lg transform transition-all duration-300 ease-in-out opacity-0 z-50`;
+        notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg transform transition-all duration-300 ease-in-out opacity-0 z-50`;
         
         const colors = {
             error: 'bg-red-500',
