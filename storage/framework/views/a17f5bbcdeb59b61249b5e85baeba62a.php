@@ -214,16 +214,25 @@ unset($__errorArgs, $__bag); ?>
     </div>
 </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
+<script defer>
     const authorsContainer = document.getElementById('authorsContainer');
     const addAuthorBtn = document.getElementById('addAuthorBtn');
+    const form = document.getElementById('authorForm');
     const MAX_AUTHORS = 5;
     let authorTemplate = null;
 
-    // Get the template from the first author section
-    if (document.querySelector('.author-section')) {
-        authorTemplate = document.querySelector('.author-section').cloneNode(true);
+    // Initialize template from first author section
+    const firstAuthorSection = document.querySelector('.author-section');
+    if (firstAuthorSection) {
+        authorTemplate = firstAuthorSection.cloneNode(true);
+        // Reset template values
+        authorTemplate.querySelectorAll('input').forEach(input => {
+            if (input.type === 'checkbox' || input.type === 'radio') {
+                input.checked = input.defaultChecked;
+            } else {
+                input.value = '';
+            }
+        });
     }
 
     // Function to create new author section
@@ -234,43 +243,51 @@ document.addEventListener('DOMContentLoaded', function() {
         newSection.querySelectorAll('input').forEach(input => {
             const newName = input.name.replace(/\[\d+\]/, `[${index}]`);
             input.name = newName;
-            input.value = input.type === 'checkbox' ? '1' : '';
-            input.checked = false;
-            
-            // Clear any error states
-            input.classList.remove('border-red-500');
-            const errorDiv = input.nextElementSibling;
-            if (errorDiv && errorDiv.classList.contains('text-red-500')) {
-                errorDiv.textContent = '';
-                errorDiv.classList.add('hidden');
+            if (input.type === 'checkbox') {
+                input.checked = false;
+            } else {
+                input.value = '';
             }
+            input.classList.remove('border-red-500');
         });
 
         // Update number badge
         const numberBadge = newSection.querySelector('.bg-green-500');
-        numberBadge.innerText = index + 1;
+        if (numberBadge) {
+            numberBadge.textContent = index + 1;
+        }
 
-        // Add remove button
-        const removeBtn = document.createElement('button');
-        removeBtn.type = 'button';
-        removeBtn.className = 'remove-author-btn text-red-500 hover:text-red-700 focus:outline-none';
-        removeBtn.innerHTML = `<svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-        </svg>`;
-
-        removeBtn.addEventListener('click', function() {
-            newSection.classList.add('scale-95', 'opacity-0');
-            setTimeout(() => {
-                newSection.remove();
-                updateAuthorNumbers();
-                checkAuthorsLimit();
-            }, 200);
-        });
-
+        // Set up remove button
         const headerDiv = newSection.querySelector('.flex.items-center.justify-between');
-        headerDiv.appendChild(removeBtn);
+        if (headerDiv) {
+            const removeBtn = document.createElement('button');
+            removeBtn.type = 'button';
+            removeBtn.className = 'remove-author-btn text-red-500 hover:text-red-700 focus:outline-none';
+            removeBtn.innerHTML = `
+                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>`;
+            
+            removeBtn.addEventListener('click', function() {
+                deleteAuthorSection(newSection);
+            });
+            
+            headerDiv.appendChild(removeBtn);
+        }
 
         return newSection;
+    }
+
+    // Function to delete author section
+    function deleteAuthorSection(section) {
+        section.style.opacity = '0';
+        section.style.transform = 'scale(0.95)';
+        
+        setTimeout(() => {
+            section.remove();
+            updateAuthorNumbers();
+            checkAuthorsLimit();
+        }, 300);
     }
 
     // Function to update author numbers
@@ -278,11 +295,13 @@ document.addEventListener('DOMContentLoaded', function() {
         const sections = document.querySelectorAll('.author-section');
         
         sections.forEach((section, index) => {
-            // Update the number badge
+            // Update number badge
             const numberBadge = section.querySelector('.bg-green-500');
-            numberBadge.innerText = index + 1;
+            if (numberBadge) {
+                numberBadge.textContent = index + 1;
+            }
 
-            // Update input names and check corresponding author status
+            // Update input names
             section.querySelectorAll('input').forEach(input => {
                 const newName = input.name.replace(/\[\d+\]/, `[${index}]`);
                 input.name = newName;
@@ -301,77 +320,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Add new author section
-    addAuthorBtn.addEventListener('click', function() {
-        const currentCount = document.querySelectorAll('.author-section').length;
-        if (currentCount < MAX_AUTHORS) {
-            const newSection = createAuthorSection(currentCount);
-            newSection.classList.add('scale-95', 'opacity-0');
-            authorsContainer.appendChild(newSection);
-            
-            // Animate entrance
-            requestAnimationFrame(() => {
-                newSection.classList.remove('scale-95', 'opacity-0');
-            });
-            
-            checkAuthorsLimit();
-        }
-    });
-
-    // Form validation
-    const form = document.getElementById('authorForm');
-    
-    function validateForm() {
-        let isValid = true;
-        const requiredFields = form.querySelectorAll('input[required]');
-        
-        // Clear all previous errors
-        document.querySelectorAll('.error-message').forEach(error => {
-            error.textContent = '';
-            error.classList.add('hidden');
-        });
-        document.querySelectorAll('.form-input').forEach(input => {
-            input.classList.remove('border-red-500');
-        });
-
-        // Validate each required field
-        requiredFields.forEach(field => {
-            const errorDiv = field.nextElementSibling;
-            if (!field.value.trim()) {
-                isValid = false;
-                field.classList.add('border-red-500');
-                showFieldError(field, 'This field is required');
-            } else if (field.type === 'email' && !validateEmail(field.value)) {
-                isValid = false;
-                field.classList.add('border-red-500');
-                showFieldError(field, 'Please enter a valid email address');
-            }
-        });
-
-        return isValid;
-    }
-
-    // Helper function to show field errors
-    function showFieldError(field, message) {
-        let errorDiv = field.nextElementSibling;
-        if (!errorDiv || !errorDiv.classList.contains('text-red-500')) {
-        errorDiv = document.createElement('div');
-        errorDiv.className = 'text-red-500 text-xs mt-1';
-        field.parentNode.insertBefore(errorDiv, field.nextSibling);
-        }
-        errorDiv.textContent = message;
-        errorDiv.classList.remove('hidden');
-    }
-
-    // Email validation helper
-    function validateEmail(email) {
-        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-    }
-
     // Function to show notifications
     function showNotification(message, type = 'info') {
         const notification = document.createElement('div');
-        notification.className = `fixed bottom-4 right-4 px-6 py-3 rounded-lg shadow-lg transform transition-all duration-300 ease-in-out translate-y-full z-50`;
+        notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg transform transition-all duration-300 ease-in-out opacity-0 z-50`;
         
         const colors = {
             error: 'bg-red-500',
@@ -386,154 +338,183 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Animate in
         requestAnimationFrame(() => {
-            notification.classList.remove('translate-y-full');
+            notification.style.opacity = '1';
+            notification.style.transform = 'translateY(0)';
         });
 
         // Auto-dismiss after 3 seconds
         setTimeout(() => {
-            notification.classList.add('translate-y-full');
+            notification.style.opacity = '0';
+            notification.style.transform = 'translateY(20px)';
             setTimeout(() => notification.remove(), 300);
         }, 3000);
     }
 
-    // Form submit handler
-    form.addEventListener('submit', function(event) {
-        if (!validateForm()) {
-            event.preventDefault();
-            showNotification('Please correct the errors before proceeding', 'error');
+    // Email validation
+    function validateEmail(email) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
+    // Form validation
+    function validateForm() {
+        let isValid = true;
+        const requiredFields = form.querySelectorAll('input[required]');
+        
+        // Clear previous errors
+        document.querySelectorAll('.error-message').forEach(error => error.remove());
+        document.querySelectorAll('.form-input').forEach(input => {
+            input.classList.remove('border-red-500');
+        });
+
+        // Check required fields
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
+                isValid = false;
+                field.classList.add('border-red-500');
+                showFieldError(field, 'This field is required');
+            } else if (field.type === 'email' && !validateEmail(field.value)) {
+                isValid = false;
+                field.classList.add('border-red-500');
+                showFieldError(field, 'Please enter a valid email address');
+            }
+        });
+
+        // Check for corresponding author
+        const hasCorrespondingAuthor = Array.from(document.querySelectorAll('input[name$="[is_correspondent]"]'))
+            .some(checkbox => checkbox.checked);
+        
+        if (!hasCorrespondingAuthor) {
+            isValid = false;
+            showNotification('Please select at least one corresponding author', 'error');
+        }
+
+        return isValid;
+    }
+
+    // Show field error
+    function showFieldError(field, message) {
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'error-message text-red-500 text-xs mt-1';
+        errorDiv.textContent = message;
+        field.parentNode.insertBefore(errorDiv, field.nextSibling);
+    }
+
+    // Save draft function
+    async function saveDraft(event, currentStep) {
+        event.preventDefault();
+        const saveButton = event.target;
+        const originalText = saveButton.innerHTML;
+
+        try {
+            // Update button state
+            saveButton.innerHTML = 'Saving...';
+            saveButton.disabled = true;
+
+            // Collect form data
+            const formData = new FormData(form);
+            const authors = [];
+            let currentAuthor = {};
+            let currentIndex = -1;
+
+            for (const [key, value] of formData.entries()) {
+                const matches = key.match(/authors\[(\d+)\]\[([^\]]+)\]/);
+                if (!matches) continue;
+
+                const [, index, field] = matches;
+                const numIndex = parseInt(index);
+
+                if (numIndex !== currentIndex) {
+                    if (Object.keys(currentAuthor).length > 0) {
+                        authors.push(currentAuthor);
+                    }
+                    currentAuthor = {};
+                    currentIndex = numIndex;
+                }
+
+                currentAuthor[field] = field === 'is_correspondent' ? value === '1' : value.trim();
+            }
+
+            if (Object.keys(currentAuthor).length > 0) {
+                authors.push(currentAuthor);
+            }
+
+            const saveDraftRoute = "<?php echo e(route('user.saveDraft')); ?>";
+            const response = await fetch(saveDraftRoute, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({
+                    current_step: currentStep,
+                    authors: authors,
+                })
+            });
+
+            const data = await response.json();
+            
+            if (!response.ok) {
+                throw new Error(data.message || 'Error saving draft');
+            }
+
+            showNotification('Draft saved successfully!', 'success');
+            
+            if (data.serial_number) {
+                localStorage.setItem('draft_serial_number', data.serial_number);
+            }
+
+        } catch (error) {
+            showNotification(error.message || 'Error saving draft', 'error');
+        } finally {
+            saveButton.innerHTML = originalText;
+            saveButton.disabled = false;
+        }
+    }
+
+    // Event Listeners
+    if (addAuthorBtn) {
+        addAuthorBtn.addEventListener('click', function() {
+            const currentCount = document.querySelectorAll('.author-section').length;
+            if (currentCount < MAX_AUTHORS) {
+                const newSection = createAuthorSection(currentCount);
+                newSection.style.opacity = '0';
+                newSection.style.transform = 'scale(0.95)';
+                authorsContainer.appendChild(newSection);
+                
+                requestAnimationFrame(() => {
+                    newSection.style.opacity = '1';
+                    newSection.style.transform = 'scale(1)';
+                });
+                
+                checkAuthorsLimit();
+            }
+        });
+    }
+
+    if (form) {
+        form.addEventListener('submit', function(event) {
+            if (!validateForm()) {
+                event.preventDefault();
+                showNotification('Please correct the errors before proceeding', 'error');
+            }
+        });
+    }
+
+    // Delegate remove button click event to authorsContainer
+    authorsContainer.addEventListener('click', function(event) {
+        if (event.target.closest('.remove-author-btn')) {
+            const section = event.target.closest('.author-section');
+            if (section) {
+                deleteAuthorSection(section);
+            }
         }
     });
 
     // Initialize form state
     checkAuthorsLimit();
 
-    // Add remove button functionality to existing remove buttons
-    document.querySelectorAll('.remove-author-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const section = btn.closest('.author-section');
-            section.classList.add('scale-95', 'opacity-0');
-            setTimeout(() => {
-                section.remove();
-                updateAuthorNumbers();
-                checkAuthorsLimit();
-            }, 200);
-        });
-    });
-});
-function validateAuthorData(author) {
-    const requiredFields = ['first_name', 'surname', 'email', 'university', 'department'];
-    return requiredFields.every(field => author[field] && typeof author[field] === 'string' && author[field].trim() !== '');
-}
-
-function showNotification(message, type = 'success') {
-    const alert = document.createElement('div');
-    alert.className = `fixed top-4 right-4 px-6 py-3 rounded shadow-lg z-50 transition-all duration-500 ${
-        type === 'success' ? 'bg-green-500' : 'bg-red-500'
-    } text-white`;
-    alert.textContent = message;
-    document.body.appendChild(alert);
-    
-    setTimeout(() => {
-        alert.remove();
-    }, 3000);
-}
-
-async function saveDraft(event, currentStep) {
-    event.preventDefault();
-    try {
-        const saveButton = event.target;
-        const originalText = saveButton.innerHTML;
-        
-        // Update button state
-        saveButton.innerHTML = '<span class="spinner-border spinner-border-sm mr-2"></span>Saving...';
-        saveButton.disabled = true;
-
-        // Get form data
-        const form = document.querySelector('#authorForm');
-        if (!form) throw new Error('Form not found');
-        
-        const formData = new FormData(form);
-        const authors = [];
-        let currentAuthor = {};
-        let currentIndex = -1;
-
-        // Process form data
-        for (const [key, value] of formData.entries()) {
-            const matches = key.match(/authors\[(\d+)\]\[([^\]]+)\]/);
-            if (!matches) continue;
-
-            const [, index, field] = matches;
-            const numIndex = parseInt(index);
-
-            if (numIndex !== currentIndex) {
-                if (Object.keys(currentAuthor).length > 0 && validateAuthorData(currentAuthor)) {
-                    authors.push(currentAuthor);
-                }
-                currentAuthor = {};
-                currentIndex = numIndex;
-            }
-
-            currentAuthor[field] = field === 'is_correspondent' ? value === '1' : value.trim();
-        }
-
-        // Add last author if valid
-        if (Object.keys(currentAuthor).length > 0 && validateAuthorData(currentAuthor)) {
-            authors.push(currentAuthor);
-        }
-
-        if (authors.length === 0) {
-            throw new Error('No valid authors found');
-        }
-
-        // Prepare request data
-        const requestData = {
-            current_step: currentStep,
-            authors,
-            _token: document.querySelector('meta[name="csrf-token"]')?.content
-        };
-
-        // Send request
-        const response = await fetch('<?php echo e(route("user.saveDraft")); ?>', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content
-            },
-            body: JSON.stringify(requestData)
-        });
-
-        const data = await response.json();
-        
-        if (!response.ok) {
-            throw new Error(data.message || 'Error saving draft');
-        }
-
-        if (data.serial_number) {
-            localStorage.setItem('draft_serial_number', data.serial_number);
-        }
-
-        showNotification('Draft saved successfully!', 'success');
-        
-    } catch (error) {
-        showNotification(error.message || 'Error saving draft', 'error');
-    } finally {
-        // Restore button state
-        saveButton.innerHTML = originalText;
-        saveButton.disabled = false;
-    }
-}
-
-// Event listener setup
-document.addEventListener('DOMContentLoaded', () => {
-    const saveDraftBtn = document.querySelector('[data-action="save-draft"]');
-    if (saveDraftBtn) {
-        saveDraftBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            const currentStep = saveDraftBtn.dataset.step;
-            saveDraft(currentStep);
-        });
-    }
-});
+    // Encapsulate saveDraft function within a namespace
+    window.MyApp = window.MyApp || {};
 </script>
 
 <style>
