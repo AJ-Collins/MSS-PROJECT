@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
     <title>TUM-MSS</title>
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@2.8.2/dist/alpine.min.js" defer></script>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
@@ -50,40 +51,28 @@
                     <!-- Notifications with Badge -->
                     <div class="relative" x-data="{ open: false }">
                         <button @click="open = !open" 
-                                class="p-2 text-black-400 hover:text-gray-500 hover:bg-gray-100 rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                class="p-2 text-gray-400 hover:text-gray-500 hover:bg-gray-100 rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-500">
                             <span class="sr-only">View notifications</span>
                             <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
                             </svg>
-                            <span class="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-400 ring-2 ring-white"></span>
+                            <span id="notification-badge" class="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-400 ring-2 ring-white" style="display: none;"></span>
                         </button>
 
-                        <!-- Enhanced Notifications Dropdown -->
                         <div x-show="open" @click.away="open = false" 
-                             class="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg py-1 z-50 transform origin-top-right transition-all duration-200">
+                            class="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg py-1 z-50">
                             <div class="px-4 py-2 border-b border-gray-100">
                                 <div class="flex justify-between items-center">
                                     <h3 class="text-sm font-semibold text-gray-900">Notifications</h3>
-                                    <span class="px-2 py-1 text-xs font-semibold text-red-600 bg-red-100 rounded-full">5 New</span>
+                                    <button onclick="markAllAsRead()" 
+                                            class="text-xs text-blue-600 hover:text-blue-800">
+                                        Mark all as read
+                                    </button>
                                 </div>
                             </div>
-                            <div class="max-h-64 overflow-y-auto">
-                                <a href="#" class="block px-4 py-3 hover:bg-gray-50 transition duration-150">
-                                    <div class="flex items-center">
-                                        <div class="flex-shrink-0">
-                                            <span class="inline-block h-2 w-2 rounded-full bg-blue-400"></span>
-                                        </div>
-                                        <div class="ml-3">
-                                            <p class="text-sm text-gray-700">New user registration</p>
-                                            <p class="text-xs text-gray-500">5 minutes ago</p>
-                                        </div>
-                                    </div>
-                                </a>
-                                <!-- Add more notification items here -->
+                            <div id="notifications-dropdown" class="max-h-64 overflow-y-auto">
+                                <!-- Notifications will be dynamically added here -->
                             </div>
-                            <a href="#" class="block text-center text-sm text-indigo-600 hover:text-indigo-500 py-2 border-t">
-                                View all notifications
-                            </a>
                         </div>
                     </div>
 
@@ -203,4 +192,109 @@
          @click="sidebarOpen = false">
     </div>
 </body>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const notificationDropdown = document.getElementById('notifications-dropdown');
+    const notificationBadge = document.getElementById('notification-badge');
+
+    function fetchNotifications() {
+        return fetch('/notifications', {
+            method: 'GET',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            updateNotificationUI(data.notifications, data.unread_count);
+        })
+        .catch(error => {
+            notificationDropdown.innerHTML = `
+                <div class="p-4 text-center text-red-500">
+                    Failed to load notifications
+                </div>
+            `;
+        });
+    }
+
+    function updateNotificationUI(notifications, unreadCount) {
+        notificationBadge.style.display = unreadCount > 0 ? 'block' : 'none';
+        notificationDropdown.innerHTML = '';
+        
+        if (notifications.length === 0) {
+            notificationDropdown.innerHTML = `
+                <div class="p-4 text-center text-gray-500">
+                    No notifications
+                </div>
+            `;
+            return;
+        }
+
+        notifications.forEach(notification => {
+            const notificationElement = document.createElement('div');
+            notificationElement.className = `p-4 ${notification.read_at ? 'bg-white' : 'bg-blue-50'} hover:bg-gray-50 border-b border-gray-100`;
+            
+            notificationElement.innerHTML = `
+                <div class="flex items-center justify-between">
+                    <div class="flex-1">
+                        <p class="text-sm text-gray-800">${escapeHtml(notification.message)}</p>
+                        <p class="text-xs text-gray-500 mt-1">${escapeHtml(notification.created_at)}</p>
+                        <a href="${escapeHtml(notification.link)}" 
+                            class="text-sm text-blue-600 hover:text-blue-800 underline mt-2 block">
+                            View Details
+                        </a>
+                    </div>
+                    ${!notification.read_at ? `
+                        <button onclick="markAsRead('${notification.id}')" 
+                                class="text-xs text-blue-600 hover:text-blue-800">
+                            Mark as read
+                        </button>
+                    ` : ''}
+                </div>
+            `;
+            
+            notificationDropdown.appendChild(notificationElement);
+        });
+    }
+
+    function markAsRead(id) {
+        fetch(`/notifications/${id}/read`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return fetchNotifications();
+        })
+        .catch(error => console.error('Error marking notification as read:', error));
+    }
+
+    function escapeHtml(unsafe) {
+        return unsafe
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    // Make markAsRead available globally
+    window.markAsRead = markAsRead;
+
+    // Initial fetch
+    fetchNotifications();
+    
+    // Fetch notifications every 30 seconds
+    setInterval(fetchNotifications, 30000);
+});
+</script>
 </html><?php /**PATH D:\MSS\email-verification-app\resources\views/reviewer/layouts/reviewer.blade.php ENDPATH**/ ?>

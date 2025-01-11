@@ -44,9 +44,15 @@ Route::get('/', function () {
     return redirect()->route('login');
 });
 
-Route::middleware(['preventBackHistory'])->group(function () {
+Route::middleware(['preventBackHistory', 'auth'])->group(function () {
+
+     //Notifications
+     Route::get('/notifications', [NotificationController::class, 'getNotifications']);
+     Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
+     Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead']);
+
     //Admin routes
-    Route::prefix('admin')->middleware(['auth'])->group(function () {
+    Route::prefix('admin')->group(function () {
         Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
         Route::get('/users', [AdminController::class, 'users'])->name('admin.users');
 
@@ -82,7 +88,7 @@ Route::middleware(['preventBackHistory'])->group(function () {
     });
 
     //Reviewer routes
-    Route::prefix('reviewer')->middleware(['auth'])->group(function () {
+    Route::prefix('reviewer')->group(function () {
         Route::get('/dashboard', [ReviewerController::class, 'dashboard'])->name('reviewer.partials.dashboard');
         Route::get('/assigned-abstracts', [ReviewerController::class, 'assignedAbstracts'])->name('reviewer.assignedAbstracts');
         Route::get('/documents', [ReviewerController::class, 'documentsReview'])->name('reviewer.partials.documents');
@@ -105,7 +111,7 @@ Route::middleware(['preventBackHistory'])->group(function () {
 
     });
     //User routes
-    Route::prefix('user')->middleware(['auth'])->group(function () {
+    Route::prefix('user')->group(function () {
         Route::get('/profile', [UserController::class, 'profile'])->name('user.profile');
         Route::get('/dashboard', [UserController::class, 'dashboard'])->name('user.dashboard');
         Route::get('/documents', [UserController::class, 'documents'])->name('user.documents');
@@ -159,10 +165,7 @@ Route::middleware(['preventBackHistory'])->group(function () {
         Route::get('/proposal-view-drafts', [ResearchSubmissionController::class, 'viewProposalDrafts'])->name('user.proposal.drafts');
         Route::delete('/proposal-drafts/delete/{serialNumber}', [ResearchSubmissionController::class, 'deleteProposalDraft'])->where('serialNumber', '.+')->name('user.delete.proposal.draft');
 
-        //Notifications
-        Route::get('/notifications', [NotificationController::class, 'getNotifications']);
-        Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
-        Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead']);
+       
     });
 
     //Abstarct download routes

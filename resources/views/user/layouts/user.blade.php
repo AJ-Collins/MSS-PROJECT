@@ -198,7 +198,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const notificationBadge = document.getElementById('notification-badge');
 
     function fetchNotifications() {
-        return fetch('/user/notifications', {
+        return fetch('/notifications', {
             method: 'GET',
             headers: {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
@@ -263,7 +263,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function markAsRead(id) {
-        fetch(`/user/notifications/${id}/read`, {
+        fetch(`/notifications/${id}/read`, {
             method: 'POST',
             headers: {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
@@ -297,5 +297,4 @@ document.addEventListener('DOMContentLoaded', function() {
     setInterval(fetchNotifications, 30000);
 });
 </script>
-
 </html>
