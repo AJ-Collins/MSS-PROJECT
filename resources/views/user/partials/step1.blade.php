@@ -78,6 +78,7 @@
                             
                             <div class="flex items-center space-x-4">
                                 <label class="flex items-center space-x-2 text-sm text-gray-600 hover:text-gray-800 cursor-pointer">
+                                    <input type="hidden" name="authors[0][is_correspondent]" value="0">
                                     <input type="checkbox" 
                                            name="authors[{{ $index }}][is_correspondent]" 
                                            value="1" 
@@ -203,7 +204,7 @@ document.addEventListener('DOMContentLoaded', function() {
         newSection.querySelectorAll('input').forEach(input => {
             const newName = input.name.replace(/\[\d+\]/, `[${index}]`);
             input.name = newName;
-            input.value = '';
+            input.value = input.type === 'checkbox' ? '1' : '';
             input.checked = false;
             
             // Clear any error states
@@ -245,12 +246,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // Function to update author numbers
     function updateAuthorNumbers() {
         const sections = document.querySelectorAll('.author-section');
+        
         sections.forEach((section, index) => {
             // Update the number badge
             const numberBadge = section.querySelector('.bg-green-500');
             numberBadge.innerText = index + 1;
 
-            // Update input names
+            // Update input names and check corresponding author status
             section.querySelectorAll('input').forEach(input => {
                 const newName = input.name.replace(/\[\d+\]/, `[${index}]`);
                 input.name = newName;
@@ -316,25 +318,19 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // Check for at least one corresponding author
-        const hasCorrespondingAuthor = Array.from(form.querySelectorAll('input[name$="[is_correspondent]"]'))
-            .some(checkbox => checkbox.checked);
-
-        if (!hasCorrespondingAuthor) {
-            isValid = false;
-            showNotification('Please designate at least one corresponding author', 'error');
-        }
-
         return isValid;
     }
 
     // Helper function to show field errors
     function showFieldError(field, message) {
-        const errorDiv = field.nextElementSibling;
-        if (errorDiv) {
-            errorDiv.textContent = message;
-            errorDiv.classList.remove('hidden');
+        let errorDiv = field.nextElementSibling;
+        if (!errorDiv || !errorDiv.classList.contains('text-red-500')) {
+        errorDiv = document.createElement('div');
+        errorDiv.className = 'text-red-500 text-xs mt-1';
+        field.parentNode.insertBefore(errorDiv, field.nextSibling);
         }
+        errorDiv.textContent = message;
+        errorDiv.classList.remove('hidden');
     }
 
     // Email validation helper
@@ -395,7 +391,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 function validateAuthorData(author) {
-    if (!author) return false;
     const requiredFields = ['first_name', 'surname', 'email', 'university', 'department'];
     return requiredFields.every(field => author[field] && typeof author[field] === 'string' && author[field].trim() !== '');
 }
@@ -413,7 +408,8 @@ function showNotification(message, type = 'success') {
     }, 3000);
 }
 
-async function saveDraft(currentStep) {
+async function saveDraft(event, currentStep) {
+    event.preventDefault();
     try {
         const saveButton = event.target;
         const originalText = saveButton.innerHTML;

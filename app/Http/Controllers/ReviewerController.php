@@ -364,8 +364,11 @@ class ReviewerController extends Controller
             'score' => $validated['total_score']
         ]);
 
-        return redirect()->route('reviewer.partials.documents')
-            ->with('success', 'Abstract assessment submitted successfully');
+        return response()->json([
+            'success' => true,
+            'message' => 'Abstract assessment submitted successfully',
+            'redirect' => route('reviewer.partials.documents')
+        ]);
     }
 
     public function ProposalAssessmentStore(Request $request, $serial_number)

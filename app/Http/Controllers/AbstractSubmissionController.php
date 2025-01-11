@@ -47,7 +47,7 @@ class AbstractSubmissionController extends Controller
             'authors.*.department' => 'required|string|max:255',
             'authors.*.university' => 'required|string|max:255',
             'authors.*.email' => 'required|email|max:255',
-            'authors.*.is_correspondent' => 'sometimes|boolean',
+            'authors.*.is_correspondent' => 'required|boolean',
             'submission_type' => 'required|in:abstract',
         ]);
 
