@@ -1,6 +1,6 @@
-@extends('reviewer.layouts.reviewer')
 
-@section('reviewer-content')
+
+<?php $__env->startSection('reviewer-content'); ?>
 <div class="min-h-screen bg-gray-50" x-data="assessmentForm">
     <!-- Main Content -->
     <div class="flex flex-col md:flex-row h-screen">
@@ -29,30 +29,31 @@
             <div class="flex-1 overflow-y-auto">
                 <form 
                     @submit.prevent="submitForm"
-                    action="{{ route('reviewer.proposal.assessment.store', $researchSubmission->serial_number) }}" 
+                    action="<?php echo e(route('reviewer.proposal.assessment.store', $researchSubmission->serial_number)); ?>" 
                     method="POST" 
                     class="p-6 space-y-6"
                     id="assessmentForm">
-                    @csrf
+                    <?php echo csrf_field(); ?>
 
                     <!-- Error Alert -->
-                    @if ($errors->any())
+                    <?php if($errors->any()): ?>
                         <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative" role="alert">
                             <strong class="font-bold">Please check the following errors:</strong>
                             <ul class="mt-2 list-disc list-inside">
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
+                                <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <li><?php echo e($error); ?></li>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </ul>
                         </div>
-                    @endif
+                    <?php endif; ?>
 
                     <!-- Success Message -->
-                    @if(session('success'))
+                    <?php if(session('success')): ?>
                         <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded relative" role="alert">
-                            {{ session('success') }}
+                            <?php echo e(session('success')); ?>
+
                         </div>
-                    @endif
+                    <?php endif; ?>
 
                     <!-- Assessment Sections -->
                     <template x-for="(section, key) in sections" :key="key">
@@ -175,7 +176,7 @@
             </div>
 
             <div 
-                x-data="documentPreview('{{ route('reviewer.assessment.proposalpreview', $serial_number) }}')"
+                x-data="documentPreview('<?php echo e(route('reviewer.assessment.proposalpreview', $serial_number)); ?>')"
                 x-init="loadAbstract()"
                 class="flex-1 overflow-y-auto p-6"
             >
@@ -336,4 +337,5 @@ document.addEventListener('alpine:init', () => {
     }));
 });
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('reviewer.layouts.reviewer', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH D:\MSS\email-verification-app\resources\views/reviewer/partials/proposalAssessment.blade.php ENDPATH**/ ?>

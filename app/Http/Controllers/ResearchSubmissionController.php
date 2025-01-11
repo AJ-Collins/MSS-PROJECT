@@ -13,7 +13,7 @@ use Dompdf\Options;
 use App\Models\AbstractDraft;
 use Illuminate\Support\Facades\Mail;
 use App\Notifications\NewUserNotification;
-use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\DB;
 
 
 class ResearchSubmissionController extends Controller
@@ -196,71 +196,67 @@ class ResearchSubmissionController extends Controller
     {
         // Retrieve session data
         $authorData = $request->session()->get('author');
-        $submissionData = $request->session()->get('abstract'); // Correct session key
+        $submissionData = $request->session()->get('abstract');
         $allAuthors = $request->session()->get('all_authors');
-        $serialNumber = $request->session()->get('serial_number'); // Retrieve existing serial number
-    
 
         if (!$authorData || !$submissionData || !$allAuthors) {
             return redirect()->route('user.step1_research')->with('error', 'No author or submission data available.');
         }
 
-        // If no serial number exists, generate it
-        if (!$serialNumber) {
-            $subTheme = $submissionData['sub_theme'];
-            $acronyms = [
-                'Transformative Education' => 'TE',
-                'Business and Entrepreneurship' => 'BE',
-                'Health and Food Security' => 'HFS',
-                'Digital, Creative Economy and Contemporary Societies' => 'DCECS',
-                'Engineering, Technology and Sustainable Environment' => 'ETSE',
-                'Blue Economy & Maritime Affairs' => 'BEMA',
-            ];
-    
-            $acronym = $acronyms[$subTheme] ?? 'N/A';
-            $serialCode = mb_strtoupper(Str::random(mt_rand(4, 5)) . Str::random(mt_rand(3, 5)));
-            $serialNumber = "{$acronym}-{$serialCode}-" . date('y');
-    
-            // Store the serial number in the session for reuse
-            $request->session()->put('serial_number', $serialNumber);
-        }
-
-        // Check if a draft exists with the same serial number and delete it
-        $this->deleteProposalDraft($serialNumber);
-
-        $user = auth()->user();
-
-        // Save research abstract submission data
-        $researchSubmission = new ResearchSubmission();
-        $researchSubmission->serial_number = $serialNumber;
-        $researchSubmission->article_title = $submissionData['article_title'];
-        $researchSubmission->sub_theme = $submissionData['sub_theme'];
-        $researchSubmission->abstract = $submissionData['abstract'];
-        $researchSubmission->keywords = json_encode($submissionData['keywords']);
-        $researchSubmission->pdf_document_path = $submissionData['pdf_document_path'] ?? null;
-        $researchSubmission->user_reg_no = $user->reg_no;
-        $researchSubmission->final_status = "submitted";  // Ensure the final status is set
-        $researchSubmission->save();
-
-        // Save authors
-        foreach ($allAuthors as $author) {
-            $author['research_submission_id'] = $serialNumber;  // Associate with the correct research_submission
-            $author = new Author($author);
-            $author->save();
-        }
-
-        $data = [
-            'message' => 'This is a new notification',
-            'link' => '/some-link',
+        // Generate unique serial number
+        $subTheme = $submissionData['sub_theme'];
+        $acronyms = [
+            'Transformative Education' => 'TE',
+            'Business and Entrepreneurship' => 'BE',
+            'Health and Food Security' => 'HFS',
+            'Digital, Creative Economy and Contemporary Societies' => 'DCECS',
+            'Engineering, Technology and Sustainable Environment' => 'ETSE',
+            'Blue Economy & Maritime Affairs' => 'BEMA',
         ];
+
+        $acronym = $acronyms[$subTheme] ?? 'N/A';
         
-        $user->notify(new NewUserNotification($data));
+        // Generate unique identifier using timestamp and uniqid
+        $uniqueCode = strtoupper(substr(uniqid(date('YmdHis')), 0, 8));
+        $serialNumber = "{$acronym}-{$uniqueCode}-" . date('y');
 
-        // Clear session data after submission
-        $request->session()->forget(['author', 'abstract', 'all_authors']);  // Remove session keys after saving
+        try {
+            $user = auth()->user();
 
-        // Return success response
-        return redirect()->route('user.dashboard')->with('success', 'Submission successfully.');
+            // Save research abstract submission data
+            $researchSubmission = new ResearchSubmission();
+            $researchSubmission->serial_number = $serialNumber;
+            $researchSubmission->article_title = $submissionData['article_title'];
+            $researchSubmission->sub_theme = $submissionData['sub_theme'];
+            $researchSubmission->abstract = $submissionData['abstract'];
+            $researchSubmission->keywords = json_encode($submissionData['keywords']);
+            $researchSubmission->pdf_document_path = $submissionData['pdf_document_path'] ?? null;
+            $researchSubmission->user_reg_no = $user->reg_no;
+            $researchSubmission->final_status = "submitted";
+            $researchSubmission->save();
+
+            // Save authors
+            foreach ($allAuthors as $author) {
+                $author['research_submission_id'] = $serialNumber;
+                $authorModel = new Author($author);
+                $authorModel->save();
+            }
+
+            $data = [
+                'message' => 'This is a new notification',
+                'link' => '/some-link',
+            ];
+            
+            $user->notify(new NewUserNotification($data));
+
+            // Clear session data after successful submission
+            $request->session()->forget(self::SESSION_KEYS);
+
+            return redirect()->route('user.dashboard')->with('success', 'Submission successful.');
+            
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'An error occurred during submission. Please try again.');
+        }
     }
 
     public function saveProposalDraft(Request $request)

@@ -412,7 +412,10 @@ class ReviewerController extends Controller
             'score' => $validated['total_score']
         ]);
 
-        return redirect()->route('reviewer.partials.documents')
-            ->with('success', 'Proposal assessment submitted successfully');
+        return response()->json([
+            'success' => true,
+            'message' => 'Proposal assessment submitted successfully',
+            'redirect' => route('reviewer.partials.documents')
+        ]);
     }
 }
