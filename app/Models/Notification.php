@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Notifications\DatabaseNotification;
 
 class Notification extends Model
 {
@@ -19,18 +20,9 @@ class Notification extends Model
     ];
 
     // Relationship with the User model (assuming you are storing the user's registration number)
-    public function user()
+    public function notifiable()
     {
-        return $this->belongsTo(User::class, 'user_reg_no', 'reg_no');
-    }
-    public function notifications()
-    {
-        return $this->morphMany(Notification::class, 'notifiable');
-    }
-
-    public function unreadNotifications()
-    {
-        return $this->notifications()->where('read', false);
+        return $this->morphTo();
     }
 }
 

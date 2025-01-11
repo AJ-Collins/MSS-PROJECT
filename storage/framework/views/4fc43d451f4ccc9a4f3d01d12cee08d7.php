@@ -56,7 +56,7 @@
                             <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
                             </svg>
-                            <span id="notification-badge" class="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-400 ring-2 ring-white" style="display: none;"></span>
+                            <span id="notification-badge" class="absolute top-0 right-0 text-xs font-semibold text-white bg-red-600 rounded-full px-1 py-0.5 hidden"></span>
                         </button>
 
                         <div x-show="open" @click.away="open = false" 
@@ -224,6 +224,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function updateNotificationUI(notifications, unreadCount) {
         notificationBadge.style.display = unreadCount > 0 ? 'block' : 'none';
+        notificationBadge.textContent = unreadCount;
         notificationDropdown.innerHTML = '';
         
         if (notifications.length === 0) {
