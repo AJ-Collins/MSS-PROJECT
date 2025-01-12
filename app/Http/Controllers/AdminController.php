@@ -227,6 +227,7 @@ class AdminController extends Controller
         
         // Remove the reviewer assignment
         $submission->reviewer_reg_no = null;
+        $submission->reviewer_status = '';
         $submission->save();
         
         // Only attempt to notify if there was a reviewer assigned

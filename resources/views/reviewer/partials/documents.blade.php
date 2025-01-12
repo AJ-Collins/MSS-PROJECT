@@ -85,7 +85,7 @@
                             <td class="px-4 py-3 text-center text-sm text-gray-700">Good (Remarks)</td>
                             <td class="px-4 py-3 text-center text-sm text-gray-700">
                                 <div class="flex flex-col items-center space-y-2">
-                                    @if ($submission->final_status === 'accepted' && $submission->reviewer_status === 'accepted')
+                                    @if ($submission->final_status === 'under_review' && $submission->reviewer_status === 'accepted')
                                         <a href="{{ route('reviewer.abstract.assessment', ['serial_number' => $submission->serial_number]) }}" 
                                         class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-all">
                                             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">

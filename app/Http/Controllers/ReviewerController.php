@@ -64,7 +64,7 @@ class ReviewerController extends Controller
         $submission = AbstractSubmission::find($request->serial_number);
         if ($submission) {
             $submission->reviewer_status = $request->reviewer_status;
-            $submission->final_status = 'accepted';
+            $submission->final_status = 'under_review';
             $submission->save();
         }
 
@@ -81,7 +81,7 @@ class ReviewerController extends Controller
 
         if ($submission) {
             // Update the reviewer status
-            $submission->reviewer_status = '';
+            $submission->reviewer_status = 'rejected';
 
             // Remove the reviewer_reg_no (set it to null)
             $submission->reviewer_reg_no = null;
