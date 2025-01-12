@@ -18,6 +18,8 @@ class AbstractSubmission extends Model
         'sub_theme', 
         'abstract', 
         'keywords',
+        'final_status',
+        'reviewer_status',
         'pdf_document_path',
         'reviewer_reg_no',
         // Add any other fields you want to allow mass-assignment for

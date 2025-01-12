@@ -99,10 +99,35 @@
                     <td class="px-4 py-3 text-sm text-gray-500"><?php echo e(\Carbon\Carbon::parse($submission->created_at)->format('d M Y')); ?></td>
                     <td class="px-4 py-3 text-sm text-gray-700">
                         <?php if(!$submission->score): ?>
-                            Not reviewed
+                            <span class="text-gray-500">Not reviewed</span>
                         <?php else: ?>
-                            <?php echo e($submission->score); ?>
-
+                            <div class="flex items-center space-x-2">
+                                <span class="font-medium"><?php echo e($submission->score); ?></span>
+                                <button type="button" 
+                                        data-submission-id="<?php echo e($submission->serial_number); ?>"
+                                        class="reject-score-btn p-1.5 rounded-full text-red-600 hover:text-white hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1 transition-all duration-200 relative group"
+                                        aria-label="Reject Score">
+                                    <svg xmlns="http://www.w3.org/2000/svg" 
+                                        class="h-4 w-4"
+                                        fill="none"
+                                        viewBox="0 0 24 24" 
+                                        stroke="currentColor"
+                                        stroke-width="2">
+                                        <path stroke-linecap="round" 
+                                            stroke-linejoin="round" 
+                                            d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                    <span class="sr-only">Reject assessment</span>
+                                    
+                                    <!-- Enhanced Tooltip -->
+                                    <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block z-20">
+                                        <div class="bg-gray-900 text-white text-xs rounded px-2 py-1.5 whitespace-nowrap shadow-lg relative">
+                                            Reject assessment
+                                            <div class="absolute w-2 h-2 bg-gray-900 rotate-45 -bottom-1 left-1/2 -translate-x-1/2"></div>
+                                        </div>
+                                    </div>
+                                </button>
+                            </div>
                         <?php endif; ?>
                     </td>
                     <td class="px-4 py-3 text-sm text-gray-700">
@@ -110,7 +135,7 @@
                             <?php
                                 $firstName = explode(' ', $submission->reviewer_name)[0];
                             ?>
-                            <span><?php echo e($firstName); ?></span>
+                          <span><?php echo e($firstName); ?></span>
                             <!-- Form for removing reviewer -->
                             <form action="<?php echo e(route('remove.abstract.reviewer', $submission->serial_number)); ?>" method="POST" class="inline">
                                 <?php echo csrf_field(); ?>
@@ -123,41 +148,108 @@
                             <span class="text-red-500">Not assigned</span>
                         <?php endif; ?>
                     </td>
-                    <td class="px-4 py-3 text-center">
+                    <td class="px-4 py-3 text-center relative group">
                         <?php
                             $statusStyles = [
                                 'submitted' => [
                                     'text' => 'text-yellow-800',
-                                    'bg' => 'bg-yellow-100'
+                                    'bg' => 'bg-yellow-100',
+                                    'icon' => '<svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a8 8 0 100 16 8 8 0 000-16zm0 14a6 6 0 110-12 6 6 0 010 12z"/></svg>'
                                 ],
                                 'under_review' => [
                                     'text' => 'text-blue-800',
-                                    'bg' => 'bg-blue-100'
+                                    'bg' => 'bg-blue-100',
+                                    'icon' => '<svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/></svg>'
                                 ],
                                 'rejected' => [
                                     'text' => 'text-red-800',
-                                    'bg' => 'bg-red-100'
+                                    'bg' => 'bg-red-100',
+                                    'icon' => '<svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/></svg>'
                                 ],
                                 'revision_required' => [
                                     'text' => 'text-orange-800',
-                                    'bg' => 'bg-orange-100'
+                                    'bg' => 'bg-orange-100',
+                                    'icon' => '<svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/></svg>'
                                 ],
                                 'accepted' => [
                                     'text' => 'text-green-800',
-                                    'bg' => 'bg-green-100'
+                                    'bg' => 'bg-green-100',
+                                    'icon' => '<svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>'
                                 ]
                             ];
                             $currentStatus = $submission->final_status;
                             $style = $statusStyles[$currentStatus] ?? [
                                 'text' => 'text-gray-800',
-                                'bg' => 'bg-gray-100'
+                                'bg' => 'bg-gray-100',
+                                'icon' => '<svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"/></svg>'
                             ];
                         ?>
-                        <span class="px-3 py-1 text-xs font-medium <?php echo e($style['text']); ?> <?php echo e($style['bg']); ?> rounded-full">
-                            <?php echo e($currentStatus ?: 'Unknown'); ?>
+                        <div class="flex items-center justify-center space-x-2">
+                            <span class="inline-flex items-center px-2 py-0.5 text-xs font-medium <?php echo e($style['text']); ?> <?php echo e($style['bg']); ?> rounded-full">
+                                <?php echo $style['icon']; ?>
 
-                        </span>
-                    </td>                    
+                                <span><?php echo e($currentStatus === 'revision_required' ? 'Revision Request' : str_replace('_', ' ', ucfirst($currentStatus ?: 'Unknown'))); ?></span>
+                            </span>
+                            
+                            <?php if($currentStatus === 'revision_required'): ?>
+                                <div class="inline-flex items-center space-x-1 relative group">
+                                    <form action="<?php echo e(route('accept.abstract.revision', ['serial_number' => $submission->serial_number])); ?>" 
+                                        method="POST" 
+                                        class="inline-block">
+                                        <?php echo csrf_field(); ?>
+                                        <button type="submit" 
+                                                class="p-1 rounded-full text-green-600 hover:text-white hover:bg-green-600 focus:outline-none focus:ring-1 focus:ring-green-500 focus:ring-offset-1 transition-all duration-150"
+                                                title="Accept Revision"
+                                                aria-label="Accept Revision"
+                                                onclick="return confirm('Are you sure you want to accept this revision?')">
+                                            <svg xmlns="http://www.w3.org/2000/svg" 
+                                                class="h-4 w-4" 
+                                                viewBox="0 0 20 20" 
+                                                fill="currentColor">
+                                                <path fill-rule="evenodd" 
+                                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" 
+                                                    clip-rule="evenodd" />
+                                            </svg>
+                                            <span class="sr-only">Accept</span>
+                                        </button>
+                                        
+                                        <div class="absolute bottom-full left-0 mb-1 hidden group-hover:block z-10">
+                                            <div class="bg-gray-800 text-white text-xs rounded px-2 py-0.5 whitespace-nowrap">
+                                                Accept revision
+                                            </div>
+                                        </div>
+                                    </form>
+
+                                    <form action="<?php echo e(route('reject.abstract.revision', ['serial_number' => $submission->serial_number])); ?>" 
+                                        method="POST" 
+                                        class="inline-block">
+                                        <?php echo csrf_field(); ?>
+                                        <button type="submit" 
+                                                class="p-1 rounded-full text-red-600 hover:text-white hover:bg-red-600 focus:outline-none focus:ring-1 focus:ring-red-500 focus:ring-offset-1 transition-all duration-150"
+                                                title="Reject Revision"
+                                                aria-label="Reject Revision"
+                                                onclick="return confirm('Are you sure you want to reject this revision?')">
+                                            <svg xmlns="http://www.w3.org/2000/svg" 
+                                                class="h-4 w-4" 
+                                                viewBox="0 0 20 20" 
+                                                fill="currentColor">
+                                                <path fill-rule="evenodd" 
+                                                    d="M6.293 4.293a1 1 0 011.414 0L10 6.586l2.293-2.293a1 1 0 111.414 1.414L11.414 8l2.293 2.293a1 1 0 11-1.414 1.414L10 9.414l-2.293 2.293a1 1 0 11-1.414-1.414L8.586 8 6.293 5.707a1 1 0 010-1.414z" 
+                                                    clip-rule="evenodd" />
+                                            </svg>
+                                            <span class="sr-only">Reject</span>
+                                        </button>
+                                        
+                                        <div class="absolute bottom-full right-0 mb-1 hidden group-hover:block z-10">
+                                            <div class="bg-gray-800 text-white text-xs rounded px-2 py-0.5 whitespace-nowrap">
+                                                Reject revision
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    </td>                   
                     <td class="px-4 py-3 text-center relative" x-data="{ isOpen: false }">
                         <?php if($submission->score && $submission->pdf_path): ?>
                             <a href="<?php echo e(Storage::url($submission->pdf_path)); ?>" target="_blank" 
@@ -313,7 +405,7 @@
                                             <?php echo csrf_field(); ?>
                                             <input type="hidden" name="serial_number" value="<?php echo e($submission->serial_number); ?>">
                                             <button type="submit" 
-                                                    class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                class="block w-full text-left px-4 py-2 text-sm text-grey-700 hover:text-white hover:bg-green-800">
                                                 Accept
                                             </button>
                                         </form>
@@ -329,14 +421,19 @@
                                             class="block w-full text-left px-4 py-2 text-sm text-green-900 hover:bg-gray-100">
                                             User Revision
                                         </a>
-                                        <a href="" 
-                                            class="block w-full text-left px-4 py-2 text-sm text-green-900 hover:bg-gray-100">
-                                            Reviewer Revision
-                                        </a>
-                                        <button class="block w-full text-left px-4 py-2 text-sm text-red-700 hover:bg-gray-100" 
-                                                onclick="openModal('add-comments-modal-<?php echo e($submission->serial_number); ?>')">
-                                            Reject
+                                        <button type="button" 
+                                                data-submission-id="<?php echo e($submission->serial_number); ?>"
+                                                class="reviewer-revision-btn block w-full text-left px-4 py-2 text-sm text-green-900 hover:bg-gray-100">
+                                                Reviewer Revision
                                         </button>
+                                        <form action="" method="POST" class="contents">
+                                            <?php echo csrf_field(); ?>
+                                            <input type="hidden" name="serial_number" value="<?php echo e($submission->serial_number); ?>">
+                                            <button type="submit" 
+                                                class="block w-full text-left px-4 py-2 text-sm text-red-700 hover:text-white hover:bg-red-800">
+                                                Reject
+                                            </button>
+                                        </form>
                                     </div>
                                 </div>
                             </div>
@@ -784,6 +881,35 @@
     </div>  
 </div>
 <script>
+    // Function to show notifications
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg transform transition-all duration-300 ease-in-out opacity-0 z-50`;
+    
+    const colors = {
+        error: 'bg-red-500',
+        warning: 'bg-yellow-500',
+        success: 'bg-green-500',
+        info: 'bg-blue-500'
+    };
+    
+    notification.classList.add(colors[type], 'text-white');
+    notification.textContent = message;
+    document.body.appendChild(notification);
+
+    // Animate in
+    requestAnimationFrame(() => {
+        notification.style.opacity = '1';
+        notification.style.transform = 'translateY(0)';
+    });
+
+    // Auto-dismiss after 3 seconds
+    setTimeout(() => {
+        notification.style.opacity = '0';
+        notification.style.transform = 'translateY(20px)';
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
+}
     function closeModal(modalId) {
         document.getElementById(modalId).classList.add('hidden');
     }
@@ -916,6 +1042,74 @@ function assignReviewers() {
             alert('An error occurred. Please try again.');
         });
 }
+
+document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll('.reject-score-btn').forEach(button => {
+        button.addEventListener("click", async function () {
+            const serial_number = this.dataset.submissionId;
+            
+            if (!confirm("Are you sure you want to reject this score? This action cannot be undone.")) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/admin/reject/assessment/${serial_number}`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content,
+                        "Accept": "application/json"
+                    }
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // Show success message
+                    showNotification(data.message || "Score rejected successfully", 'success');
+                    // Reload page or update UI
+                    window.location.reload();
+                } else {
+                    showNotification(data.message || "Failed to reject score");
+                }
+            } catch (error) {
+                showNotification(error.message || "An error occurred. Please try again later.", 'error');
+            }
+        });
+    });
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll('.reviewer-revision-btn').forEach(button => {
+        button.addEventListener("click", async function () {
+            const serial_number = this.dataset.submissionId;
+
+            try {
+                const response = await fetch(`/admin/reviewer-abstract-revision/${serial_number}`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content,
+                        "Accept": "application/json"
+                    }
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // Show success message
+                    showNotification(data.message || "Revision request successfully", 'success');
+                    // Reload page or update UI
+                    window.location.reload();
+                } else {
+                    showNotification(data.message || "Failed to request revision");
+                }
+            } catch (error) {
+                showNotification(error.message || "An error occurred. Please try again later.", 'error');
+            }
+        });
+    });
+});
 </script>
 <?php $__env->stopSection(); ?>
 <?php echo $__env->make('admin.layouts.admin', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH D:\MSS\email-verification-app\resources\views/admin/partials/documents.blade.php ENDPATH**/ ?>

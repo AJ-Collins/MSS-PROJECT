@@ -161,7 +161,7 @@ class AdminController extends Controller
         $researchSubmissions = ResearchSubmission::leftJoin('users', 'users.reg_no', '=', 'research_submissions.reviewer_reg_no')
             ->select('research_submissions.*', 'users.name as reviewer_name')
             ->get();
-            
+        
         $reviewers = User::whereHas('roles', function ($query){
             $query->where('name', 'Reviewer');
         })->get();
@@ -653,10 +653,164 @@ class AdminController extends Controller
 
         return redirect()->back()->with('success', 'User has been notified to upload article.');
     }
-    
-    public function returnRevision ()
+
+    public function acceptRevision(Request $request)
     {
-    
+        try {
+            $serial_number = $request->serial_number;
+            
+            // Find the submission and the associated user
+            $submission = AbstractSubmission::where('serial_number', $serial_number)->firstOrFail();
+            $user = User::where('reg_no', $submission->reviewer_reg_no)->firstOrFail();
+
+            // Update submission status to 'under_review'
+            $submission->final_status = 'under_review';
+            $submission->save();
+
+            // Notify the user about the accepted revision
+            $notificationData = [
+                'message' => 'Revision for Abstract ' . $submission->serial_number . ' has been accepted.',
+                'link' => '/some-link',  // Update with the actual link
+            ];
+            $user->notify(new NewUserNotification($notificationData));
+
+            return redirect()->back()->with('success', 'Revision accepted and user notified successfully.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'An error occurred while accepting the revision.');
+        }
+    }
+    public function rejectRevision(Request $request)
+    {
+        try {
+            $serial_number = $request->serial_number;
+            
+            // Find the submission and the associated user
+            $submission = AbstractSubmission::where('serial_number', $serial_number)->firstOrFail();
+            $user = User::where('reg_no', $submission->reviewer_reg_no)->firstOrFail();
+
+            // Update submission status to 'rejected'
+            $submission->final_status = 'submitted';  // Mark as rejected
+            $submission->reviewer_status = '';       // Clear reviewer status
+            $submission->reviewer_reg_no = '';       // Clear reviewer assignment
+            $submission->save();
+
+            // Notify the reviewer about the rejection
+            $notificationDataForReviewer = [
+                'message' => 'Revision for Abstract ' . $submission->serial_number . ' rejected.',
+                'link' => '/some-link',  // Update with the actual link to where the reviewer can view more details
+            ];
+            $user->notify(new NewUserNotification($notificationDataForReviewer));
+
+            return redirect()->back()->with('success', 'Revision rejected and users notified successfully.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'An error occurred while rejecting the revision.');
+        }
     }
 
+    public function rejectAssessment($serial_number)
+    {
+    try {
+        // Retrieve the submission by serial number
+        $submission = AbstractSubmission::where('serial_number', $serial_number)->firstOrFail();
+
+        // Store old reviewer reg no before updating
+        $oldReviewerRegNo = $submission->reviewer_reg_no;
+
+        // Update submission data
+        $submission->update([
+            'reviewer_reg_no' => null,
+            'reviewer_status' => null,
+            'final_status' => 'submitted',
+        ]);
+        $submission->score = null;
+        $submission->save();
+
+        // Notify reviewer
+        if ($oldReviewerRegNo) {
+            $reviewer = User::where('reg_no', $oldReviewerRegNo)
+                ->whereHas('roles', function ($query) {
+                    $query->where('name', 'reviewer');
+                })
+                ->first();
+            
+            if ($reviewer) {
+                $notificationData = [
+                    'message' => 'Assessment of ' . $submission->serial_number . ' lost.',
+                    'link' => '/some-link',
+                ];
+
+                $reviewer->notify(new NewUserNotification($notificationData));
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Score rejected successfully'
+        ]);
+            
+    } catch (\Exception $e) {
+        \Log::error('Score rejection failed:', [
+            'serial_number' => $serial_number,
+            'error' => $e->getMessage()
+        ]);
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to reject score. Please try again later.'
+        ], 500);
+    }
+    }
+
+    public function returnRevision($serial_number)
+    {
+        try {
+            // Find the submission
+            $submission = AbstractSubmission::where('serial_number', $serial_number)->firstOrFail();
+
+            // Ensure submission has a reviewer
+            if (!$submission->reviewer_reg_no) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No reviewer assigned to this submission.',
+                ], 400);
+            }
+
+            // Find the associated user
+            $user = User::where('reg_no', $submission->reviewer_reg_no)->first();
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Reviewer not found.',
+                ], 404);
+            }
+
+            // Update submission status
+            $submission->update([
+                'final_status' => 'under_review',
+            ]);
+            $submission->score = null;
+            $submission->save();
+
+            // Send notification to the reviewer
+            $notificationData = [
+                'message' => 'You have a revision for ' . $submission->serial_number,
+                'link' => '/some-link', // Replace with actual link
+            ];
+            $user->notify(new NewUserNotification($notificationData));
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Revision requested successfully.',
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error requesting revision: ' . $e->getMessage(), [
+                'serial_number' => $serial_number,
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to request revision. Please try again later.',
+            ], 500);
+        }
+    }
 }

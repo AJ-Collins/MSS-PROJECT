@@ -85,6 +85,11 @@ Route::middleware(['preventBackHistory', 'auth'])->group(function () {
         Route::get('/proposal-assessments/{serial_number}', [AdminController::class, 'showProposalAssessments'])->name('admin.proposal.showAssessments');
 
         Route::get('/research-assessment/{serial_number}/pdf', [AdminController::class, 'downloadAssessmentPDF'])->name('download.AssessmentPDF');
+
+        Route::post('/accept-abstract-revision', [AdminController::class, 'acceptRevision'])->name('accept.abstract.revision');
+        Route::post('/reject-abstract-revision', [AdminController::class, 'rejectRevision'])->name('reject.abstract.revision');
+        Route::post('/reject/assessment/{serial_number}', [AdminController::class, 'rejectAssessment'])->name('reject.assessment');
+        Route::post('/reviewer-abstract-revision/{serial_number}', [AdminController::class, 'returnRevision'])->name('return.reviewer.abstract.revision');
     });
 
     //Reviewer routes
