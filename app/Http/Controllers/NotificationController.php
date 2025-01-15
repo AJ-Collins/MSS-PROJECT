@@ -10,6 +10,7 @@ class NotificationController extends Controller
     public function getNotifications(Request $request)
     {
         $notifications = auth()->user()->notifications()
+            ->orWhere('data->user_reg_no', auth()->user()->reg_no)
             ->orderBy('created_at', 'desc')
             ->paginate(10)  // Paginate results
             ->map(function ($notification) {

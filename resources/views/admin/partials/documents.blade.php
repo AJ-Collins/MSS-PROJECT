@@ -970,10 +970,12 @@ function assignAbstractReviewers() {
         .then(response => response.json())
         .then(data => {
             if (data.message) {
-                alert(data.message);
-                location.reload(); // Reload the page to reflect changes
+                showNotification('success', data.message || 'Reviwer assigned successfully.');
+                setTimeout(() => {
+                        location.reload();
+                }, 1000);
             } else if (data.error) {
-                alert(data.error); // Handle error if there's any
+                showNotification('success', data.message || 'Error assigning reviewer. Try again');
             }
         })
         .catch(error => {
@@ -1020,10 +1022,12 @@ function assignReviewers() {
         .then(response => response.json())
         .then(data => {
             if (data.message) {
-                alert(data.message);
-                location.reload(); // Reload the page to reflect changes
+                showNotification('success', data.message || 'Reviwer assigned successfully.');
+                setTimeout(() => {
+                        location.reload();
+                }, 1000);
             } else if (data.error) {
-                alert(data.error);
+                showNotification('success', data.message || 'Error assigning reviewer. Try again');
             }
         })
         .catch(error => {
@@ -1056,8 +1060,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (response.ok) {
                     // Show success message
                     showNotification(data.message || "Score rejected successfully", 'success');
-                    // Reload page or update UI
-                    window.location.reload();
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000);
                 } else {
                     showNotification(data.message || "Failed to reject score");
                 }
@@ -1088,8 +1093,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (response.ok) {
                     // Show success message
                     showNotification(data.message || "Revision request successfully", 'success');
-                    // Reload page or update UI
-                    window.location.reload();
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000);
                 } else {
                     showNotification(data.message || "Failed to request revision");
                 }

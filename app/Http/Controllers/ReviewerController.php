@@ -8,8 +8,7 @@ use App\Models\AbstractSubmission;
 use App\Models\ResearchSubmission;
 use App\Models\ResearchAssessment;
 use Illuminate\Support\Facades\DB;
-use App\Models\Role;
-use Livewire\Attributes\Validate;
+use App\Notifications\NewUserNotification;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
@@ -436,6 +435,18 @@ class ReviewerController extends Controller
             $submission->final_status = 'revision_required';
             $submission->score = Null;
             $submission->save();
+
+            $admin = User::whereHas('roles', function ($query) {
+                $query->where('name', 'admin');
+            })->first();
+
+            $notificationData = [
+                'message' => 'Revision request for abstract: ' . $submission->serial_number,
+                'link' => route('admin.documents', ['serial_number' => $serial_number]),
+                'user_reg_no' => $admin->reg_no,
+            ];
+    
+            $admin->notify(new NewUserNotification($notificationData));
     
             return response()->json(['message' => 'Revision requested successfully.']);
         } catch (\Exception $e) {

@@ -127,8 +127,9 @@ class AdminController extends Controller
     {
         $submissions = AbstractSubmission::with('user')->get();
         $researchSubmissions = ResearchSubmission::with('user')->get();
+        $researchAssessments = ResearchAssessment::all();
 
-        return view('admin.partials.reports', compact('submissions', 'researchSubmissions'));
+        return view('admin.partials.reports', compact('submissions', 'researchSubmissions', 'researchAssessments'));
     }
 
     public function showAssessments($serial_number)
@@ -749,11 +750,6 @@ class AdminController extends Controller
         ]);
             
     } catch (\Exception $e) {
-        \Log::error('Score rejection failed:', [
-            'serial_number' => $serial_number,
-            'error' => $e->getMessage()
-        ]);
-
         return response()->json([
             'success' => false,
             'message' => 'Failed to reject score. Please try again later.'
@@ -803,10 +799,6 @@ class AdminController extends Controller
                 'message' => 'Revision requested successfully.',
             ]);
         } catch (\Exception $e) {
-            \Log::error('Error requesting revision: ' . $e->getMessage(), [
-                'serial_number' => $serial_number,
-            ]);
-
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to request revision. Please try again later.',
