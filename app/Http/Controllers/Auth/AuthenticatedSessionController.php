@@ -72,7 +72,7 @@ class AuthenticatedSessionController extends Controller
         $user = Auth::user();
 
         if (!$user) {
-            return '/'; // Fallback to home if no user is authenticated
+            return '/login'; // Fallback to home if no user is authenticated
         }
 
         $roles = $user->roles->pluck('name');
@@ -80,7 +80,7 @@ class AuthenticatedSessionController extends Controller
         if ($roles->contains('admin')) {
             return route('admin.dashboard');
         } elseif ($roles->contains('reviewer')) {
-            return route('reviewer.partials.dashboard');
+            return route('reviewer.dashboard');
         } elseif ($roles->contains('user')) {
             return route('user.dashboard');
         }

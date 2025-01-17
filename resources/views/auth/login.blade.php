@@ -1,111 +1,167 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
     <title>TUM-MSS - Login</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
+        :root {
+            --primary-color: #0D8700;
+            --secondary-color: #9DA11E;
+            --form-bg: #ffffff;
+            --input-border: #e5e7eb;
+            --text-primary: #374151;
+            --text-secondary: #6B7280;
+        }
+
         body {
-            background-color: #f8f9fa;
-            font-family: 'Arial', sans-serif;
+            background-color: #f3f4f6;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
             min-height: 100vh;
             display: flex;
             align-items: center;
+            padding: 2rem 0;
         }
+
         .login-container {
             width: 100%;
             max-width: 450px;
-            margin: 0 auto;
-            padding: 1rem;
-        }
-        .brand-header {
-            background: linear-gradient(135deg,rgb(13, 135, 0) 0%,rgb(157, 161, 30) 100%);
-            padding: 1rem;
-            border-radius: 8px 8px 0 0;
-            margin-bottom: 0;
-        }
-        .brand-header h4 {
-            color: black;
-            font-weight: 400;
-            letter-spacing: 1px;
-            margin: 0;
-            font-size: 1.2rem;
-        }
-        .login-card {
-            border: none;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .login-card .card-body {
+            margin: auto;
             padding: 1.5rem;
         }
-        .form-control {
-            padding: 0.6rem;
-            border-radius: 6px;
-            border: 1px solid #e2e8f0;
+
+        .brand-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            padding: 1.5rem;
+            border-radius: 12px 12px 0 0;
+            text-align: center;
         }
-        .form-control:focus {
-            border-color: #3498db;
-            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
-        }
-        .btn-primary {
-            background-color:rgb(150, 188, 152);
-            border: none;
-            padding: 0.6rem 1.2rem;
+
+        .brand-header h4 {
+            color: white;
             font-weight: 500;
+            letter-spacing: 0.5px;
+            margin: 0;
+            font-size: 1.5rem;
         }
+
+        .login-card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            background: var(--form-bg);
+        }
+
+        .login-card .card-body {
+            padding: 2rem;
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .form-control {
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            border: 1.5px solid var(--input-border);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(13, 135, 0, 0.1);
+        }
+
+        .form-text {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            border: none;
+            padding: 0.875rem 1.5rem;
+            font-weight: 500;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
         .btn-primary:hover {
-            background-color:rgb(127, 162, 129);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(13, 135, 0, 0.2);
         }
+
         .login-footer {
-            border-top: 1px solid #e2e8f0;
-            padding-top: 1rem;
+            border-top: 1px solid var(--input-border);
+            padding-top: 1.5rem;
             margin-top: 1.5rem;
         }
-        .form-text {
-            color: #718096;
-            font-size: 0.8rem;
-        }
+
         .help-links {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 1rem;
-            font-size: 0.9rem;
+            gap: 1.5rem;
+            font-size: 0.95rem;
         }
+
         .help-links a {
-            color: #3498db;
+            color: var(--primary-color);
             text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
         }
+
         .help-links a:hover {
-            color: #2980b9;
-            text-decoration: underline;
+            color: var(--secondary-color);
         }
-        .form-label {
-            font-size: 0.9rem;
-            margin-bottom: 0.3rem;
+
+        .form-check {
+            margin-top: 0.5rem;
         }
-        .mb-4 {
-            margin-bottom: 1rem !important;
+
+        .form-check-input:checked {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
         }
+
+        .form-check-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(13, 135, 0, 0.1);
+        }
+
+        .form-check-label {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .alert {
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
         @media (max-width: 576px) {
             .login-container {
-                padding: 0.5rem;
-            }
-            .login-card .card-body {
                 padding: 1rem;
             }
-            .brand-header {
-                padding: 0.8rem;
+
+            .card-body {
+                padding: 1.5rem;
             }
-            .brand-header h4 {
-                font-size: 1.1rem;
-            }
+
             .help-links {
-                font-size: 0.8rem;
+                flex-direction: column;
+                align-items: center;
+                gap: 1rem;
             }
         }
     </style>
@@ -117,30 +173,43 @@
                 <h4>Sign In | TUM-MSS</h4>
             </div>
             <div class="card-body">
+                @if (session('status'))
+                    <div class="alert alert-success">
+                        {{ session('status') }}
+                    </div>
+                @endif
                 <form method="POST" action="{{ route('login') }}">
                     @csrf
                     <div class="mb-4">
                         <label for="reg_no" class="form-label">Registration Number</label>
                         <input type="text" 
-                               class="form-control" 
+                               class="form-control @error('reg_no') is-invalid @enderror" 
                                id="reg_no" 
                                name="reg_no"
                                required 
                                autocomplete="reg_no" 
                                autofocus
                                placeholder="Enter registration number">
-                        <div class="form-text">Please enter your assigned registration number</div>
+                        @error('reg_no')
+                            <span class="invalid-feedback" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                        @enderror
                     </div>
 
                     <div class="mb-4">
                         <label for="password" class="form-label">Password</label>
                         <input type="password" 
-                               class="form-control" 
+                               class="form-control @error('password') is-invalid @enderror" 
                                id="password" 
                                name="password"
                                required
                                placeholder="Enter password">
-                        <div class="form-text">Enter your secure password</div>
+                        @error('password')
+                            <span class="invalid-feedback" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                        @enderror
                     </div>
 
                     <div class="mb-4">
@@ -165,7 +234,6 @@
                         <div class="help-links">
                             <a href="{{ route('password.request') }}">Forgot Password?</a>
                             <a href="{{ route('register') }}">New User Registration</a>
-                            <!--<a href="#">Help</a>-->
                         </div>
                     </div>
                 </form>

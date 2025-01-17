@@ -6,100 +6,140 @@
     <title>TUM-MSS - Register</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
+        :root {
+            --primary-color: #0D8700;
+            --secondary-color: #9DA11E;
+            --form-bg: #ffffff;
+            --input-border: #e5e7eb;
+            --text-primary: #374151;
+            --text-secondary: #6B7280;
+        }
+
         body {
-            background-color: #f8f9fa;
-            font-family: 'Arial', sans-serif;
+            background-color: #f3f4f6;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
             min-height: 100vh;
             display: flex;
             align-items: center;
+            padding: 2rem 0;
         }
+
         .register-container {
             width: 100%;
-            max-width: 500px;
-            margin: 2rem auto;
-            padding: 1rem;
-        }
-        .brand-header {
-            background: linear-gradient(135deg,rgb(13, 135, 0) 0%,rgb(157, 161, 30) 100%);
-            padding: 1rem;
-            border-radius: 8px 8px 0 0;
-            margin-bottom: 0;
-        }
-        .brand-header h4 {
-            color: white;
-            font-weight: 300;
-            letter-spacing: 1px;
-            margin: 0;
-            font-size: 1.2rem;
-        }
-        .register-card {
-            border: none;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .register-card .card-body {
+            max-width: 600px;
+            margin: auto;
             padding: 1.5rem;
         }
-        .form-control {
-            padding: 0.6rem;
-            border-radius: 6px;
-            border: 1px solid #e2e8f0;
-            font-size: 0.9rem;
+
+        .brand-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            padding: 1.5rem;
+            border-radius: 12px 12px 0 0;
+            text-align: center;
         }
-        .form-control:focus {
-            border-color: #3498db;
-            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
-        }
-        .btn-primary {
-            background-color:rgb(150, 188, 152);
-            border: none;
-            padding: 0.6rem 1.2rem;
+
+        .brand-header h4 {
+            color: white;
             font-weight: 500;
-            width: 100%;
+            letter-spacing: 0.5px;
+            margin: 0;
+            font-size: 1.5rem;
         }
-        .btn-primary:hover {
-            background-color:rgb(127, 162, 129);
+
+        .register-card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            background: var(--form-bg);
         }
-        .form-text {
-            color: #718096;
-            font-size: 0.8rem;
+
+        .register-card .card-body {
+            padding: 2rem;
         }
+
         .form-label {
-            font-size: 0.9rem;
-            margin-bottom: 0.3rem;
-            color: #2c3e50;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
         }
-        .mb-3 {
-            margin-bottom: 1rem !important;
+
+        .form-control, .form-select {
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            border: 1.5px solid var(--input-border);
+            font-size: 1rem;
+            transition: all 0.3s ease;
         }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(13, 135, 0, 0.1);
+        }
+
+        .form-text {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            border: none;
+            padding: 0.875rem 1.5rem;
+            font-weight: 500;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(13, 135, 0, 0.2);
+        }
+
+        .form-floating {
+            margin-bottom: 1.5rem;
+        }
+
+        .name-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
         .invalid-feedback {
-            font-size: 0.8rem;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
         }
+
         .login-link {
             text-align: center;
-            margin-top: 1rem;
-            font-size: 0.9rem;
+            margin-top: 1.5rem;
+            color: var(--text-secondary);
         }
+
         .login-link a {
-            color: #3498db;
+            color: var(--primary-color);
             text-decoration: none;
+            font-weight: 500;
         }
+
         .login-link a:hover {
             text-decoration: underline;
         }
+
         @media (max-width: 576px) {
             .register-container {
-                padding: 0.5rem;
-                margin: 1rem auto;
-            }
-            .register-card .card-body {
                 padding: 1rem;
             }
-            .brand-header {
-                padding: 0.8rem;
+
+            .card-body {
+                padding: 1.5rem;
             }
-            .brand-header h4 {
-                font-size: 1.1rem;
+
+            .name-group {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -107,7 +147,7 @@
 <body>
     <div class="container register-container">
         <div class="register-card card">
-            <div class="brand-header text-center">
+            <div class="brand-header">
                 <h4>Create New Account</h4>
             </div>
             <div class="card-body">
@@ -133,20 +173,57 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="name" class="form-label">Full Name</label>
-                        <input type="text" 
-                               class="form-control @error('name') is-invalid @enderror" 
-                               id="name" 
-                               name="name"
-                               value="{{ old('name') }}"
-                               required 
-                               autocomplete="name"
-                               placeholder="Enter your full name">
-                        @error('name')
+                        <label for="salutation" class="form-label">Salutation</label>
+                        <select class="form-select @error('salutation') is-invalid @enderror" 
+                                id="salutation" 
+                                name="salutation">
+                            <option value="">Select Salutation</option>
+                            <option value="Mr." {{ old('salutation') == 'Mr.' ? 'selected' : '' }}>Mr.</option>
+                            <option value="Mrs." {{ old('salutation') == 'Mrs.' ? 'selected' : '' }}>Mrs.</option>
+                            <option value="Ms." {{ old('salutation') == 'Ms.' ? 'selected' : '' }}>Ms.</option>
+                            <option value="Dr." {{ old('salutation') == 'Dr.' ? 'selected' : '' }}>Dr.</option>
+                            <option value="Prof." {{ old('salutation') == 'Prof.' ? 'selected' : '' }}>Prof.</option>
+                        </select>
+                        @error('salutation')
                             <span class="invalid-feedback" role="alert">
                                 <strong>{{ $message }}</strong>
                             </span>
                         @enderror
+                    </div>
+
+                    <div class="name-group mb-3">
+                        <div>
+                            <label for="first_name" class="form-label">First Name</label>
+                            <input type="text" 
+                                   class="form-control @error('first_name') is-invalid @enderror" 
+                                   id="first_name" 
+                                   name="first_name"
+                                   value="{{ old('first_name') }}"
+                                   required 
+                                   autocomplete="first_name"
+                                   placeholder="Enter first name">
+                            @error('first_name')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
+                        </div>
+                        <div>
+                            <label for="last_name" class="form-label">Last Name</label>
+                            <input type="text" 
+                                   class="form-control @error('last_name') is-invalid @enderror" 
+                                   id="last_name" 
+                                   name="last_name"
+                                   value="{{ old('last_name') }}"
+                                   required 
+                                   autocomplete="last_name"
+                                   placeholder="Enter last name">
+                            @error('last_name')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
+                        </div>
                     </div>
 
                     <div class="mb-3">
@@ -159,7 +236,6 @@
                                required 
                                autocomplete="email"
                                placeholder="Enter your email address">
-                        <div class="form-text">We'll never share your email with anyone else</div>
                         @error('email')
                             <span class="invalid-feedback" role="alert">
                                 <strong>{{ $message }}</strong>

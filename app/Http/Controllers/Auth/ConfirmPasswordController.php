@@ -25,10 +25,8 @@ class ConfirmPasswordController extends Controller
      *
      * @var string
      */
-    protected function redirectTo()
-    {
-        return route('login');
-    }
+    protected $redirectTo = '/login';
+
     /**
      * Create a new controller instance.
      *

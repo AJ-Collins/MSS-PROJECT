@@ -1,131 +1,144 @@
-@extends('reviewer.layouts.reviewer')
+@extends('admin.layouts.admin')
 
-@section('reviewer-content')
-<div class="container mx-auto p-6 space-y-6">
-    <!-- Profile Header -->
-    <div class="flex justify-between items-center mb-6">
-        <div class="flex items-center space-x-4">
-            <img id="profile-picture" src="https://via.placeholder.com/100" alt="Profile Picture" class="w-24 h-24 rounded-full border border-gray-200">
-            <div>
-                <h1 class="text-2xl font-bold text-gray-800">John Doe</h1>
-                <p class="text-sm text-gray-500">Senior Developer at Example Company</p>
-            </div>
+@section('admin-content')
+<div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="max-w-7xl mx-auto">
+        <!-- Profile Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900">Profile Settings</h1>
+            <p class="mt-2 text-sm text-gray-600">Account information</p>
         </div>
-        <button onclick="openModal('edit-profile-modal')" class="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
-            Edit Profile
-        </button>
-    </div>
 
-    <!-- Personal Info Section -->
-    <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
-        <h2 class="text-xl font-semibold text-gray-800 mb-4">Personal Information</h2>
-        <div class="space-y-4">
-            <p><strong class="font-semibold text-gray-700">Email:</strong> john.doe@example.com</p>
-            <p><strong class="font-semibold text-gray-700">Phone:</strong> +1 234 567 890</p>
-            <p><strong class="font-semibold text-gray-700">Location:</strong> New York, USA</p>
-        </div>
-    </div>
-
-    <!-- Skills Section 
-    <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
-        <h2 class="text-xl font-semibold text-gray-800 mb-4">Skills</h2>
-        <div class="space-x-4">
-            <span class="inline-block px-4 py-2 bg-gray-200 text-gray-800 rounded-full text-sm">Laravel</span>
-            <span class="inline-block px-4 py-2 bg-gray-200 text-gray-800 rounded-full text-sm">PHP</span>
-            <span class="inline-block px-4 py-2 bg-gray-200 text-gray-800 rounded-full text-sm">JavaScript</span>
-            <span class="inline-block px-4 py-2 bg-gray-200 text-gray-800 rounded-full text-sm">React</span>
-        </div>
-    </div>-->
-
-    <!-- Experience Section -->
-    <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
-        <h2 class="text-xl font-semibold text-gray-800 mb-4">Professional Experience</h2>
-        <div class="space-y-4">
-            <div>
-                <h3 class="text-lg font-semibold text-gray-800">Senior Developer - Example Company</h3>
-                <p class="text-sm text-gray-500">Jan 2020 - Present</p>
-                <p class="text-sm text-gray-700">Led a team of developers to build scalable web applications using Laravel and React. Enhanced the user experience and optimized performance for high-traffic applications.</p>
-            </div>
-            <div>
-                <h3 class="text-lg font-semibold text-gray-800">Web Developer - Tech Solutions</h3>
-                <p class="text-sm text-gray-500">Jan 2018 - Dec 2019</p>
-                <p class="text-sm text-gray-700">Developed dynamic websites and applications using PHP, JavaScript, and SQL. Focused on creating efficient, user-friendly interfaces and improving website performance.</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Education Section -->
-    <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
-        <h2 class="text-xl font-semibold text-gray-800 mb-4">Education</h2>
-        <div class="space-y-4">
-            <div>
-                <h3 class="text-lg font-semibold text-gray-800">Bachelor of Science in Computer Science</h3>
-                <p class="text-sm text-gray-500">University of New York, 2017</p>
-            </div>
-            <div>
-                <h3 class="text-lg font-semibold text-gray-800">Master of Science in Data Science</h3>
-                <p class="text-sm text-gray-500">Stanford University, 2020</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Contact Section -->
-    <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
-        <h2 class="text-xl font-semibold text-gray-800 mb-4">Contact</h2>
-        <div class="space-y-4">
-            <p><strong class="font-semibold text-gray-700">LinkedIn:</strong> <a href="https://linkedin.com/in/johndoe" class="text-indigo-600 hover:text-indigo-700">linkedin.com/in/johndoe</a></p>
-            <p><strong class="font-semibold text-gray-700">GitHub:</strong> <a href="https://github.com/johndoe" class="text-indigo-600 hover:text-indigo-700">github.com/johndoe</a></p>
-        </div>
-    </div>
-
-    <!-- Modals (for editing profile, etc.) -->
-    <!-- Edit Profile Modal -->
-    <div id="edit-profile-modal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center">
-        <div class="bg-white rounded-lg shadow-md p-6 w-full max-w-lg">
-            <h3 class="text-lg font-medium text-gray-800 mb-4">Edit Profile</h3>
-            <form>
-                <div class="mb-4">
-                    <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-                    <input type="email" id="email" name="email" class="mt-1 p-2 w-full border border-gray-300 rounded-md" value="john.doe@example.com">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Left Column: Profile Photo Section -->
+            <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                <div class="p-6">
+                    <div class="flex flex-col items-center">
+                        <div class="relative group">
+                            <div class="w-40 h-40 rounded-full overflow-hidden ring-4 ring-gray-100">
+                                <img 
+                                    id="profileImagePreview" 
+                                    src="" 
+                                    alt="Profile Photo" 
+                                    class="w-full h-full object-cover transition duration-300 ease-in-out group-hover:opacity-75"
+                                >
+                            </div>
+                            <label for="profilePhotoInput" class="absolute bottom-0 right-0 bg-white rounded-full p-2 shadow-lg cursor-pointer transform transition duration-300 ease-in-out hover:scale-110">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                            </label>
+                            <input type="file" name="profile_photo" id="profilePhotoInput" accept="image/*" onchange="uploadPhoto(event)" class="hidden">
+                        </div>
+                        <h3 class="mt-4 text-xl font-semibold text-gray-900">Collins</h3>
+                        <p class="text-sm text-gray-500">kiprocolloaj</p>
+                    </div>
                 </div>
-                <div class="mb-4">
-                    <label for="phone" class="block text-sm font-medium text-gray-700">Phone</label>
-                    <input type="text" id="phone" name="phone" class="mt-1 p-2 w-full border border-gray-300 rounded-md" value="+1 234 567 890">
+            </div>
+
+            <!-- Right Column: User Details Section -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                    <div class="p-6">
+                        <h2 class="text-lg font-medium text-gray-900">Personal Information</h2>
+                        
+                        <dl class="mt-6 space-y-6 divide-y divide-gray-200">
+                            <div class="pt-6 first:pt-0">
+                                <dt class="text-sm font-medium text-gray-500">First Name</dt>
+                                <dd class="mt-1 text-sm text-gray-900">Collins</dd>
+                            </div>
+
+                            <div class="pt-6">
+                                <dt class="text-sm font-medium text-gray-500">Middle Name</dt>
+                                <dd class="mt-1 text-sm text-gray-900">Kiprotich</dd>
+                            </div>
+
+                            <div class="pt-6">
+                                <dt class="text-sm font-medium text-gray-500">Surname</dt>
+                                <dd class="mt-1 text-sm text-gray-900">AJ</dd>
+                            </div>
+
+                            <div class="pt-6">
+                                <dt class="text-sm font-medium text-gray-500">Email Address</dt>
+                                <dd class="mt-1 text-sm text-gray-900">kiprocolloaj</dd>
+                            </div>
+
+                            <div class="pt-6">
+                                <dt class="text-sm font-medium text-gray-500">Phone Number</dt>
+                                <dd class="mt-1 text-sm text-gray-900">07000</dd>
+                            </div>
+                        </dl>
+                    </div>
                 </div>
-                <div class="mb-4">
-                    <label for="location" class="block text-sm font-medium text-gray-700">Location</label>
-                    <input type="text" id="location" name="location" class="mt-1 p-2 w-full border border-gray-300 rounded-md" value="New York, USA">
-                </div>
-                <div class="mb-4">
-                    <label for="profile-picture-upload" class="block text-sm font-medium text-gray-700">Upload Profile Picture</label>
-                    <input type="file" id="profile-picture-upload" class="mt-1 p-2 w-full border border-gray-300 rounded-md" accept="image/*" onchange="previewProfilePicture(event)">
-                </div>
-                <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">Save Changes</button>
-            </form>
+
+                <!-- Additional Information Card
+                <div class="mt-8 bg-white rounded-lg shadow-sm overflow-hidden">
+                    <div class="p-6">
+                        <h2 class="text-lg font-medium text-gray-900">Account Settings</h2>
+                        <p class="mt-1 text-sm text-gray-500">Manage your account preferences and settings.</p>
+                        
+                        <div class="mt-6">
+                            <a href="#" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                Change Password
+                            </a>
+                        </div>
+                    </div>
+                </div>-->
+            </div>
         </div>
     </div>
-
-    <script>
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.add('hidden');
-        }
-
-        function openModal(modalId) {
-            document.getElementById(modalId).classList.remove('hidden');
-        }
-
-        function previewProfilePicture(event) {
-            const file = event.target.files[0];
-            const reader = new FileReader();
-
-            reader.onload = function (e) {
-                document.getElementById('profile-picture').src = e.target.result;
-            };
-
-            if (file) {
-                reader.readAsDataURL(file);
-            }
-        }
-    </script>
 </div>
+
+<script>
+function uploadPhoto(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Show loading state
+    const preview = document.getElementById('profileImagePreview');
+    preview.style.opacity = '0.5';
+
+    // Preview image
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        preview.src = e.target.result;
+        preview.style.opacity = '1';
+    };
+    reader.readAsDataURL(file);
+
+    // Prepare form data
+    const formData = new FormData();
+    formData.append('profile_photo', file);
+    formData.append('_token', '{{ csrf_token() }}');
+
+    // Upload to server
+    fetch('', {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Accept': 'application/json',
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Show success message using a toast notification system
+            toastr.success('Profile photo updated successfully');
+        } else {
+            toastr.error('Error uploading photo');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        toastr.error('An error occurred while uploading the photo');
+        // Reset preview to previous image if upload failed
+        preview.src = '{{ auth()->user()->profile_photo_url }}';
+    })
+    .finally(() => {
+        preview.style.opacity = '1';
+    });
+}
+</script>
 @endsection

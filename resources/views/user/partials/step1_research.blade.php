@@ -465,7 +465,6 @@
         form.addEventListener('submit', function(event) {
             if (!validateForm()) {
                 event.preventDefault();
-                showNotification('Please correct the errors before proceeding', 'error');
             }
         });
     }

@@ -63,7 +63,7 @@
                             </div>
                             <div class="ml-4">
                                 <p class="text-sm text-gray-500">Revisions</p>
-                                <p class="text-2xl font-semibold text-gray-700">3</p>
+                                <p class="text-2xl font-semibold text-gray-700">0</p>
                             </div>
                         </div>
                     </div>

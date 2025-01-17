@@ -74,37 +74,43 @@ Route::middleware(['preventBackHistory', 'auth'])->group(function () {
         Route::get('/documents', [AdminController::class, 'documents'])->name('admin.documents');
         Route::get('/profile', [AdminController::class, 'profile'])->name('admin.profile');
         Route::get('/settings', [AdminController::class, 'settings'])->name('admin.settings');
-        Route::get('/profile', [AdminController::class, 'profile'])->name('admin.partials.profile');
-        Route::post('/approve-abstract', [AdminController::class, 'approveAbstract'])->name('approve.abstract');
+        Route::post('/accept-abstract', [AdminController::class, 'acceptAbstract'])->name('accept.abstract');
         Route::post('/reject-abstract', [AdminController::class, 'rejectAbstract'])->name('reject.abstract');
-        Route::post('/approve-proposal', [AdminController::class, 'approveProposal'])->name('approve.proposal');
+        Route::post('/accept-proposal', [AdminController::class, 'acceptProposal'])->name('accept.proposal');
         Route::post('/reject-proposal', [AdminController::class, 'rejectProposal'])->name('reject.proposal');
         Route::post('/request-article-upload/{serial_number}', [AdminController::class, 'requestArticleUpload'])->name('request.article.upload');
+        Route::post('/approve-abstract', [AdminController::class, 'approveAbstract'])->name('approve.abstract');
+        Route::post('/unapprove-abstract', [AdminController::class, 'unapproveAbstract'])->name('unapprove.abstract');
+        Route::post('/approve-proposal', [AdminController::class, 'approveProposal'])->name('approve.proposal');
+        Route::post('/unapprove-proposal', [AdminController::class, 'unapproveProposal'])->name('unapprove.proposal');
 
         Route::get('/research-assessments/{serial_number}', [AdminController::class, 'showAssessments'])->name('admin.showAssessments');
         Route::get('/proposal-assessments/{serial_number}', [AdminController::class, 'showProposalAssessments'])->name('admin.proposal.showAssessments');
-
-        Route::get('/research-assessment/{serial_number}/pdf', [AdminController::class, 'downloadAssessmentPDF'])->name('download.AssessmentPDF');
 
         Route::post('/accept-abstract-revision', [AdminController::class, 'acceptRevision'])->name('accept.abstract.revision');
         Route::post('/reject-abstract-revision', [AdminController::class, 'rejectRevision'])->name('reject.abstract.revision');
         Route::post('/reject/assessment/{serial_number}', [AdminController::class, 'rejectAssessment'])->name('reject.assessment');
         Route::post('/reviewer-abstract-revision/{serial_number}', [AdminController::class, 'returnRevision'])->name('return.reviewer.abstract.revision');
+
+        Route::post('/accept-proposal-revision', [AdminController::class, 'acceptProposalRevision'])->name('accept.proposal.revision');
+        Route::post('/reject-proposal-revision', [AdminController::class, 'rejectProposalRevision'])->name('reject.proposal.revision');
+        Route::post('/reject/proposal-assessment/{serial_number}', [AdminController::class, 'rejectProposalAssessment'])->name('reject.proposal.assessment');
+        Route::post('/reviewer-proposal-revision/{serial_number}', [AdminController::class, 'returnProposalRevision'])->name('return.reviewer.proposal.revision');
     });
 
     //Reviewer routes
     Route::prefix('reviewer')->group(function () {
-        Route::get('/dashboard', [ReviewerController::class, 'dashboard'])->name('reviewer.partials.dashboard');
+        Route::get('/dashboard', [ReviewerController::class, 'dashboard'])->name('reviewer.dashboard');
         Route::get('/assigned-abstracts', [ReviewerController::class, 'assignedAbstracts'])->name('reviewer.assignedAbstracts');
-        Route::get('/documents', [ReviewerController::class, 'documentsReview'])->name('reviewer.partials.documents');
+        Route::get('/documents', [ReviewerController::class, 'documentsReview'])->name('reviewer.documents');
         Route::get('/assessment/abstract/{serial_number}', [ReviewerController::class, 'AbstractAssessment'])->name('reviewer.abstract.assessment');
         Route::get('/assessment/proposal-view/{serial_number}', [ReviewerController::class, 'ProposalAssessment'])->name('reviewer.proposal.assessment');
         Route::post('/assessment/abstract/{serial_number}', [ReviewerController::class, 'AbstractAssessmentStore'])->name('reviewer.abstracts.assessment.store');
         Route::post('/assessment/proposal-store/{serial_number}', [ReviewerController::class, 'ProposalAssessmentStore'])->name('reviewer.proposal.assessment.store');
         Route::get('/assessment/abstracts/{serial_number}', [ReviewerController::class, 'AbstracPreview'])->name('reviewer.assessment.abstractpreview');
         Route::get('/assessment/proposal/{serial_number}', [ReviewerController::class, 'ProposalPreview'])->name('reviewer.assessment.proposalpreview');
-        Route::get('/reviewed', [ReviewerController::class, 'revieweddocuments'])->name('reviewer.partials.reviewed');
-        Route::get('/profile', [ReviewerController::class, 'profile'])->name('reviewer.partials.profile');
+        Route::get('/reviewed', [ReviewerController::class, 'revieweddocuments'])->name('reviewer.reviewed');
+        Route::get('/profile', [ReviewerController::class, 'profile'])->name('reviewer.profile');
         Route::post('/update-abstract-reviewer-status', [ReviewerController::class, 'abstractStatus'])->name('update.abstract.reviewer.status');
         Route::post('/abstract/reject', [ReviewerController::class, 'abstractReject'])->name('reviewer.abstract.reject');
         Route::post('/update-proposal-reviewer-status', [ReviewerController::class, 'proposalStatus'])->name('update.proposal.reviewer.status');
@@ -192,5 +198,9 @@ Route::middleware(['preventBackHistory', 'auth'])->group(function () {
 
 
     Route::get('/download/{serialNumber}', [ResearchSubmissionController::class, 'downloadFile'])->name('download.file');
+
+
+    Route::get('/research_assessments/{abstract_submission_id}/download-pdf', [AbstractsController::class, 'downloadAssessmentPDF'])->name('assessments.download-pdf');
+    Route::get('/proposal/research_assessments/{abstract_submission_id}/download-pdf', [ProposalController::class, 'downloadProposalAssessmentPDF'])->name('assessments.proposal.download-pdf');
 
 });

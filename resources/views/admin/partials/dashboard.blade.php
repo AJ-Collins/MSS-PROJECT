@@ -105,69 +105,264 @@
                         </tr>
                     </thead>
                     <tbody>
-                    @foreach ($submissions as $submission)
-                        <tr class="border-b hover:bg-gray-50">
-                            <td class="px-4 py-3 text-sm text-gray-700">{{ $submission->serial_number }}</td>
-                            <td class="px-4 py-3 text-sm text-gray-700">{{ $submission->user_reg_no }}</td>
-                            <td class="px-4 py-3 text-sm text-gray-500">{{ \Carbon\Carbon::parse($submission->created_at)->format('d M Y') }}</td>
-                            <td class="px-4 py-3 text-center">
-                                @php
-                                    $statusStyles = [
-                                        'Pending' => [
-                                            'text' => 'text-yellow-800',
-                                            'bg' => 'bg-yellow-100'
-                                        ],
-                                        'Approved' => [
-                                            'text' => 'text-green-800',
-                                            'bg' => 'bg-green-100'
-                                        ],
-                                        'Under Review' => [
-                                            'text' => 'text-blue-800',
-                                            'bg' => 'bg-blue-100'
-                                        ],
-                                        'Rejected' => [
-                                            'text' => 'text-red-800',
-                                            'bg' => 'bg-red-100'
-                                        ],
-                                        'Needs Revision' => [
-                                            'text' => 'text-orange-800',
-                                            'bg' => 'bg-orange-100'
-                                        ]
-                                    ];
-
-                                    $currentStatus = $submission->reviewer_status;
-                                    $style = $statusStyles[$currentStatus] ?? [
-                                        'text' => 'text-gray-800',
-                                        'bg' => 'bg-gray-100'
-                                    ];
-                                @endphp
-
-                                <span class="px-3 py-1 text-xs font-medium {{ $style['text'] }} {{ $style['bg'] }} rounded-full">
-                                    {{ $currentStatus ?: 'Not Assigned' }}
-                                </span>
+                        @foreach ($submissions as $submission)
+                            <tr class="border-b hover:bg-gray-50">
+                            <td class="px-4 py-3 text-sm text-gray-700">
+                                <span class="font-semibold">{{ $submission->title }}</span><br>
+                                <span>{{ $submission->serial_number }}</span>
                             </td>
-                            <td class="px-4 py-3 text-center space-x-2">
-                            <!--<button class="px-2 py-1 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-full">View</button>                            -->
-                                <div class="relative inline-block text-left">
-                                    <button onclick="toggleDropdown(event)" class="inline-flex justify-center w-full px-2 py-1 text-xs font-medium text-white bg-gray-600 rounded-full hover:bg-gray-700 focus:outline-none">
-                                        Download
-                                    </button>
-                                    <div class="absolute right-0 z-10 hidden mt-2 w-32 origin-top-right rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none dropdown-menu">
-                                        <div class="py-1">
-                                            <!-- Download as PDF -->
-                                            <a href="{{ route('research.abstract.download', $submission->serial_number) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                                Download PDF
-                                            </a>
-                                            <!-- Download as Word -->
-                                            <a href="{{ route('abstract.abstractWord.download', $submission->serial_number) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                                Download Word
-                                            </a>
+                                <td class="px-4 py-3 text-sm text-gray-700">{{ $submission->user_reg_no }}</td>
+                                <td class="px-4 py-3 text-sm text-gray-500">{{ \Carbon\Carbon::parse($submission->created_at)->format('d M Y') }}</td>
+                                <td class="px-4 py-3 text-center">
+                                    @php
+                                        $statusStyles = [
+                                            'submitted' => [
+                                                'text' => 'text-yellow-800',
+                                                'bg' => 'bg-yellow-100'
+                                            ],
+                                            'under_review' => [
+                                                'text' => 'text-blue-800',
+                                                'bg' => 'bg-blue-100'
+                                            ],
+                                            'rejected' => [
+                                                'text' => 'text-red-800',
+                                                'bg' => 'bg-red-100'
+                                            ],
+                                            'revision_required' => [
+                                                'text' => 'text-orange-800',
+                                                'bg' => 'bg-orange-100'
+                                            ],
+                                            'accepted' => [
+                                                'text' => 'text-green-800',
+                                                'bg' => 'bg-green-100'
+                                            ],
+                                        ];
+
+                                        $currentStatus = match($submission->final_status) {
+                                            'submitted' => 'Not Accepted',
+                                            'under_review' => 'Under Review',
+                                            'rejected' => 'Rejected',
+                                            'revision_required' => 'Revision Required',
+                                            'accepted' => 'Accepted',
+                                            default => 'Unknown'
+                                        };
+
+                                        $style = $statusStyles[$submission->final_status] ?? [
+                                            'text' => 'text-gray-800',
+                                            'bg' => 'bg-gray-100'
+                                        ];
+                                    @endphp
+                                    <span class="px-3 py-1 text-xs font-medium {{ $style['text'] }} {{ $style['bg'] }} rounded-full">
+                                        {{ $currentStatus }}
+                                    </span>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <div x-data="{ isOpen: false }" class="flex justify-center space-x-1.5">
+                                        <form action="{{ route('accept.abstract')}}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="serial_number" value="{{ $submission->serial_number }}">
+                                            <button type="submit" 
+                                                class="inline-flex items-center px-2 py-1 text-xs font-medium text-white bg-green-600 hover:bg-green-700 rounded transition-colors">
+                                                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                                </svg>
+                                                Accept
+                                            </button>
+                                        </form>
+
+                                        <form x-data="{ isRejectModalOpen: false }" action="{{ route('reject.abstract')}}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="serial_number" value="{{ $submission->serial_number }}">
+                                            <button type="button" 
+                                                @click="isRejectModalOpen = true"
+                                                class="inline-flex items-center px-2 py-1 text-xs font-medium text-white bg-red-600 hover:bg-red-700 rounded transition-colors">
+                                                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                                </svg>
+                                                Reject
+                                            </button>
+
+                                            <!-- Rejection Modal Backdrop -->
+                                            <div x-show="isRejectModalOpen"
+                                                x-cloak 
+                                                x-transition:enter="transition ease-out duration-300"
+                                                x-transition:enter-start="opacity-0"
+                                                x-transition:enter-end="opacity-100"
+                                                x-transition:leave="transition ease-in duration-200"
+                                                x-transition:leave-start="opacity-100"
+                                                x-transition:leave-end="opacity-0"
+                                                class="fixed inset-0 bg-black bg-opacity-50 z-40">
+                                            </div>
+
+                                            <!-- Rejection Modal Container -->
+                                            <div x-show="isRejectModalOpen"
+                                                x-cloak
+                                                x-transition:enter="transition ease-out duration-300"
+                                                x-transition:enter-start="opacity-0 translate-y-4"
+                                                x-transition:enter-end="opacity-100 translate-y-0"
+                                                x-transition:leave="transition ease-in duration-200"
+                                                x-transition:leave-start="opacity-100 translate-y-0"
+                                                x-transition:leave-end="opacity-0 translate-y-4"
+                                                class="fixed inset-0 z-50 overflow-y-auto"
+                                                @click.away="isRejectModalOpen = false">
+                                                    
+                                                <div class="min-h-screen px-4 text-center">
+                                                    <!-- Modal Panel -->
+                                                    <div class="inline-block w-full max-w-md p-6 my-8 text-left align-middle bg-white rounded-lg shadow-xl transform transition-all">
+                                                        <!-- Header -->
+                                                        <div class="flex justify-between items-center pb-3 border-b">
+                                                            <h3 class="text-lg font-medium text-gray-900">Reject Abstract</h3>
+                                                            <button @click="isRejectModalOpen = false" class="text-gray-400 hover:text-gray-500 focus:outline-none">
+                                                                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                                                </svg>
+                                                            </button>
+                                                        </div>
+
+                                                        <!-- Content -->
+                                                        <div class="mt-4">
+                                                            <label for="rejection_comment" class="block text-sm font-medium text-gray-700 mb-2">
+                                                                Please provide a reason for rejection
+                                                            </label>
+                                                            <textarea
+                                                                name="rejection_comment"
+                                                                id="rejection_comment"
+                                                                rows="4"
+                                                                required
+                                                                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500"
+                                                                placeholder="Enter your comments here..."
+                                                            ></textarea>
+                                                        </div>
+
+                                                        <!-- Footer -->
+                                                        <div class="mt-6 flex justify-end space-x-3">
+                                                            <button
+                                                                type="button"
+                                                                @click="isRejectModalOpen = false"
+                                                                class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors">
+                                                                Cancel
+                                                            </button>
+                                                            <button
+                                                                type="submit"
+                                                                class="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-md transition-colors">
+                                                                Confirm Rejection
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+
+                                        <button @click="isOpen = true" 
+                                            class="inline-flex items-center space-x-1 px-3 py-1 text-xs text-gray-700 hover:text-gray-900 rounded-md hover:bg-gray-100 transition-colors duration-200">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                            </svg>
+                                            <span>Preview Abstract</span>
+                                        </button>
+
+                                        <!-- Modal Backdrop -->
+                                        <div x-show="isOpen"
+                                            x-cloak 
+                                            x-transition:enter="transition ease-out duration-300"
+                                            x-transition:enter-start="opacity-0"
+                                            x-transition:enter-end="opacity-100"
+                                            x-transition:leave="transition ease-in duration-200"
+                                            x-transition:leave-start="opacity-100"
+                                            x-transition:leave-end="opacity-0"
+                                            class="fixed inset-0 bg-black bg-opacity-50 z-40"
+                                            @click="isOpen = false">
+                                        </div>
+
+                                        <!-- Modal Container -->
+                                        <div x-show="isOpen"
+                                            x-cloak
+                                            x-transition:enter="transition ease-out duration-300"
+                                            x-transition:enter-start="opacity-0 translate-y-4"
+                                            x-transition:enter-end="opacity-100 translate-y-0"
+                                            x-transition:leave="transition ease-in duration-200"
+                                            x-transition:leave-start="opacity-100 translate-y-0"
+                                            x-transition:leave-end="opacity-0 translate-y-4"
+                                            class="fixed inset-0 z-50 overflow-y-auto"
+                                            @click.away="isOpen = false">
+                                                
+                                            <div class="min-h-screen px-4 text-center">
+                                                <!-- Modal Panel -->
+                                                <div class="inline-block w-full max-w-4xl p-6 my-8 text-left align-middle bg-white rounded-lg shadow-xl transform transition-all">
+                                                    <!-- Header -->
+                                                    <div class="flex justify-between items-center pb-3 border-b">
+                                                        <h3 class="text-lg font-medium text-gray-900">Research Abstract Preview</h3>
+                                                        <button @click="isOpen = false" class="text-gray-400 hover:text-gray-500 focus:outline-none">
+                                                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                                            </svg>
+                                                        </button>
+                                                    </div>
+
+                                                    <!-- Content -->
+                                                    <div class="mt-4 max-h-[70vh] overflow-y-auto">
+                                                        <!-- Title -->
+                                                        <h1 class="text-2xl font-serif text-center font-bold mb-6">
+                                                            {{ $submission->title }}
+                                                        </h1>
+
+                                                        <!-- Authors -->
+                                                        <div class="text-center mb-8">
+                                                            @php
+                                                                $authors = json_decode($submission->authors, true);
+                                                            @endphp
+                                                            @if($authors && is_array($authors))
+                                                                <div class="flex flex-wrap justify-center gap-1 mb-2">
+                                                                    @foreach($authors as $author)
+                                                                        <span class="font-serif text-sm">
+                                                                            {{ $author['first_name'] }} {{ $author['middle_name'] ?? '' }} {{ $author['surname'] }}
+                                                                            @if($author['is_correspondent'])
+                                                                                <span class="text-black-600">*</span>
+                                                                            @endif
+                                                                            @if(!$loop->last), @endif
+                                                                        </span>
+                                                                    @endforeach
+                                                                </div>
+                                                                <!-- Affiliation -->
+                                                                <div class="space-y-1 text-gray-600">
+                                                                    <p class="font-serif text-xs">{{ $authors[0]['university'] }}</p>
+                                                                    <p class="font-serif text-xs">{{ $authors[0]['department'] }}</p>
+                                                                </div>
+                                                            @else
+                                                                <p class="text-gray-500 italic text-sm">No authors available</p>
+                                                            @endif
+                                                        </div>
+
+                                                        <!-- Abstract -->
+                                                        <div class="space-y-4">
+                                                            <h2 class="text-lg font-bold text-gray-900">Abstract</h2>
+                                                            <p class="text-sm text-gray-700 leading-relaxed text-justify">
+                                                                {{ $submission->abstract }}
+                                                            </p>
+                                                        </div>
+
+                                                        <!-- Keywords -->
+                                                        <div class="mt-6">
+                                                            <h3 class="text-sm font-bold text-gray-900">Keywords</h3>
+                                                            <p class="text-sm text-gray-700">
+                                                                {{ implode(', ', json_decode($submission->keywords)) }}
+                                                            </p>
+                                                        </div>
+
+                                                        <!-- Sub-Theme -->
+                                                        <div class="mt-4">
+                                                            <h3 class="text-sm font-bold text-gray-900">Sub-Theme</h3>
+                                                            <p class="text-sm text-gray-700">{{ $submission->sub_theme }}</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </td>
-                        </tr> 
-                        @endforeach                       
+                                </td>
+                            </tr> 
+                        @endforeach
                     </tbody>
                 </table>
             </div>
@@ -184,69 +379,267 @@
                         </tr>
                     </thead>
                     <tbody>
-                    @foreach ($researchSubmissions as $researchSubmission)
-                        <tr class="border-b hover:bg-gray-50">
-                            <td class="px-4 py-3 text-sm text-gray-700">{{ $researchSubmission->serial_number}}</td>
-                            <td class="px-4 py-3 text-sm text-gray-700">{{ $researchSubmission->user_reg_no }}</td>
-                            <td class="px-4 py-3 text-sm text-gray-500">{{ \Carbon\Carbon::parse($researchSubmission->created_at)->format('d M Y') }}</td>
-                            <td class="px-4 py-3 text-center">
-                                @php
-                                    $statusStyles = [
-                                        'Pending' => [
-                                            'text' => 'text-yellow-800',
-                                            'bg' => 'bg-yellow-100'
-                                        ],
-                                        'Approved' => [
-                                            'text' => 'text-green-800',
-                                            'bg' => 'bg-green-100'
-                                        ],
-                                        'Under Review' => [
-                                            'text' => 'text-blue-800',
-                                            'bg' => 'bg-blue-100'
-                                        ],
-                                        'Rejected' => [
-                                            'text' => 'text-red-800',
-                                            'bg' => 'bg-red-100'
-                                        ],
-                                        'Needs Revision' => [
-                                            'text' => 'text-orange-800',
-                                            'bg' => 'bg-orange-100'
-                                        ]
-                                    ];
-
-                                    $currentStatus = $researchSubmission->reviewer_status;
-                                    $style = $statusStyles[$currentStatus] ?? [
-                                        'text' => 'text-gray-800',
-                                        'bg' => 'bg-gray-100'
-                                    ];
-                                @endphp
-
-                                <span class="px-3 py-1 text-xs font-medium {{ $style['text'] }} {{ $style['bg'] }} rounded-full">
-                                    {{ $currentStatus ?: 'Not Assigned' }}
-                                </span>
+                    <tbody>
+                        @foreach ($researchSubmissions as $researchSubmission)
+                            <tr class="border-b hover:bg-gray-50">
+                            <td class="px-4 py-3 text-sm text-gray-700">
+                                <span class="font-semibold">{{ $researchSubmission->article_title }}</span><br>
+                                <span>{{ $researchSubmission->serial_number }}</span>
                             </td>
-                            <td class="px-4 py-3 text-center space-x-2">
-                            <!--<button class="px-2 py-1 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-full">View</button>                            -->
-                                <div class="relative inline-block text-left">
-                                    <button onclick="toggleDropdown(event)" class="inline-flex justify-center w-full px-2 py-1 text-xs font-medium text-white bg-gray-600 rounded-full hover:bg-gray-700 focus:outline-none">
-                                        Download
-                                    </button>
-                                    <div class="absolute right-0 z-10 hidden mt-2 w-32 origin-top-right rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none dropdown-menu">
-                                        <div class="py-1">
-                                            <!-- Download as PDF -->
-                                            <a href="{{ route('proposal.abstract.download', $researchSubmission->serial_number) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                                Download PDF
-                                            </a>
-                                            <!-- Download as Word -->
-                                            <a href="{{ route('proposal.abstractWord.download', $researchSubmission->serial_number) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                                Download Word
-                                            </a>
+                                <td class="px-4 py-3 text-sm text-gray-700">{{ $researchSubmission->user_reg_no }}</td>
+                                <td class="px-4 py-3 text-sm text-gray-500">{{ \Carbon\Carbon::parse($researchSubmission->created_at)->format('d M Y') }}</td>
+                                <td class="px-4 py-3 text-center">
+                                    @php
+                                        $statusStyles = [
+                                            'submitted' => [
+                                                'text' => 'text-yellow-800',
+                                                'bg' => 'bg-yellow-100'
+                                            ],
+                                            'under_review' => [
+                                                'text' => 'text-blue-800',
+                                                'bg' => 'bg-blue-100'
+                                            ],
+                                            'rejected' => [
+                                                'text' => 'text-red-800',
+                                                'bg' => 'bg-red-100'
+                                            ],
+                                            'revision_required' => [
+                                                'text' => 'text-orange-800',
+                                                'bg' => 'bg-orange-100'
+                                            ],
+                                            'accepted' => [
+                                                'text' => 'text-green-800',
+                                                'bg' => 'bg-green-100'
+                                            ],
+                                        ];
+
+                                        $currentStatus = match($researchSubmission->final_status) {
+                                            'submitted' => 'Not Accepted',
+                                            'under_review' => 'Under Review',
+                                            'rejected' => 'Rejected',
+                                            'revision_required' => 'Revision Required',
+                                            'accepted' => 'Accepted',
+                                            default => 'Unknown'
+                                        };
+
+                                        $style = $statusStyles[$researchSubmission->final_status] ?? [
+                                            'text' => 'text-gray-800',
+                                            'bg' => 'bg-gray-100'
+                                        ];
+                                    @endphp
+                                    <span class="px-3 py-1 text-xs font-medium {{ $style['text'] }} {{ $style['bg'] }} rounded-full">
+                                        {{ $currentStatus }}
+                                    </span>
+                                </td>
+                                <td class="px-4 py-3">
+                                <div x-data="{ isOpen: false, isRejectModalOpen: false }" class="flex justify-center space-x-1.5">
+                                    <form action="{{ route('accept.proposal')}}" method="POST">
+                                        @csrf
+                                        <input type="hidden" name="serial_number" value="{{ $researchSubmission->serial_number }}">
+                                        <button type="submit" 
+                                            class="inline-flex items-center px-2 py-1 text-xs font-medium text-white bg-green-600 hover:bg-green-700 rounded transition-colors">
+                                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                            </svg>
+                                            Accept
+                                        </button>
+                                    </form>
+
+                                    <form action="{{ route('reject.proposal')}}" method="POST">
+                                        @csrf
+                                        <input type="hidden" name="serial_number" value="{{ $researchSubmission->serial_number }}">
+                                        <button type="button" 
+                                            @click="isRejectModalOpen = true"
+                                            class="inline-flex items-center px-2 py-1 text-xs font-medium text-white bg-red-600 hover:bg-red-700 rounded transition-colors">
+                                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                            </svg>
+                                            Reject
+                                        </button>
+
+                                        <!-- Rejection Modal Backdrop -->
+                                        <div x-show="isRejectModalOpen"
+                                            x-cloak 
+                                            x-transition:enter="transition ease-out duration-300"
+                                            x-transition:enter-start="opacity-0"
+                                            x-transition:enter-end="opacity-100"
+                                            x-transition:leave="transition ease-in duration-200"
+                                            x-transition:leave-start="opacity-100"
+                                            x-transition:leave-end="opacity-0"
+                                            class="fixed inset-0 bg-black bg-opacity-50 z-40">
+                                        </div>
+
+                                        <!-- Rejection Modal Container -->
+                                        <div x-show="isRejectModalOpen"
+                                            x-cloak
+                                            x-transition:enter="transition ease-out duration-300"
+                                            x-transition:enter-start="opacity-0 translate-y-4"
+                                            x-transition:enter-end="opacity-100 translate-y-0"
+                                            x-transition:leave="transition ease-in duration-200"
+                                            x-transition:leave-start="opacity-100 translate-y-0"
+                                            x-transition:leave-end="opacity-0 translate-y-4"
+                                            class="fixed inset-0 z-50 overflow-y-auto"
+                                            @click.away="isRejectModalOpen = false">
+                                                
+                                            <div class="min-h-screen px-4 text-center">
+                                                <!-- Modal Panel -->
+                                                <div class="inline-block w-full max-w-md p-6 my-8 text-left align-middle bg-white rounded-lg shadow-xl transform transition-all">
+                                                    <!-- Header -->
+                                                    <div class="flex justify-between items-center pb-3 border-b">
+                                                        <h3 class="text-lg font-medium text-gray-900">Reject Proposal</h3>
+                                                        <button @click="isRejectModalOpen = false" class="text-gray-400 hover:text-gray-500 focus:outline-none">
+                                                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                                            </svg>
+                                                        </button>
+                                                    </div>
+
+                                                    <!-- Content -->
+                                                    <div class="mt-4">
+                                                        <label for="rejection_comment" class="block text-sm font-medium text-gray-700 mb-2">
+                                                            Please provide a reason for rejection
+                                                        </label>
+                                                        <textarea
+                                                            name="rejection_comment"
+                                                            id="rejection_comment"
+                                                            rows="4"
+                                                            required
+                                                            class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500"
+                                                            placeholder="Enter your comments here..."
+                                                        ></textarea>
+                                                    </div>
+
+                                                    <!-- Footer -->
+                                                    <div class="mt-6 flex justify-end space-x-3">
+                                                        <button
+                                                            type="button"
+                                                            @click="isRejectModalOpen = false"
+                                                            class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors">
+                                                            Cancel
+                                                        </button>
+                                                        <button
+                                                            type="submit"
+                                                            class="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-md transition-colors">
+                                                            Confirm Rejection
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                    <a href="{{ asset('storage/' . $researchSubmission->pdf_document_path) }}" target="_blank" class="text-sm text-blue-600 hover:text-blue-800 hover:underline">
+                                        View Proposal
+                                    </a>
+                                        <button @click="isOpen = true" 
+                                            class="inline-flex items-center space-x-1 px-3 py-1 text-xs text-gray-700 hover:text-gray-900 rounded-md hover:bg-gray-100 transition-colors duration-200">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                            </svg>
+                                            <span>Preview Abstract</span>
+                                        </button>
+
+                                        <!-- Modal Backdrop -->
+                                        <div x-show="isOpen"
+                                            x-cloak 
+                                            x-transition:enter="transition ease-out duration-300"
+                                            x-transition:enter-start="opacity-0"
+                                            x-transition:enter-end="opacity-100"
+                                            x-transition:leave="transition ease-in duration-200"
+                                            x-transition:leave-start="opacity-100"
+                                            x-transition:leave-end="opacity-0"
+                                            class="fixed inset-0 bg-black bg-opacity-50 z-40"
+                                            @click="isOpen = false">
+                                        </div>
+
+                                        <!-- Modal Container -->
+                                        <div x-show="isOpen"
+                                            x-cloak
+                                            x-transition:enter="transition ease-out duration-300"
+                                            x-transition:enter-start="opacity-0 translate-y-4"
+                                            x-transition:enter-end="opacity-100 translate-y-0"
+                                            x-transition:leave="transition ease-in duration-200"
+                                            x-transition:leave-start="opacity-100 translate-y-0"
+                                            x-transition:leave-end="opacity-0 translate-y-4"
+                                            class="fixed inset-0 z-50 overflow-y-auto"
+                                            @click.away="isOpen = false">
+                                                
+                                            <div class="min-h-screen px-4 text-center">
+                                                <!-- Modal Panel -->
+                                                <div class="inline-block w-full max-w-4xl p-6 my-8 text-left align-middle bg-white rounded-lg shadow-xl transform transition-all">
+                                                    <!-- Header -->
+                                                    <div class="flex justify-between items-center pb-3 border-b">
+                                                        <h3 class="text-lg font-medium text-gray-900">Research Abstract Preview</h3>
+                                                        <button @click="isOpen = false" class="text-gray-400 hover:text-gray-500 focus:outline-none">
+                                                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                                            </svg>
+                                                        </button>
+                                                    </div>
+
+                                                    <!-- Content -->
+                                                    <div class="mt-4 max-h-[70vh] overflow-y-auto">
+                                                        <!-- Title -->
+                                                        <h1 class="text-2xl font-serif text-center font-bold mb-6">
+                                                            {{ $researchSubmission->article_title }}
+                                                        </h1>
+
+                                                        <!-- Authors -->
+                                                        <div class="text-center mb-8">
+                                                            @php
+                                                                $authors = json_decode($researchSubmission->authors, true);
+                                                            @endphp
+                                                            @if($authors && is_array($authors))
+                                                                <div class="flex flex-wrap justify-center gap-1 mb-2">
+                                                                    @foreach($authors as $author)
+                                                                        <span class="font-serif text-sm">
+                                                                            {{ $author['first_name'] }} {{ $author['middle_name'] ?? '' }} {{ $author['surname'] }}
+                                                                            @if($author['is_correspondent'])
+                                                                                <span class="text-black-600">*</span>
+                                                                            @endif
+                                                                            @if(!$loop->last), @endif
+                                                                        </span>
+                                                                    @endforeach
+                                                                </div>
+                                                                <!-- Affiliation -->
+                                                                <div class="space-y-1 text-gray-600">
+                                                                    <p class="font-serif text-xs">{{ $authors[0]['university'] }}</p>
+                                                                    <p class="font-serif text-xs">{{ $authors[0]['department'] }}</p>
+                                                                </div>
+                                                            @else
+                                                                <p class="text-gray-500 italic text-sm">No authors available</p>
+                                                            @endif
+                                                        </div>
+
+                                                        <!-- Abstract -->
+                                                        <div class="space-y-4">
+                                                            <h2 class="text-lg font-bold text-gray-900">Abstract</h2>
+                                                            <p class="text-sm text-gray-700 leading-relaxed text-justify">
+                                                                {{ $researchSubmission->abstract }}
+                                                            </p>
+                                                        </div>
+
+                                                        <!-- Keywords -->
+                                                        <div class="mt-6">
+                                                            <h3 class="text-sm font-bold text-gray-900">Keywords</h3>
+                                                            <p class="text-sm text-gray-700">
+                                                                {{ implode(', ', json_decode($researchSubmission->keywords)) }}
+                                                            </p>
+                                                        </div>
+
+                                                        <!-- Sub-Theme -->
+                                                        <div class="mt-4">
+                                                            <h3 class="text-sm font-bold text-gray-900">Sub-Theme</h3>
+                                                            <p class="text-sm text-gray-700">{{ $researchSubmission->sub_theme }}</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </td>
-                        </tr>  
-                    @endforeach                 
+                                </td>
+                            </tr> 
+                        @endforeach
                     </tbody>
                 </table>
             </div>

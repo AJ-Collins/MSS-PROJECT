@@ -28,8 +28,12 @@ class AdminController extends Controller
         $totalAbstracts = AbstractSubmission::distinct('serial_number')->count();
         $totalProposals = ResearchSubmission::distinct('serial_number')->count();
 
-        $submissions = AbstractSubmission::where('reviewer_status', Null)->get();
-        $researchSubmissions = ResearchSubmission::where('reviewer_status', Null)->get();
+        $submissions = AbstractSubmission::where('reviewer_status', Null)
+            ->where('final_status', '!=','accepted')
+            ->get();
+        $researchSubmissions = ResearchSubmission::where('reviewer_status', Null)
+            ->where('final_status', '!=','accepted')
+            ->get();
 
         return view('admin.partials.dashboard', compact('totalUsers', 'totalAbstracts',
                     'totalProposals', 'totalReviewers', 'submissions', 'researchSubmissions'));
@@ -156,11 +160,13 @@ class AdminController extends Controller
 
         // Get submissions with their reviewer information
         $submissions = AbstractSubmission::leftJoin('users', 'users.reg_no', '=', 'abstract_submissions.reviewer_reg_no')
-            ->select('abstract_submissions.*', 'users.name as reviewer_name')
+            ->select('abstract_submissions.*', 'users.first_name as reviewer_name')
+            ->where('approved', '!=', true)
             ->get();
         // Get submissions with their reviewer information
         $researchSubmissions = ResearchSubmission::leftJoin('users', 'users.reg_no', '=', 'research_submissions.reviewer_reg_no')
-            ->select('research_submissions.*', 'users.name as reviewer_name')
+            ->select('research_submissions.*', 'users.first_name as reviewer_name')
+            ->where('approved', '!=', true)
             ->get();
         
         $reviewers = User::whereHas('roles', function ($query){
@@ -393,15 +399,15 @@ class AdminController extends Controller
     {
         $request->validate([
             'serial_number' => 'required|exists:abstract_submissions,serial_number',
-            'comments' => 'required|string|max:1000',
+            'rejection_comment' => 'required|string|max:1000',
         ]);
         // Find the abstract by serial number
         $submission = AbstractSubmission::where('serial_number', $request->serial_number)->first();
 
         if ($submission) {
             // Reject the abstract
-            $submission->final_status = "Rejected";
-            $submission->admin_comments = $request->comments;
+            $submission->final_status = "rejected";
+            $submission->admin_comments = $request->rejection_comment;
             $submission->save();
 
             $user = User::where('reg_no', $submission->user_reg_no)->first();
@@ -417,9 +423,8 @@ class AdminController extends Controller
         }
         return redirect()->back()->with('error', 'Abstract not found.');
     }
-    public function approveAbstract(Request $request)
+    public function acceptAbstract(Request $request)
     {
-        $user = auth()->user();
 
         $request->validate([
             'serial_number' => 'required|exists:abstract_submissions,serial_number',
@@ -429,18 +434,16 @@ class AdminController extends Controller
 
         if ($submission) {
             // Approve the abstract by setting the 'approved' field to true
-            $submission->final_status = "Accepted";
+            $submission->final_status = "accepted";
             $submission->admin_comments = null;
             $submission->save();
     
-            return redirect()->back()->with('success', 'Abstract approved successfully.');
+            return redirect()->back()->with('success', 'Abstract accepted successfully.');
         }
         return redirect()->back()->with('error', 'Abstract not found.');
     }
-    public function approveProposal(Request $request)
+    public function acceptProposal(Request $request)
     {
-        $user = auth()->user();
-
         $request->validate([
             'serial_number' => 'required|exists:research_submissions,serial_number',
         ]);
@@ -449,11 +452,11 @@ class AdminController extends Controller
 
         if ($researchSubmission) {
             // Approve the abstract by setting the 'approved' field to true
-            $researchSubmission->final_status = "Approved";
+            $researchSubmission->final_status = "accepted";
             $researchSubmission->admin_comments = null;
             $researchSubmission->save();
     
-            return redirect()->back()->with('success', 'Proposal approved successfully.');
+            return redirect()->back()->with('success', 'Proposal accepted successfully.');
         }
         return redirect()->back()->with('error', 'Abstract not found.');
     }
@@ -463,179 +466,97 @@ class AdminController extends Controller
 
         $request->validate([
             'serial_number' => 'required|exists:research_submissions,serial_number',
-            'comments' => 'required|string|max:1000',
+            'rejection_comment' => 'required|string|max:1000',
         ]);
         // Find the abstract by serial number
         $researchSubmission = ResearchSubmission::where('serial_number', $request->serial_number)->first();
 
         if ($researchSubmission) {
             // Approve the abstract by setting the 'approved' field to true
-            $researchSubmission->final_status = "Rejected";
-            $researchSubmission->admin_comments = $request->comments;
+            $researchSubmission->final_status = "rejected";
+            $researchSubmission->admin_comments = $request->rejection_comment;
             $researchSubmission->save();
     
             return redirect()->back()->with('success', 'Proposal rejected successfully.');
         }
         return redirect()->back()->with('error', 'Abstract not found.');
     }
+    public function approveAbstract(Request $request)
+    {
+
+        $request->validate([
+            'serial_number' => 'required|exists:abstract_submissions,serial_number',
+        ]);
+        // Find the abstract by serial number
+        $submission = AbstractSubmission::where('serial_number', $request->serial_number)->first();
+
+        if ($submission) {
+            // Approve the abstract by setting the 'approved' field to true
+            $submission->approved = true;
+            $submission->save();
+    
+            return redirect()->back()->with('success', 'Abstract approved successfully.');
+        }
+        return redirect()->back()->with('error', 'Abstract not found.');
+    }
+    public function unapproveAbstract(Request $request)
+    {
+
+        $request->validate([
+            'serial_number' => 'required|exists:abstract_submissions,serial_number',
+        ]);
+        // Find the abstract by serial number
+        $submission = AbstractSubmission::where('serial_number', $request->serial_number)->first();
+
+        if ($submission) {
+            // Approve the abstract by setting the 'approved' field to true
+            $submission->approved = false;
+            $submission->save();
+    
+            return redirect()->back()->with('success', 'Abstract declined successfully.');
+        }
+        return redirect()->back()->with('error', 'Abstract not found.');
+    }
+    public function approveProposal(Request $request)
+    {
+
+        $request->validate([
+            'serial_number' => 'required|exists:research_submissions,serial_number',
+        ]);
+        // Find the abstract by serial number
+        $researchSubmission = ResearchSubmission::where('serial_number', $request->serial_number)->first();
+
+        if ($researchSubmission) {
+            // Approve the proposal by setting the 'approved' field to true
+            $researchSubmission->approved = true;
+            $researchSubmission->save();
+    
+            return redirect()->back()->with('success', 'Proposal approved successfully.');
+        }
+        return redirect()->back()->with('error', 'Proposal not found.');
+    }
+    public function unapproveProposal(Request $request)
+    {
+
+        $request->validate([
+            'serial_number' => 'required|exists:research_submissions,serial_number',
+        ]);
+        // Find the abstract by serial number
+        $researchSubmission = ResearchSubmission::where('serial_number', $request->serial_number)->first();
+
+        if ($researchSubmission) {
+            // Approve the abstract by setting the 'approved' field to false
+            $researchSubmission->approved = false;
+            $researchSubmission->save();
+    
+            return redirect()->back()->with('success', 'Proposal declined successfully.');
+        }
+        return redirect()->back()->with('error', 'Proposal not found.');
+    }
     public function profile()
     {
         return view('admin.partials.profile');
     }
-
-
-    public function downloadAssessmentPDF($serial_number)
-    {
-        $assessment = ResearchAssessment::with(['abstractSubmission', 'reviewer', 'user'])->findOrFail($serial_number);
-        
-        // Configure DomPDF options
-        $options = new Options();
-        $options->set('isHtml5ParserEnabled', true);
-        $options->set('isPhpEnabled', true);
-        
-        // Initialize DomPDF
-        $dompdf = new Dompdf($options);
-        
-        // Generate HTML content
-        $html = '
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <meta charset="utf-8">
-            <title>Research Assessment Report</title>
-            <style>
-                body {
-                    font-family: Arial, sans-serif;
-                    line-height: 1.6;
-                    color: #333;
-                }
-                .header {
-                    text-align: center;
-                    margin-bottom: 30px;
-                    border-bottom: 2px solid #333;
-                    padding-bottom: 10px;
-                }
-                .section {
-                    margin-bottom: 20px;
-                }
-                .section-title {
-                    background-color: #f5f5f5;
-                    padding: 5px 10px;
-                    font-weight: bold;
-                    margin-bottom: 10px;
-                }
-                .score-box {
-                    border: 1px solid #ddd;
-                    padding: 10px;
-                    margin-bottom: 10px;
-                }
-                .score {
-                    font-size: 18px;
-                    font-weight: bold;
-                    color: #2c5282;
-                }
-                .comments {
-                    margin-top: 5px;
-                    padding: 10px;
-                    background-color: #f8f8f8;
-                }
-                .meta-info {
-                    margin-bottom: 20px;
-                    padding: 10px;
-                    background-color: #f0f4f8;
-                }
-                .correction-section {
-                    margin-top: 20px;
-                    padding: 10px;
-                    border: 1px solid #e2e8f0;
-                }
-            </style>
-        </head>
-        <body>
-            <div class="header">
-                <h1>Research Assessment Report</h1>
-                <p>Generated on: ' . date('F d, Y') . '</p>
-            </div>
-            
-            <div class="meta-info">
-                <p><strong>Abstract ID:</strong> ' . $assessment->abstract_submission_id . '</p>
-                <p><strong>Reviewer:</strong> ' . $assessment->reviewer->name . '</p>
-                <p><strong>Author:</strong> ' . $assessment->user->name . '</p>
-            </div>
-            
-            <div class="section">
-                <div class="section-title">Thematic Assessment</div>
-                <div class="score-box">
-                    <div class="score">Score: ' . $assessment->thematic_score . '/10</div>
-                    <div class="comments">' . nl2br($assessment->thematic_comments) . '</div>
-                </div>
-            </div>
-            
-            <div class="section">
-                <div class="section-title">Title Assessment</div>
-                <div class="score-box">
-                    <div class="score">Score: ' . $assessment->title_score . '/10</div>
-                    <div class="comments">' . nl2br($assessment->title_comments) . '</div>
-                </div>
-            </div>
-            
-            <div class="section">
-                <div class="section-title">Objectives Assessment</div>
-                <div class="score-box">
-                    <div class="score">Score: ' . $assessment->objectives_score . '/10</div>
-                    <div class="comments">' . nl2br($assessment->objectives_comments) . '</div>
-                </div>
-            </div>
-            
-            <div class="section">
-                <div class="section-title">Methodology Assessment</div>
-                <div class="score-box">
-                    <div class="score">Score: ' . $assessment->methodology_score . '/10</div>
-                    <div class="comments">' . nl2br($assessment->methodology_comments) . '</div>
-                </div>
-            </div>
-            
-            <div class="section">
-                <div class="section-title">Output Assessment</div>
-                <div class="score-box">
-                    <div class="score">Score: ' . $assessment->output_score . '/10</div>
-                    <div class="comments">' . nl2br($assessment->output_comments) . '</div>
-                </div>
-            </div>
-            
-            <div class="section">
-                <div class="section-title">General Comments</div>
-                <div class="comments">' . nl2br($assessment->general_comments) . '</div>
-            </div>
-            
-            <div class="correction-section">
-                <h3>Correction Requirements</h3>
-                <p><strong>Type:</strong> ' . ucfirst($assessment->correction_type) . '</p>
-                <div class="comments">' . nl2br($assessment->correction_comments) . '</div>
-            </div>
-            
-            <div style="margin-top: 30px; text-align: center; font-size: 12px;">
-                <p>This is an official assessment report. Please maintain confidentiality.</p>
-            </div>
-        </body>
-        </html>';
-        
-        // Load HTML content
-        $dompdf->loadHtml($html);
-        
-        // Set paper size and orientation
-        $dompdf->setPaper('A4', 'portrait');
-        
-        // Render PDF
-        $dompdf->render();
-        
-        // Generate file name
-        $fileName = 'Research_Assessment_' . $assessment->abstract_submission_id . '_' . date('Y-m-d') . '.pdf';
-        
-        // Download PDF
-        return $dompdf->stream($fileName, ['Attachment' => true]);
-    }
-
     public function requestArticleUpload (Request $request, $serial_number)
     {
         // Find the abstract submission by serial number

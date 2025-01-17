@@ -1,9 +1,6 @@
 @extends('user.layouts.user')
 
 @section('user-content')
-<div class="px-6 py-4 border-b border-gray-200 shadow-sm bg-white">
-    <h2 class="text-2xl font-semibold text-gray-800 tracking-tight">My Submissions</h2>
-</div>
 <!-- Document Management Section -->
 <div x-data="{ activeTab: 'articles' }">
     <div class="border-b border-gray-200 shadow-sm bg-white">

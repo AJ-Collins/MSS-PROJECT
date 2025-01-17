@@ -355,9 +355,10 @@ class ReviewerController extends Controller
             [
                 'abstract_submission_id' => $serial_number,
                 'reviewer_reg_no' => auth()->user()->reg_no,
-                'user_reg_no' => auth()->user()->reg_no
             ],
-            $validated
+            array_merge($validated, [
+                'user_reg_no' => AbstractSubmission::where('serial_number', $serial_number)->value('user_reg_no')
+            ])
         );
 
         AbstractSubmission::where('serial_number', $serial_number)->update([
@@ -367,7 +368,7 @@ class ReviewerController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Abstract assessment submitted successfully',
-            'redirect' => route('reviewer.partials.documents')
+            'redirect' => route('reviewer.documents')
         ]);
     }
 
@@ -396,16 +397,16 @@ class ReviewerController extends Controller
             $validated['objectives_score'] +
             $validated['methodology_score'] +
             $validated['output_score'];
-            
-            $user = auth()->user();
+
         // Update or create assessment for this abstract
         ProposalAssessment::updateOrCreate(
             [
                 'abstract_submission_id' => $serial_number,
-                'reviewer_reg_no' => auth()->user()->reg_no,
-                'user_reg_no' => auth()->user()->reg_no
+                'reviewer_reg_no' => auth()->user()->reg_no
             ],
-            $validated
+            array_merge($validated, [
+                'user_reg_no' => ResearchSubmission::where('serial_number', $serial_number)->value('user_reg_no')
+            ])
         );
 
         ResearchSubmission::where('serial_number', $serial_number)->update([
@@ -415,7 +416,7 @@ class ReviewerController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Proposal assessment submitted successfully',
-            'redirect' => route('reviewer.partials.documents')
+            'redirect' => route('reviewer.documents')
         ]);
     }
 

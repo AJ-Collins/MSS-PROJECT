@@ -29,7 +29,7 @@
                         </svg>
                     </button>
                     <h2 class="ml-4 text-2xl font-bold text-black-600 flex items-center">
-                        Reviewer Dashboard
+                        {{ $pageTitle }}
                     </h2>
                 </div>
 
@@ -96,7 +96,7 @@
                         <!-- Enhanced Profile Dropdown Menu -->
                         <div x-show="open" @click.away="open = false"
                              class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-1 z-50 transform origin-top-right transition-all duration-200">
-                            <a href="{{ route('reviewer.partials.profile') }}" 
+                            <a href="{{ route('reviewer.profile') }}" 
                                class="flex items-center px-4 py-2 text-sm text-gray-900 hover:bg-gray-200 transition duration-150">
                                 <svg class="mr-3 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
@@ -139,7 +139,7 @@
                 </div>  
             <nav class="mt-10">
                 <a class="hover:bg-green-800 flex items-center px-4 py-3 text-white text-lg font-medium rounded-lg transition-colors duration-150"
-                   href="{{ route('reviewer.partials.dashboard') }}">
+                   href="{{ route('reviewer.dashboard') }}">
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
                     </svg>
@@ -147,7 +147,7 @@
                 </a>
 
                 <a class="hover:bg-blue-800 flex items-center px-4 py-3 text-white text-lg font-medium rounded-lg transition-colors duration-150"
-                    href="{{ route('reviewer.partials.documents') }}">
+                    href="{{ route('reviewer.documents') }}">
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m2 8H6a2 2 0 01-2-2V6a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z" />
                     </svg>
@@ -155,7 +155,7 @@
                 </a>
 
                 <a class="hover:bg-green-800 flex items-center px-4 py-3 text-white text-lg font-medium rounded-lg transition-colors duration-150"
-                   href="{{ route('reviewer.partials.reviewed')}}">
+                   href="{{ route('reviewer.reviewed')}}">
                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                     </svg>
@@ -163,7 +163,7 @@
                 </a>
 
                 <a class="hover:bg-green-800 flex items-center px-4 py-3 text-white text-lg font-medium rounded-lg transition-colors duration-150"
-                   href="{{ route('reviewer.partials.profile') }}">
+                   href="{{ route('reviewer.profile') }}">
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
                     </svg>

@@ -33,7 +33,7 @@
             </div>
             <div class="ml-4">
                 <p class="text-sm text-gray-500">Published Articles</p>
-                <p class="text-2xl font-semibold text-gray-700">1</p>
+                <p class="text-2xl font-semibold text-gray-700">{{ $totalArticles }}</p>
             </div>
         </div>
     </div>

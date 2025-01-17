@@ -32,6 +32,9 @@ class UserController extends Controller
         
         // Count total abstracts 
         $totalAbstracts = AbstractSubmission::where('user_reg_no', $user->reg_no)->count();
+        $totalArticles = AbstractSubmission::where('user_reg_no', $user->reg_no)
+            ->where('pdf_path', '!=', null)
+            ->count();
         $abstractsPending = AbstractSubmission::where('user_reg_no', $user->reg_no)->where('final_status', 'Pending')->count();
         
 
@@ -54,7 +57,9 @@ class UserController extends Controller
             'totalResearchSubmissions' => $totalResearchSubmissions,
             'draft' => $draft,
             'notifications' => $this->notifications,
-            'unreadCount' => $this->unreadCount
+            'unreadCount' => $this->unreadCount,
+            'totalArticles' => $totalArticles
+
         ]);
     }
     public function documents()

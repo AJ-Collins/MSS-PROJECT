@@ -183,7 +183,7 @@ class AbstractSubmissionController extends Controller
         $uniqueCode = mb_strtoupper(Str::random(mt_rand(4, 5)) . Str::random(mt_rand(3, 5)));
         $serialNumber = "{$acronym}-{$uniqueCode}-{$year}";
     
-        $this->deleteDraft($serialNumber);
+        
     
         $abstractSubmission = new AbstractSubmission();
         $abstractSubmission->serial_number = $serialNumber;
@@ -194,6 +194,8 @@ class AbstractSubmissionController extends Controller
         $abstractSubmission->user_reg_no = auth()->user()->reg_no;
         $abstractSubmission->final_status = "submitted";
         $abstractSubmission->save();
+        
+        $this->deleteDraft($serialNumber);
     
         foreach ($allAuthors as $authorData) {
             $authorData['abstract_submission_id'] = $serialNumber;

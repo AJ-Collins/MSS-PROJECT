@@ -29,8 +29,8 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                         </svg>
                     </button>
-                    <h2 class="ml-4 text-2xl font-bold text-black-600 flex items-center">
-                        Manuscript Submission
+                    <h2 class="ml-4 text-2xl font-bold text-black-600">
+                        {{ $pageTitle }}
                     </h2>
                 </div>
 

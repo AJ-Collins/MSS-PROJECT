@@ -31,7 +31,7 @@
                                     @forelse ($proposalDrafts as $draft)
                                         <tr>
                                             <td class="px-6 py-4 whitespace-nowrap">
-                                                <div class="text-sm font-medium text-gray-900">{{ $draft->title ?? 'Untitled Draft' }}</div>
+                                                <div class="text-sm font-medium text-gray-900">{{ $draft->serial_number ?? 'Untitled Draft' }}</div>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                                 {{ \Carbon\Carbon::parse($draft->created_at)->format('d M Y') }}
@@ -58,7 +58,7 @@
                                     @forelse ($abstractDrafts as $draft)
                                         <tr>
                                             <td class="px-6 py-4 whitespace-nowrap">
-                                                <div class="text-sm font-medium text-gray-900">{{ $draft->title ?? 'Untitled Draft' }}</div>
+                                                <div class="text-sm font-medium text-gray-900">{{ $draft->serial_number ?? 'Untitled Draft' }}</div>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                                 {{ \Carbon\Carbon::parse($draft->created_at)->format('d M Y') }}

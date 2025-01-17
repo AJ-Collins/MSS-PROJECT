@@ -5,7 +5,7 @@
     <!-- Header with gradient background -->
     <div class="relative mb-8 bg-gradient-to-r from-gray-100 to-grey-200 p-6 shadow-lg">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0">
-            <h1 class="text-3xl font-bold text-black">Reports & Analytics</h1>
+            <h1 class="text-3xl font-bold text-black">Reports</h1>
             <div class="flex flex-wrap gap-3">
                 <a href="{{ route('abstract.downloadAll') }}" class="px-4 py-2 bg-white/10 backdrop-blur-md text-black rounded-lg hover:bg-white/20 transition duration-200 flex items-center gap-2">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -102,7 +102,7 @@
                                     <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Title</th>
                                     <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Submitted By</th>
                                     <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Uploaded On</th>
-                                    <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Reviewer By</th>
+                                    <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Reviewed By</th>
                                     <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Score</th>
                                     <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Final Status</th>                        
                                     <th class="px-6 py-4 text-center text-sm font-semibold text-gray-600">Actions</th>
@@ -112,17 +112,17 @@
                             @foreach ($submissions as $submission)
                                     <tr class="hover:bg-gray-50 transition duration-150">
                                         <td class="px-4 py-3 text-sm text-gray-700">
-                                            <div class="font-medium">{{ $submission->article_title }}</div>
+                                            <div class="font-medium">{{ $submission->title }}</div>
                                             <div class="text-xs text-gray-500">{{ $submission->serial_number }}</div>
                                         </td>
                                         <td class="px-4 py-3 text-sm text-gray-700">
-                                            <div class="font-medium">{{ $submission->user->name }}</div>
+                                            <div class="font-medium">{{ $submission->user->first_name }} {{ $submission->user->last_name }}</div>
                                             <div class="text-xs text-gray-500">{{ $submission->user->reg_no }}</div>
                                         </td>
                                         <td class="px-6 py-4 text-sm text-gray-500">{{ \Carbon\Carbon::parse($submission->created_at)->format('d M Y') }}</td>
                                         <td class="px-6 py-4">
                                             @if ($submission->reviewer)
-                                                <div class="font-medium">{{ $submission->reviewer->name }}</div>
+                                                <div class="font-medium">{{ $submission->reviewer->first_name }} {{ $submission->reviewer->last_name }}</div>
                                                 <div class="text-xs text-gray-500">{{ $submission->reviewer->reg_no }}</div>
                                             @else
                                                 <div class="font-medium text-gray-500">No Reviewer Assigned</div>
@@ -155,16 +155,6 @@
                                                         View assessments
                                                     </span>
                                                 </a>
-                                                <button onclick="openModal('generate-report-modal')" class="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition duration-200">
-                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-                                                    </svg>
-                                                </button>
-                                                <button onclick="openModal('view-analytics-modal')" class="p-2 text-gray-600 hover:bg-gray-50 rounded-lg transition duration-200">
-                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-                                                    </svg>
-                                                </button>
                                             </div>
                                         </td>
                                     </tr>
@@ -209,13 +199,13 @@
                                             <div class="text-xs text-gray-500">{{ $researchSubmission->serial_number }}</div>
                                         </td>
                                         <td class="px-4 py-3 text-sm text-gray-700">
-                                            <div class="font-medium">{{ $researchSubmission->user->name }}</div>
+                                            <div class="font-medium">{{ $researchSubmission->user->first_name }} {{ $researchSubmission->user->last_name }}</div>
                                             <div class="text-xs text-gray-500">{{ $researchSubmission->user->reg_no }}</div>
                                         </td>
                                         <td class="px-6 py-4 text-sm text-gray-500">{{ \Carbon\Carbon::parse($researchSubmission->created_at)->format('d M Y') }}</td>
                                         <td class="px-6 py-4">
                                             @if ($researchSubmission->reviewer)
-                                                <div class="font-medium">{{ $researchSubmission->reviewer->name }}</div>
+                                                <div class="font-medium">{{ $researchSubmission->reviewer->first_name }} {{ $researchSubmission->reviewer->last_name }}</div>
                                                 <div class="text-xs text-gray-500">{{ $researchSubmission->reviewer->reg_no }}</div>
                                             @else
                                                 <div class="font-medium text-gray-500">No Reviewer Assigned</div>
@@ -247,16 +237,6 @@
                                                     <span class="absolute bottom-full left-1/2 transform -translate-x-1/2 px-2 py-1 text-xs text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 mb-2 whitespace-nowrap z-10">
                                                         View assessments
                                                     </span>
-                                                </a>
-                                                <a onclick="openModal('generate-report-modal')" class="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition duration-200">
-                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-                                                    </svg>
-                                                </a>
-                                                <a onclick="openModal('view-analytics-modal')" class="p-2 text-gray-600 hover:bg-gray-50 rounded-lg transition duration-200">
-                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-                                                    </svg>
                                                 </a>
                                             </div>
                                         </td>

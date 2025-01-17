@@ -53,7 +53,7 @@ class LoginController extends Controller
         if ($roles->contains('admin')) {
             return redirect()->route('admin.dashboard');
         } elseif ($roles->contains('reviewer')) {
-            return redirect()->route('reviewer.partials.dashboard');
+            return redirect()->route('reviewer.dashboard');
         } elseif ($roles->contains('user')) {
             return redirect()->route('user.dashboard');
         }
