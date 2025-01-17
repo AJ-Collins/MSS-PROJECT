@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use App\Traits\DynamicTitleTrait;
+use Illuminate\Support\Facades\Auth;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -25,7 +26,10 @@ class AppServiceProvider extends ServiceProvider
             if (!isset($view->getData()['pageTitle'])) {
                 $currentRole = $this->getCurrentUserRole();
                 $pageTitle = $this->getPageTitle();
-                $view->with('pageTitle', $pageTitle);
+                $view->with([
+                    'pageTitle' => $pageTitle,
+                    'user' => Auth::user()
+                ]);
             }
         });
     }

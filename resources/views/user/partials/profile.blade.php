@@ -18,7 +18,7 @@
                             <div class="w-40 h-40 rounded-full overflow-hidden ring-4 ring-gray-100">
                                 <img 
                                     id="profileImagePreview" 
-                                    src="" 
+                                    src="{{ asset('storage/' . $user->profile_photo_url ?? 'default-profile.png') }}" 
                                     alt="Profile Photo" 
                                     class="w-full h-full object-cover transition duration-300 ease-in-out group-hover:opacity-75"
                                 >
@@ -31,8 +31,8 @@
                             </label>
                             <input type="file" name="profile_photo" id="profilePhotoInput" accept="image/*" onchange="uploadPhoto(event)" class="hidden">
                         </div>
-                        <h3 class="mt-4 text-xl font-semibold text-gray-900">Collins</h3>
-                        <p class="text-sm text-gray-500">kiprocolloaj</p>
+                        <h3 class="mt-4 text-xl font-semibold text-gray-900">{{ $user->first_name . ' ' .auth()->user()->last_name}}</h3>
+                        <p class="text-sm text-gray-500">{{ $user->email }}</p>
                     </div>
                 </div>
             </div>
@@ -44,29 +44,23 @@
                         <h2 class="text-lg font-medium text-gray-900">Personal Information</h2>
                         
                         <dl class="mt-6 space-y-6 divide-y divide-gray-200">
+                            <div class="pt-6">
+                                <dt class="text-sm font-medium text-gray-500">Registration Number</dt>
+                                <dd class="mt-1 text-sm text-gray-900">{{ $user->reg_no }}</dd>
+                            </div>
                             <div class="pt-6 first:pt-0">
                                 <dt class="text-sm font-medium text-gray-500">First Name</dt>
-                                <dd class="mt-1 text-sm text-gray-900">Collins</dd>
+                                <dd class="mt-1 text-sm text-gray-900">{{ $user->first_name }}</dd>
                             </div>
 
                             <div class="pt-6">
                                 <dt class="text-sm font-medium text-gray-500">Middle Name</dt>
-                                <dd class="mt-1 text-sm text-gray-900">Kiprotich</dd>
-                            </div>
-
-                            <div class="pt-6">
-                                <dt class="text-sm font-medium text-gray-500">Surname</dt>
-                                <dd class="mt-1 text-sm text-gray-900">AJ</dd>
+                                <dd class="mt-1 text-sm text-gray-900">{{ $user->last_name }}</dd>
                             </div>
 
                             <div class="pt-6">
                                 <dt class="text-sm font-medium text-gray-500">Email Address</dt>
-                                <dd class="mt-1 text-sm text-gray-900">kiprocolloaj</dd>
-                            </div>
-
-                            <div class="pt-6">
-                                <dt class="text-sm font-medium text-gray-500">Phone Number</dt>
-                                <dd class="mt-1 text-sm text-gray-900">07000</dd>
+                                <dd class="mt-1 text-sm text-gray-900">{{ $user->email }}</dd>
                             </div>
                         </dl>
                     </div>
@@ -113,7 +107,7 @@ function uploadPhoto(event) {
     formData.append('_token', '{{ csrf_token() }}');
 
     // Upload to server
-    fetch('', {
+    fetch('{{ route('upload.profile.photo') }}', {
         method: 'POST',
         headers: {
             'X-CSRF-TOKEN': '{{ csrf_token() }}',
@@ -124,21 +118,51 @@ function uploadPhoto(event) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            // Show success message using a toast notification system
-            toastr.success('Profile photo updated successfully');
+            // Show success notification using custom function
+            showNotification('Profile photo updated successfully', 'success');
         } else {
-            toastr.error('Error uploading photo');
+            showNotification('Error uploading photo', 'error');
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        toastr.error('An error occurred while uploading the photo');
+        showNotification('An error occurred while uploading the photo', 'error');
         // Reset preview to previous image if upload failed
         preview.src = '{{ auth()->user()->profile_photo_url }}';
     })
     .finally(() => {
         preview.style.opacity = '1';
     });
+}
+
+// Function to show notifications
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg transform transition-all duration-300 ease-in-out opacity-0 z-50`;
+    
+    const colors = {
+        error: 'bg-red-500',
+        warning: 'bg-yellow-500',
+        success: 'bg-green-500',
+        info: 'bg-blue-500'
+    };
+    
+    notification.classList.add(colors[type], 'text-white');
+    notification.textContent = message;
+    document.body.appendChild(notification);
+
+    // Animate in
+    requestAnimationFrame(() => {
+        notification.style.opacity = '1';
+        notification.style.transform = 'translateY(0)';
+    });
+
+    // Auto-dismiss after 3 seconds
+    setTimeout(() => {
+        notification.style.opacity = '0';
+        notification.style.transform = 'translateY(20px)';
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
 }
 </script>
 @endsection

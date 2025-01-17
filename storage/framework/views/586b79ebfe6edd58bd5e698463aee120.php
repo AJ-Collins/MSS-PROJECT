@@ -133,13 +133,13 @@
                                         </td>
                                         <td class="px-6 py-4">
                                             <span class="text-sm font-medium 
-                                                <?php if($submission->approved == 1): ?>
+                                                <?php if($submission->approved == true): ?>
                                                     text-green-600 
                                                 <?php else: ?>
                                                     text-red-600  
                                                 <?php endif; ?>
                                             ">
-                                                <?php echo e($submission->approved == 1 ? 'Approved' : 'Not Approved'); ?>
+                                                <?php echo e($submission->approved == true ? 'Approved' : 'Not Approved'); ?>
 
                                             </span>
                                         </td>
@@ -217,13 +217,13 @@
                                         </td>
                                         <td class="px-6 py-4">
                                             <span class="text-sm font-medium 
-                                                <?php if($researchSubmission->approved == 1): ?>
+                                                <?php if($researchSubmission->approved == true): ?>
                                                     text-green-600 
                                                 <?php else: ?>
                                                     text-red-600  
                                                 <?php endif; ?>
                                             ">
-                                                <?php echo e($researchSubmission->approved == 1 ? 'Approved' : 'Not Approved'); ?>
+                                                <?php echo e($researchSubmission->approved == true ? 'Approved' : 'Not Approved'); ?>
 
                                             </span>
                                         </td>

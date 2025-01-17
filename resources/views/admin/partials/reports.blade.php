@@ -133,13 +133,13 @@
                                         </td>
                                         <td class="px-6 py-4">
                                             <span class="text-sm font-medium 
-                                                @if($submission->approved == 1)
+                                                @if($submission->approved == true)
                                                     text-green-600 
                                                 @else
                                                     text-red-600  
                                                 @endif
                                             ">
-                                                {{ $submission->approved == 1 ? 'Approved' : 'Not Approved' }}
+                                                {{ $submission->approved == true ? 'Approved' : 'Not Approved' }}
                                             </span>
                                         </td>
                                         <td class="px-6 py-4">
@@ -216,13 +216,13 @@
                                         </td>
                                         <td class="px-6 py-4">
                                             <span class="text-sm font-medium 
-                                                @if($researchSubmission->approved == 1)
+                                                @if($researchSubmission->approved == true)
                                                     text-green-600 
                                                 @else
                                                     text-red-600  
                                                 @endif
                                             ">
-                                                {{ $researchSubmission->approved == 1 ? 'Approved' : 'Not Approved' }}
+                                                {{ $researchSubmission->approved == true ? 'Approved' : 'Not Approved' }}
                                             </span>
                                         </td>
                                         <td class="px-6 py-4">

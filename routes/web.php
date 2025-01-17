@@ -14,6 +14,7 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\AbstractsController;
 use App\Http\Controllers\ProposalController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Storage;
 
 Route::get('email/verify', [App\Http\Controllers\Auth\VerificationController::class, 'show'])->name('verification.notice');
@@ -202,5 +203,6 @@ Route::middleware(['preventBackHistory', 'auth'])->group(function () {
 
     Route::get('/research_assessments/{abstract_submission_id}/download-pdf', [AbstractsController::class, 'downloadAssessmentPDF'])->name('assessments.download-pdf');
     Route::get('/proposal/research_assessments/{abstract_submission_id}/download-pdf', [ProposalController::class, 'downloadProposalAssessmentPDF'])->name('assessments.proposal.download-pdf');
+    Route::post('/upload-profile-photo', [ProfileController::class, 'uploadPhoto'])->name('upload.profile.photo');
 
 });

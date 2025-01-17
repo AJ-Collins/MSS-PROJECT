@@ -129,8 +129,12 @@ class AdminController extends Controller
 
     public function reports()
     {
-        $submissions = AbstractSubmission::with('user')->get();
-        $researchSubmissions = ResearchSubmission::with('user')->get();
+        $submissions = AbstractSubmission::with('user')
+            ->where('score', '!=', null)
+            ->get();
+        $researchSubmissions = ResearchSubmission::with('user')
+            ->where('score', '!=', null)
+            ->get();
         $researchAssessments = ResearchAssessment::all();
 
         return view('admin.partials.reports', compact('submissions', 'researchSubmissions', 'researchAssessments'));
