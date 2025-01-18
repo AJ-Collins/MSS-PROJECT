@@ -12,7 +12,7 @@ use App\Models\ProposalAssessment;
 use Illuminate\Support\Facades\DB;
 use App\Models\Role;
 use Dompdf\Dompdf;
-use Dompdf\Options;
+use App\Jobs\SendNotificationJob;
 use App\Notifications\NewUserNotification;
 use App\Traits\DynamicTitleTrait;
 
@@ -313,84 +313,90 @@ class AdminController extends Controller
     }
     public function assignAbstractReviewer(Request $request, $serial_number)
     {
-
-        // Validate the reviewer_reg_no
         $request->validate([
             'reg_no' => [
                 'required',
+                'exists:users,reg_no',
                 function ($attribute, $value, $fail) {
-                    $reviewer = User::where('reg_no', $value)
+                    if (!User::where('reg_no', $value)
                         ->whereHas('roles', function ($query) {
                             $query->where('name', 'reviewer');
-                        })->first();
-
-                    if (!$reviewer) {
+                        })->exists()) {
                         $fail('The specified reviewer is not valid or does not have the reviewer role.');
                     }
                 },
             ],
         ]);
 
-        // Find the abstract submission by serial number
-        $submission = AbstractSubmission::where('serial_number', $serial_number)->firstOrFail();
+        try {
+            DB::transaction(function () use ($request, $serial_number) {
+                // Find and update the submission in one query
+                $submission = AbstractSubmission::where('serial_number', $serial_number)
+                    ->lockForUpdate()  // Prevents race conditions
+                    ->firstOrFail();
+                
+                $submission->reviewer_reg_no = $request->reg_no;
+                $submission->save();
 
-        // Update the reviewer_reg_no field
-        $submission->reviewer_reg_no = $request->reg_no;
-        $submission->save();
+                // Queue notifications
+                SendNotificationJob::dispatch($submission->user_reg_no, [
+                    'message' => 'Abstract ' . $serial_number . ' is under review',
+                    'link' => '/some-link',
+                ]);
 
-        $user = User::where('reg_no', $submission->user_reg_no)->first();
+                SendNotificationJob::dispatch($request->reg_no, [
+                    'message' => 'You have been assigned to review Abstract ' . $serial_number,
+                    'link' => '/some-link',
+                ]);
+            });
 
-        $reviewer = User::where('reg_no', $request->reg_no)
-                    ->whereHas('roles', function ($query) {
-                        $query->where('name', 'reviewer');
-                    })->first();
+            return redirect()->back()->with('success', 'Reviewer assigned successfully.');
 
-        $dataForUser = [
-            'message' => 'Abstract ' . $submission['serial_number'] . ' is under review',
-            'link' => '/some-link',
-        ];
-        
-        $user->notify(new NewUserNotification($dataForUser));
-
-        $dataForReviewer = [
-            'message' => 'You have been assigned to review Abstract ' . $submission['serial_number'],
-            'link' => '/some-link',
-        ];
-
-        $reviewer->notify(new NewUserNotification($dataForReviewer));
-
-
-        return redirect()->back()->with('success', 'Reviewer assigned successfully.');
+        } catch (\Exception $e) {
+            \Log::error('Reviewer assignment failed: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to assign reviewer. Please try again.');
+        }
     }
     public function removeAbstractReviewer(Request $request, $serial_number)
     {
-        $submission = AbstractSubmission::where('serial_number', $serial_number)->firstOrFail();
-        
-        $oldReviewerRegNo = $submission->reviewer_reg_no;
-        
-        // Remove the reviewer assignment
-        $submission->reviewer_reg_no = null;
-        $submission->reviewer_status = '';
-        $submission->save();
-        
-        // Only attempt to notify if there was a reviewer assigned
-        if ($oldReviewerRegNo) {
-            $reviewer = User::where('reg_no', $oldReviewerRegNo)
+        try {
+            DB::transaction(function () use ($serial_number) {
+                // Find and update the submission in one query
+                $submission = AbstractSubmission::where('serial_number', $serial_number)
+                    ->lockForUpdate()  // Prevents race conditions
+                    ->firstOrFail();
+
+                $oldReviewerRegNo = $submission->reviewer_reg_no;
+
+                // Remove the reviewer assignment
+                $submission->update([
+                    'reviewer_reg_no' => null,
+                    'reviewer_status' => ''
+                ]);
+
+                // Only dispatch notification if there was a reviewer assigned
+                if ($oldReviewerRegNo) {
+                    // Check if the user exists and has reviewer role before sending notification
+                    $reviewerExists = User::where('reg_no', $oldReviewerRegNo)
                         ->whereHas('roles', function ($query) {
                             $query->where('name', 'reviewer');
-                        })->first();
-            
-            if ($reviewer) {
-                $dataForReviewer = [
-                    'message' => 'You have lost ' . $submission['serial_number'],
-                    'link' => '/some-link',
-                ];
-                
-                $reviewer->notify(new NewUserNotification($dataForReviewer));
-            }
+                        })->exists();
+
+                    if ($reviewerExists) {
+                        SendNotificationJob::dispatch($oldReviewerRegNo, [
+                            'message' => 'You have been removed from reviewing Abstract ' . $serial_number,
+                            'link' => '/some-link',
+                        ]);
+                    }
+                }
+            });
+
+            return redirect()->back()->with('success', 'Reviewer removed successfully.');
+
+        } catch (\Exception $e) {
+            \Log::error('Reviewer removal failed: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to remove reviewer. Please try again.');
         }
-        
-        return redirect()->back()->with('success', 'Reviewer removed successfully.');
     }
     public function assignAbstractMassReviewer(Request $request)
     {
@@ -399,14 +405,12 @@ class AdminController extends Controller
             'reviewer' => [
                 'required',
                 'string',
-                'exists:users,reg_no', // Ensure the reviewer exists in the users table
+                'exists:users,reg_no',
                 function ($attribute, $value, $fail) {
-                    $reviewer = User::where('reg_no', $value)
+                    if (!User::where('reg_no', $value)
                         ->whereHas('roles', function ($query) {
                             $query->where('name', 'reviewer');
-                        })->first();
-
-                    if (!$reviewer) {
+                        })->exists()) {
                         $fail('The specified reviewer does not have the reviewer role.');
                     }
                 },
@@ -415,48 +419,51 @@ class AdminController extends Controller
 
         try {
             DB::transaction(function () use ($request) {
-                // Get the list of serial numbers before updating
-                $submissions = AbstractSubmission::whereIn('serial_number', $request->submissions)->get();
+                // Get submissions with their authors in a single query
+                $submissions = AbstractSubmission::whereIn('serial_number', $request->submissions)
+                    ->with('user:reg_no')  // Assuming there's a relationship with User model
+                    ->get();
 
-                // Update all abstract submissions with the assigned reviewer's reg_no
+                // Bulk update all submissions at once
                 AbstractSubmission::whereIn('serial_number', $request->submissions)
                     ->update(['reviewer_reg_no' => $request->reviewer]);
 
-                // Fetch the reviewer user
-                $reviewer = User::where('reg_no', $request->reviewer)->first();
+                // Get unique user reg numbers to notify
+                $uniqueUserRegNos = $submissions->pluck('user_reg_no')->unique();
 
-                // Prepare the list of serial numbers for notification
+                // Prepare serial numbers string
                 $serialNumbersList = $submissions->pluck('serial_number')->implode(', ');
 
-                // Notification data
-                $dataForReviewer = [
+                // Dispatch notification job for reviewer
+                SendNotificationJob::dispatch($request->reviewer, [
                     'message' => 'You have been assigned the following abstracts for review: ' . $serialNumbersList,
-                    'link' => '/some-link', // Add the actual link where the reviewer can see the abstracts
-                ];
-                foreach ($submissions as $submission) {
-                    $user = User::where('reg_no', $submission->user_reg_no)->first();
-    
-                    if ($user) {
-                        // Notification data for user
-                        $dataForUser = [
-                            'message' => 'Abstracts ' . $serialNumbersList . ' are under review',
-                            'link' => '/some-link', // Add the link where the user can track review status
-                        ];
-    
-                        // Notify the user
-                        $user->notify(new NewUserNotification($dataForUser));
+                    'link' => '/some-link'
+                ]);
+
+                // Dispatch notification jobs for users in chunks to prevent memory issues
+                foreach ($uniqueUserRegNos->chunk(100) as $userRegNoChunk) {
+                    foreach ($userRegNoChunk as $userRegNo) {
+                        SendNotificationJob::dispatch($userRegNo, [
+                            'message' => 'Abstract(s) ' . $serialNumbersList . ' are under review',
+                            'link' => '/some-link'
+                        ]);
                     }
                 }
-
-                // Notify the reviewer
-                $reviewer->notify(new NewUserNotification($dataForReviewer));
             });
 
-            return response()->json(['message' => 'Reviewers assigned and notified successfully!'], 200);
+            return response()->json([
+                'message' => 'Reviewers assigned successfully!',
+                'assigned_count' => count($request->submissions)
+            ], 200);
+
         } catch (\Exception $e) {
-            return response()->json(['error' => 'An error occurred while assigning reviewers.'], 500);
+            return response()->json([
+                'error' => 'An error occurred while assigning reviewers.',
+                'details' => config('app.debug') ? $e->getMessage() : null
+            ], 500);
         }
     }
+
 
     public function assignProposalReviewer(Request $request, $serial_number)
     {

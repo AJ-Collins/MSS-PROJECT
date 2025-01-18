@@ -139,7 +139,7 @@
                             ?>
                           <span><?php echo e($firstName); ?></span>
                             <!-- Form for removing reviewer -->
-                            <form action="<?php echo e(route('remove.abstract.reviewer', $submission->serial_number)); ?>" method="POST" class="inline">
+                            <form action="<?php echo e(route('remove.abstract.reviewer', $submission->serial_number)); ?>" method="POST" class="inline" id="removeReviewerForm">
                                 <?php echo csrf_field(); ?>
                                 <?php echo method_field('POST'); ?>
                                 <button type="submit" class="ml-2 text-red-500 hover:text-red-700" title="Remove Reviewer">
@@ -1641,6 +1641,43 @@ window.deleteDocument = function (serialNumber) {
             showNotification(error.message || "An error occurred. Please try again later.", 'error');
         });
 }
+function confirmRemoval(event) {
+    event.preventDefault(); // Prevent form submission
+
+    // Ask for confirmation
+    const userConfirmed = confirm("Are you sure you want to remove this reviewer?");
+    
+    if (userConfirmed) {
+        // Prepare the form data
+        const formData = new FormData(document.getElementById('removeReviewerForm'));
+
+        // Send AJAX request using fetch API
+        fetch("<?php echo e(route('remove.abstract.reviewer', $submission->serial_number)); ?>", {
+            method: 'POST',
+            body: formData,
+            headers: {
+                "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content,
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Handle the response (success)
+            if (data.message) {
+                showNotification(data.message, 'success');
+                setTimeout(() => {
+                    location.reload();  // Reload the page to reflect changes
+                }, 1000);
+            } else {
+                showNotification(data.error || "Failed to remove reviewer", 'error');
+            }
+        })
+        .catch(error => {
+            // Handle errors
+            showNotification(error.message || "An error occurred. Please try again later.", 'error');
+        });
+    }
+}
+
 </script>
 <?php $__env->stopSection(); ?>
 <?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH D:\MSS\mss-project\resources\views/admin/partials/documents.blade.php ENDPATH**/ ?>
