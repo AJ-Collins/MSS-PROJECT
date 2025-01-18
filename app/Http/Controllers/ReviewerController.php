@@ -11,9 +11,12 @@ use Illuminate\Support\Facades\DB;
 use App\Notifications\NewUserNotification;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use App\Traits\DynamicTitleTrait;
+
 
 class ReviewerController extends Controller
 {
+    use DynamicTitleTrait;
     public function profile()
     {
         return view('reviewer.partials.profile');

@@ -162,7 +162,7 @@
                     <span class="mx-3">My Submissions</span>
                 </a>
                 <a class="hover:bg-green-800 flex items-center px-4 py-3 text-white text-lg font-medium rounded-lg transition-colors duration-150"
-                   href="{{route('user.profile')}}">
+                   href="{{ route('user.profile') }}">
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
                     </svg>
@@ -296,42 +296,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Fetch notifications every 30 seconds
     setInterval(fetchNotifications, 30000);
-});
-</script>
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const profileImage = document.querySelector(`img[data-user-id="{{ $user->id }}"]`);
-    if (!profileImage) return;
-
-    const imageUrl = profileImage.getAttribute('src');
-    const storageKey = 'profileImage_' + '{{ $user->id }}';
-
-    const cachedImage = sessionStorage.getItem(storageKey);
-    
-    if (cachedImage) {
-        profileImage.src = cachedImage;
-    } else {
-        fetch(imageUrl)
-            .then(response => response.blob())
-            .then(blob => {
-                const reader = new FileReader();
-                reader.onloadend = function() {
-                    const base64data = reader.result;
-                    sessionStorage.setItem(storageKey, base64data);
-                    profileImage.src = base64data;
-                };
-                reader.readAsDataURL(blob);
-            })
-            .catch(error => {
-                console.error('Error loading profile image:', error);
-                profileImage.src = '{{ asset("default-profile.png") }}';
-            });
-    }
-
-    profileImage.onerror = function() {
-        this.src = '{{ asset("default-profile.png") }}';
-        sessionStorage.removeItem(storageKey);
-    };
 });
 </script>
 </html>

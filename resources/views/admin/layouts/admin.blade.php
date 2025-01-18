@@ -307,40 +307,4 @@ document.addEventListener('DOMContentLoaded', function() {
     setInterval(fetchNotifications, 30000);
 });
 </script>
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const profileImage = document.querySelector(`img[data-user-id="{{ $user->id }}"]`);
-    if (!profileImage) return;
-
-    const imageUrl = profileImage.getAttribute('src');
-    const storageKey = 'profileImage_' + '{{ $user->id }}';
-
-    const cachedImage = sessionStorage.getItem(storageKey);
-    
-    if (cachedImage) {
-        profileImage.src = cachedImage;
-    } else {
-        fetch(imageUrl)
-            .then(response => response.blob())
-            .then(blob => {
-                const reader = new FileReader();
-                reader.onloadend = function() {
-                    const base64data = reader.result;
-                    sessionStorage.setItem(storageKey, base64data);
-                    profileImage.src = base64data;
-                };
-                reader.readAsDataURL(blob);
-            })
-            .catch(error => {
-                console.error('Error loading profile image:', error);
-                profileImage.src = '{{ asset("default-profile.png") }}';
-            });
-    }
-
-    profileImage.onerror = function() {
-        this.src = '{{ asset("default-profile.png") }}';
-        sessionStorage.removeItem(storageKey);
-    };
-});
-</script>
 </html>

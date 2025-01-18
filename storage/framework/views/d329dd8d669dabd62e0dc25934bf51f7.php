@@ -31,11 +31,12 @@
                             </label>
                             <input type="file" name="profile_photo" id="profilePhotoInput" accept="image/*" onchange="uploadPhoto(event)" class="hidden">
                         </div>
-                        <h3 class="mt-4 text-xl font-semibold text-gray-900"><?php echo e($user->first_name . ' ' .auth()->user()->last_name); ?></h3>
+                        <h3 class="mt-4 text-xl font-semibold text-gray-900"><?php echo e($user->first_name . ' ' .$user->last_name); ?></h3>
                         <p class="text-sm text-gray-500"><?php echo e($user->email); ?></p>
                     </div>
                 </div>
             </div>
+            
 
             <!-- Right Column: User Details Section -->
             <div class="lg:col-span-2">

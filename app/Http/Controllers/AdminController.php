@@ -14,10 +14,12 @@ use App\Models\Role;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use App\Notifications\NewUserNotification;
+use App\Traits\DynamicTitleTrait;
 
 
 class AdminController extends Controller
 {
+    use DynamicTitleTrait;
     public function dashboard()
     {
         $admin = Auth::user();

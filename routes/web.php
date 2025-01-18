@@ -16,7 +16,9 @@ use App\Http\Controllers\ProposalController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Gate;
 
+Auth::routes();
 Route::get('email/verify', [App\Http\Controllers\Auth\VerificationController::class, 'show'])->name('verification.notice');
 Route::get('email/verify/{id}/{hash}', [App\Http\Controllers\Auth\VerificationController::class, 'verify'])
     ->middleware(['signed'])
@@ -26,8 +28,6 @@ Route::post('email/resend', [App\Http\Controllers\Auth\VerificationController::c
 
 Route::get('register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 Route::post('register', [RegisterController::class, 'register']);
-
-Route::get('/', [AuthenticatedSessionController::class, 'create'])->name('home');
 
 // Authentication Routes
 Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
@@ -53,7 +53,7 @@ Route::middleware(['preventBackHistory', 'auth'])->group(function () {
      Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead']);
 
     //Admin routes
-    Route::prefix('admin')->group(function () {
+    Route::middleware('can:view-admin-dashboard')->prefix('admin')->group(function () {
         Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
         Route::get('/users', [AdminController::class, 'users'])->name('admin.users');
 
@@ -100,7 +100,7 @@ Route::middleware(['preventBackHistory', 'auth'])->group(function () {
     });
 
     //Reviewer routes
-    Route::prefix('reviewer')->group(function () {
+    Route::middleware('can:view-reviewer-dashboard')->prefix('reviewer')->group(function () {
         Route::get('/dashboard', [ReviewerController::class, 'dashboard'])->name('reviewer.dashboard');
         Route::get('/assigned-abstracts', [ReviewerController::class, 'assignedAbstracts'])->name('reviewer.assignedAbstracts');
         Route::get('/documents', [ReviewerController::class, 'documentsReview'])->name('reviewer.documents');
@@ -125,8 +125,8 @@ Route::middleware(['preventBackHistory', 'auth'])->group(function () {
 
     });
     //User routes
-    Route::prefix('user')->group(function () {
-        Route::get('/profile', [UserController::class, 'profile'])->name('user.profile');
+    Route::middleware('can:view-user-dashboard')->prefix('user')->group(function () {
+        Route::get('/user-profile', [UserController::class, 'profile'])->name('user.profile');
         Route::get('/dashboard', [UserController::class, 'dashboard'])->name('user.dashboard');
         Route::get('/documents', [UserController::class, 'documents'])->name('user.documents');
         Route::get('/submit', [UserController::class, 'submit'])->name('user.submit');

@@ -6,9 +6,11 @@ use Illuminate\Http\Request;
 use App\Models\AbstractSubmission;
 use App\Models\ResearchSubmission;
 use App\Models\AbstractDraft;
+use App\Traits\DynamicTitleTrait;
 
 class UserController extends Controller
 {
+    use DynamicTitleTrait;
     protected $notifications;
     protected $unreadCount;
 
@@ -24,6 +26,8 @@ class UserController extends Controller
     }
     public function profile()
     {
+        $user = auth()->user();
+        
         return view('user.partials.profile');
     }
     public function dashboard()

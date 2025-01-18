@@ -2,9 +2,10 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
 use App\Traits\DynamicTitleTrait;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -22,10 +23,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        $this->registerPolicies();
+        
         view()->composer('*', function ($view) {
             if (!isset($view->getData()['pageTitle'])) {
                 $currentRole = $this->getCurrentUserRole();
                 $pageTitle = $this->getPageTitle();
+                $user = Auth::user();
                 $view->with([
                     'pageTitle' => $pageTitle,
                     'user' => Auth::user()
