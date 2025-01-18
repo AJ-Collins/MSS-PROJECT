@@ -57,6 +57,8 @@ Route::middleware(['preventBackHistory', 'auth'])->group(function () {
     Route::middleware('can:view-admin-dashboard')->prefix('admin')->group(function () {
         Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
         Route::get('/users', [AdminController::class, 'users'])->name('admin.users');
+        Route::get('/documents-search', [AdminController::class, 'documentsSearch'])->name('admin.documents-search');
+        Route::delete('/delete/documents/{serial_number}', [AdminController::class, 'deleteDocuments'])->name('admin.documentsDelete');
 
         Route::post('/users/create', [AdminController::class, 'createUser'])->name('admin.users.create');
         Route::delete('/delete/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');

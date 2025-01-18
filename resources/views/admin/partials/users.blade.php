@@ -2,14 +2,9 @@
 
 @section('content')
 <div class="container mx-auto">
-    <!-- Header -->
-    <div class="flex justify-between items-center mb-4">
-        <h1 class="text-2xl font-bold">User Management</h1>
-        <button onclick="openModal('create-user-modal')" 
-            class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
-            Add New User
-        </button>
-    </div>
+<div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900">Users</h1>
+</div>
     {{-- Search Form --}}
     <form action="{{ route('admin.users') }}" method="GET" class="mb-6" id="search-form">
         <div class="flex gap-4">
@@ -253,55 +248,6 @@
                             </div>
                         </div>
                     </div>
-    </div>
-
-    <!-- Create User Modal -->
-    <div id="create-user-modal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center">
-        <div class="bg-white rounded-lg shadow-md p-6 w-full max-w-lg">
-            <h3 class="text-lg font-medium text-gray-800 mb-4">Create User</h3>
-            <form action="{{ route('admin.users.create') }}" method="POST">
-                @csrf
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Reg_No</label>
-                        <input type="text" name="reg_no" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-2" 
-                               placeholder="Enter reg_no" required>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Name</label>
-                        <input type="text" name="name" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-2" 
-                               placeholder="Enter user name" required>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Email</label>
-                        <input type="email" name="email" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-2" 
-                               placeholder="Enter user email" required>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Password</label>
-                        <input type="password" name="password" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-2" 
-                               placeholder="Enter default password" required>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Role</label>
-                        <select name="role_id" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-2" required>
-                            @foreach($roles as $role)
-                                <option value="{{ $role->id }}">{{ $role->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
-                <div class="mt-6 flex justify-end gap-3">
-                    <button type="button" onclick="closeModal('create-user-modal')" 
-                            class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">
-                        Cancel
-                    </button>
-                    <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
-                        Create
-                    </button>
-                </div>
-            </form>
-        </div>
     </div>
 </div>
 

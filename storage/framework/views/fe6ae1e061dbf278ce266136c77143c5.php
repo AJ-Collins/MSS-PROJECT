@@ -2,14 +2,9 @@
 
 <?php $__env->startSection('content'); ?>
 <div class="container mx-auto">
-    <!-- Header -->
-    <div class="flex justify-between items-center mb-4">
-        <h1 class="text-2xl font-bold">User Management</h1>
-        <button onclick="openModal('create-user-modal')" 
-            class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
-            Add New User
-        </button>
-    </div>
+<div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900">Users</h1>
+</div>
     
     <form action="<?php echo e(route('admin.users')); ?>" method="GET" class="mb-6" id="search-form">
         <div class="flex gap-4">
@@ -165,59 +160,99 @@
                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </tbody>
         </table>
-        <div class="px-4 py-3 border-t border-gray-200">
-            <?php echo e($users->links()); ?>
+        <!-- Pagination Container -->
+        <div class="px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+                        <div class="flex-1 flex justify-between sm:hidden">
+                            <?php if($users->onFirstPage()): ?>
+                                <span class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-not-allowed rounded-md">
+                                    Previous
+                                </span>
+                            <?php else: ?>
+                                <a href="<?php echo e($users->previousPageUrl()); ?>" class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                                    Previous
+                                </a>
+                            <?php endif; ?>
 
-        </div>
-    </div>
+                            <?php if($users->hasMorePages()): ?>
+                                <a href="<?php echo e($users->nextPageUrl()); ?>" class="relative inline-flex items-center px-4 py-2 ml-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                                    Next
+                                </a>
+                            <?php else: ?>
+                                <span class="relative inline-flex items-center px-4 py-2 ml-3 text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-not-allowed rounded-md">
+                                    Next
+                                </span>
+                            <?php endif; ?>
+                        </div>
 
-    <!-- Create User Modal -->
-    <div id="create-user-modal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center">
-        <div class="bg-white rounded-lg shadow-md p-6 w-full max-w-lg">
-            <h3 class="text-lg font-medium text-gray-800 mb-4">Create User</h3>
-            <form action="<?php echo e(route('admin.users.create')); ?>" method="POST">
-                <?php echo csrf_field(); ?>
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Reg_No</label>
-                        <input type="text" name="reg_no" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-2" 
-                               placeholder="Enter reg_no" required>
+                        <!-- Desktop View -->
+                        <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                            <div>
+                                <p class="text-sm text-gray-700">
+                                    Showing
+                                    <span class="font-medium"><?php echo e($users->firstItem()); ?></span>
+                                    to
+                                    <span class="font-medium"><?php echo e($users->lastItem()); ?></span>
+                                    of
+                                    <span class="font-medium"><?php echo e($users->total()); ?></span>
+                                    results
+                                </p>
+                            </div>
+
+                            <!-- Page Numbers -->
+                            <div>
+                                <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                                    
+                                    <?php if($users->onFirstPage()): ?>
+                                        <span class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 cursor-not-allowed">
+                                            <span class="sr-only">Previous</span>
+                                            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                                <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                            </svg>
+                                        </span>
+                                    <?php else: ?>
+                                        <a href="<?php echo e($users->previousPageUrl()); ?>" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                            <span class="sr-only">Previous</span>
+                                            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                                <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                            </svg>
+                                        </a>
+                                    <?php endif; ?>
+
+                                    
+                                    <?php $__currentLoopData = $users->getUrlRange(1, $users->lastPage()); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $page => $url): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <?php if($page == $users->currentPage()): ?>
+                                            <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-blue-50 text-sm font-medium text-blue-600">
+                                                <?php echo e($page); ?>
+
+                                            </span>
+                                        <?php else: ?>
+                                            <a href="<?php echo e($url); ?>" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                                                <?php echo e($page); ?>
+
+                                            </a>
+                                        <?php endif; ?>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+
+                                    
+                                    <?php if($users->hasMorePages()): ?>
+                                        <a href="<?php echo e($users->nextPageUrl()); ?>" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                            <span class="sr-only">Next</span>
+                                            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                                            </svg>
+                                        </a>
+                                    <?php else: ?>
+                                        <span class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 cursor-not-allowed">
+                                            <span class="sr-only">Next</span>
+                                            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                                            </svg>
+                                        </span>
+                                    <?php endif; ?>
+                                </nav>
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Name</label>
-                        <input type="text" name="name" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-2" 
-                               placeholder="Enter user name" required>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Email</label>
-                        <input type="email" name="email" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-2" 
-                               placeholder="Enter user email" required>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Password</label>
-                        <input type="password" name="password" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-2" 
-                               placeholder="Enter default password" required>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Role</label>
-                        <select name="role_id" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-2" required>
-                            <?php $__currentLoopData = $roles; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $role): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                <option value="<?php echo e($role->id); ?>"><?php echo e($role->name); ?></option>
-                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                        </select>
-                    </div>
-                </div>
-                <div class="mt-6 flex justify-end gap-3">
-                    <button type="button" onclick="closeModal('create-user-modal')" 
-                            class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">
-                        Cancel
-                    </button>
-                    <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
-                        Create
-                    </button>
-                </div>
-            </form>
-        </div>
     </div>
 </div>
 

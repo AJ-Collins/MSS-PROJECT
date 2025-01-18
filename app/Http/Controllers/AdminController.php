@@ -61,6 +61,63 @@ class AdminController extends Controller
 
         return view('admin.partials.users', compact('users','roles'));
     }
+    public function documentsSearch(Request $request)
+    {
+        $search = $request->input('search');
+        $submissions = AbstractSubmission::leftJoin('users', 'users.reg_no', '=', 'abstract_submissions.user_reg_no')
+            ->select('abstract_submissions.*', 'users.first_name as user_name')
+            ->where('approved', '!=', true)
+            ->where(function ($query) use ($search) {
+                $query->where('abstract_submissions.serial_number', 'like', "%$search%")
+                    ->orWhere('abstract_submissions.title', 'like', "%$search%")
+                    ->orWhere('users.first_name', 'like', "%$search%")
+                    ->orWhere('users.last_name', 'like', "%$search%")
+                    ->orWhere('users.reg_no', 'like', "%$search%");
+            })
+            ->paginate(10);
+        $researchSubmissions = ResearchSubmission::leftJoin('users', 'users.reg_no', '=', 'research_submissions.user_reg_no')
+            ->select('research_submissions.*', 'users.first_name as user_name')
+            ->where('approved', '!=', true)
+            ->where(function ($query) use ($search) {
+                $query->where('research_submissions.serial_number', 'like', "%$search%")
+                    ->orWhere('research_submissions.article_title', 'like', "%$search%")
+                    ->orWhere('users.first_name', 'like', "%$search%")
+                    ->orWhere('users.last_name', 'like', "%$search%")
+                    ->orWhere('users.reg_no', 'like', "%$search%");
+            })
+            ->paginate(10);
+        
+        $reviewers = User::whereHas('roles', function ($query){
+            $query->where('name', 'Reviewer');
+        })->get();
+
+        return view('admin.partials.documents', compact('submissions', 'researchSubmissions', 'reviewers'));
+    }
+    public function deleteDocuments($serial_number)
+    {
+        try {
+            // Attempt to delete the abstract submission
+            $submissions = AbstractSubmission::where('serial_number', $serial_number)->delete();
+
+            // Attempt to delete the research submission, if it exists
+            $researchSumissions = ResearchSubmission::where('serial_number', $serial_number)->delete();
+
+            if ($submissions || $researchSumissions) {
+                return response()->json([
+                    'message' => 'Document deleted successfully.'
+                ], 200);
+            }
+
+            return response()->json([
+                'error' => 'No document found with the given serial number.'
+            ], 404);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'An error occurred while deleting the document. Please try again later.'
+            ], 500);
+        }
+    }
     public function updateUser(Request $request, User $user)
     {
         $request->validate([
