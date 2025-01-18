@@ -1,6 +1,6 @@
-@extends('user.layouts.user')
+@extends('layouts.app')
 
-@section('user-content')
+@section('content')
 <div class="mb-8">
     <h1 class="text-3xl font-bold text-gray-900">| Submissions Portal</h1>
     <p class="mt-2 text-sm text-gray-600">Choose your submission type to begin the application process</p>

@@ -1,6 +1,6 @@
-@extends('admin.layouts.admin')
+@extends('layouts.app')
 
-@section('admin-content')
+@section('content')
 <div class="min-h-screen bg-gray-50 p-8">
     <!-- Header with gradient background -->
     <div class="relative mb-8 bg-gradient-to-r from-gray-100 to-grey-200 p-6 shadow-lg">

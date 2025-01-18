@@ -1,6 +1,6 @@
-@extends('user.layouts.user')
+@extends('layouts.app')
 
-@section('user-content')
+@section('content')
 <div class="px-6 py-4 border-b border-gray-200 shadow-sm bg-white">
     <h2 class="text-2xl font-semibold text-gray-800 tracking-tight">Upload Article</h2>
 </div>

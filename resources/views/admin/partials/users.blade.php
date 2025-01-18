@@ -1,6 +1,6 @@
-@extends('admin.layouts.admin')
+@extends('layouts.app')
 
-@section('admin-content')
+@section('content')
 <div class="container mx-auto">
     <!-- Header -->
     <div class="flex justify-between items-center mb-4">

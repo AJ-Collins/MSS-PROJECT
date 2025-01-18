@@ -1,6 +1,6 @@
-@extends('reviewer.layouts.reviewer')
+@extends('layouts.app')
 
-@section('reviewer-content')
+@section('content')
 <div class="min-h-screen bg-gray-50" x-data="assessmentForm">
     <!-- Main Content -->
     <div class="flex flex-col md:flex-row h-screen">

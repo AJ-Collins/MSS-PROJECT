@@ -1,6 +1,6 @@
-@extends('user.layouts.user')
+@extends('layouts.app')
 
-@section('user-content')
+@section('content')
 <!-- Progress Tracker -->
 <div class="max-w-4xl mx-auto mb-8">
     <!-- Your existing progress tracker code here -->

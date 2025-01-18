@@ -1,4 +1,4 @@
-<?php $__env->startSection('user-content'); ?>
+<?php $__env->startSection('content'); ?>
 <div class="mb-8">
     <h1 class="text-3xl font-bold text-gray-900">| Dashboard</h1>
     <!--<p class="mt-2 text-sm text-gray-600">Welcome back to your research dashboard</p>-->
@@ -217,4 +217,4 @@
     </div>
 </div>
 <?php $__env->stopSection(); ?>
-<?php echo $__env->make('user.layouts.user', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH D:\MSS\mss-project\resources\views/user/partials/dashboard.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH D:\MSS\mss-project\resources\views/user/partials/dashboard.blade.php ENDPATH**/ ?>

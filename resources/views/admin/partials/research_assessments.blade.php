@@ -1,6 +1,6 @@
-@extends('admin.layouts.admin')
+@extends('layouts.app')
 
-@section('admin-content')
+@section('content')
     <div class="container mx-auto p-4">
         <h1 class="text-xl font-semibold mb-4">
             Assessments for Document {{ $serial_number }}

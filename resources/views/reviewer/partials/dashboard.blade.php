@@ -1,6 +1,6 @@
-@extends('reviewer.layouts.reviewer')
+@extends('layouts.app')
 
-@section('reviewer-content')
+@section('content')
 <div class="mb-8">
     <h1 class="text-3xl font-bold text-gray-900">| Dashboard</h1>
     <p class="mt-2 text-sm text-gray-600">Review, rate, and provide feedback on submitted documents. Approve, request revisions, or reject submissions as necessary.</p>

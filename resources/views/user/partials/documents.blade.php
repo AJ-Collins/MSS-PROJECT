@@ -1,6 +1,6 @@
-@extends('user.layouts.user')
+@extends('layouts.app')
 
-@section('user-content')
+@section('content')
 <!-- Document Management Section -->
 <div x-data="{ activeTab: 'articles' }">
     <div class="border-b border-gray-200 shadow-sm bg-white">

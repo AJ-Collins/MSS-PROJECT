@@ -1,6 +1,6 @@
-@extends('reviewer.layouts.reviewer')
+@extends('layouts.app')
 
-@section('reviewer-content')
+@section('content')
 <!-- Enhanced Document Management Section -->
 <div x-data="{ activeTab: 'articles', searchQuery: '', showFilters: false, statusFilter: 'all' }">
     <div class="border-b border-gray-200 shadow-sm bg-white">

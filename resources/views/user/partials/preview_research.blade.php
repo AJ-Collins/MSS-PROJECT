@@ -1,6 +1,6 @@
-@extends('user.layouts.user')
+@extends('layouts.app')
 
-@section('user-content')
+@section('content')
 <div class="container mx-auto px-4 py-8">
     <!-- Progress Tracker -->
     <div class="max-w-4xl mx-auto mb-8">

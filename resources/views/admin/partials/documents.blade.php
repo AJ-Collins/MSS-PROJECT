@@ -1,6 +1,6 @@
-@extends('admin.layouts.admin')
+@extends('layouts.app')
 
-@section('admin-content')
+@section('content')
 <div class="px-6 py-4 border-b border-gray-200 shadow-sm bg-white">
     <h2 class="text-2xl font-semibold text-gray-800 tracking-tight">Document Management</h2>
 </div>

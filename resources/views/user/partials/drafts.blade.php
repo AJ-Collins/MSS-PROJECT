@@ -1,6 +1,6 @@
-@extends('user.layouts.user')
+@extends('layouts.app')
 
-@section('user-content')
+@section('content')
 <div class="container mx-auto px-4 sm:px-6 lg:px-8">
     <div class="py-8">
         <div class="sm:flex sm:items-center mb-6">
