@@ -13,6 +13,11 @@ use Dompdf\Options;
 use App\Models\AbstractDraft;
 use Illuminate\Support\Facades\Mail;
 use App\Notifications\NewUserNotification;
+use App\Jobs\DeleteDraftJob;
+use App\Jobs\SendNotificationJob;
+use App\Jobs\CleanupSessionJob;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 
 
@@ -194,68 +199,98 @@ class ResearchSubmissionController extends Controller
 
     public function postPreview_research(Request $request)
     {
-        // Retrieve session data
-        $authorData = $request->session()->get('author');
-        $submissionData = $request->session()->get('abstract');
-        $allAuthors = $request->session()->get('all_authors');
+        $lockKey = 'submission_lock_' . auth()->id();
 
-        if (!$authorData || !$submissionData || !$allAuthors) {
-            return redirect()->route('user.step1_research')->with('error', 'No author or submission data available.');
+        // Prevent duplicate submissions
+        if (!Cache::add($lockKey, true, 60)) {
+            return response()->json(['error' => 'Submission already in progress'], 429);
         }
-
-        // Generate unique serial number
-        $subTheme = $submissionData['sub_theme'];
-        $acronyms = [
-            'Transformative Education' => 'TE',
-            'Business and Entrepreneurship' => 'BE',
-            'Health and Food Security' => 'HFS',
-            'Digital, Creative Economy and Contemporary Societies' => 'DCECS',
-            'Engineering, Technology and Sustainable Environment' => 'ETSE',
-            'Blue Economy & Maritime Affairs' => 'BEMA',
-        ];
-
-        $acronym = $acronyms[$subTheme] ?? 'N/A';
-        $year = date('y');
         
-        // Generate unique identifier using timestamp and uniqid
-        $uniqueCode = mb_strtoupper(Str::random(mt_rand(4, 5)) . Str::random(mt_rand(3, 5)));
-        $serialNumber = "{$acronym}-{$uniqueCode}-{$year}";
+        DB::beginTransaction();
 
         try {
             $user = auth()->user();
 
-            // Save research abstract submission data
-            $researchSubmission = new ResearchSubmission();
-            $researchSubmission->serial_number = $serialNumber;
-            $researchSubmission->article_title = $submissionData['article_title'];
-            $researchSubmission->sub_theme = $submissionData['sub_theme'];
-            $researchSubmission->abstract = $submissionData['abstract'];
-            $researchSubmission->keywords = json_encode($submissionData['keywords']);
-            $researchSubmission->pdf_document_path = $submissionData['pdf_document_path'] ?? null;
-            $researchSubmission->user_reg_no = $user->reg_no;
-            $researchSubmission->final_status = "submitted";
-            $researchSubmission->save();
-
-            // Save authors
-            foreach ($allAuthors as $author) {
-                $author['research_submission_id'] = $serialNumber;
-                $authorModel = new Author($author);
-                $authorModel->save();
+            // Early check for authenticated user
+            if (!$user || !$user->reg_no) {
+                Log::error('User not properly authenticated or missing registration number');
+                return redirect()->route('login')->with('error', 'Please log in to continue.');
             }
 
-            $data = [
-                'message' => 'This is a new notification',
-                'link' => '/some-link',
-            ];
-            
-            $user->notify(new NewUserNotification($data));
+            // Retrieve session data
+            $authorData = $request->session()->get('author');
+            $submissionData = $request->session()->get('abstract');
+            $allAuthors = $request->session()->get('all_authors');
 
-            // Clear session data after successful submission
-            $request->session()->forget(self::SESSION_KEYS);
+            if (!$authorData || !$submissionData || !$allAuthors) {
+                return redirect()->route('user.step1_research')->with('error', 'No author or submission data available.');
+            }
 
-            return redirect()->route('user.dashboard')->with('success', 'Submission successful.');
+            // Cache the acronyms for 24 hours
+            $acronyms = Cache::remember('submission_acronyms', 60 * 60 * 24, function () {
+                return [
+                    'Transformative Education' => 'TE',
+                    'Business and Entrepreneurship' => 'BE',
+                    'Health and Food Security' => 'HFS',
+                    'Digital, Creative Economy and Contemporary Societies' => 'DCECS',
+                    'Engineering, Technology and Sustainable Environment' => 'ETSE',
+                    'Blue Economy & Maritime Affairs' => 'BEMA',
+                ];
+            });
+
+            // Generate unique serial number
+            $subTheme = $submissionData['sub_theme'];
+            $acronym = $acronyms[$subTheme] ?? 'N/A';
+            $year = date('y');
             
+            // Generate unique identifier using timestamp and uniqid
+            $uniqueCode = strtoupper(substr(uniqid() . bin2hex(random_bytes(8)), 0, 10));
+            $serialNumber = "{$acronym}-{$uniqueCode}-{$year}";
+
+                // Save research abstract submission data
+                $researchSubmission = new ResearchSubmission();
+                $researchSubmission->serial_number = $serialNumber;
+                $researchSubmission->article_title = $submissionData['article_title'];
+                $researchSubmission->sub_theme = $submissionData['sub_theme'];
+                $researchSubmission->abstract = $submissionData['abstract'];
+                $researchSubmission->keywords = json_encode($submissionData['keywords']);
+                $researchSubmission->pdf_document_path = $submissionData['pdf_document_path'] ?? null;
+                $researchSubmission->user_reg_no = $user->reg_no;
+                $researchSubmission->final_status = "submitted";
+                $researchSubmission->created_at = now();
+                $researchSubmission->updated_at = now();
+                
+                // Save the abstract submission
+                if (!$researchSubmission->save()) {
+                    throw new \Exception('Failed to save abstract submission');
+                }
+
+                // Prepare author records for bulk insert
+                $authorRecords = collect($allAuthors)->map(function ($authorData) use ($serialNumber) {
+                    return array_merge($authorData, [
+                        'abstract_submission_id' => $serialNumber,
+                        'created_at' => now(),
+                        'updated_at' => now()
+                    ]);
+                })->all();
+                // Bulk insert authors
+                Author::insert($authorRecords);
+
+                // Dispatch jobs
+                DeleteDraftJob::dispatch($serialNumber);
+                SendNotificationJob::dispatch($user->reg_no, [
+                    'message' => $submissionData['article_title'] . ' Abstract Submitted successfully',
+                    'link' => '/some-link',
+                ]);
+                CleanupSessionJob::dispatch(self::SESSION_KEYS);
+
+                DB::commit();
+
+                return redirect()->route('user.dashboard')->with('success', 'Submission successful.');
+                
         } catch (\Exception $e) {
+            DB::rollBack();
+            
             return redirect()->back()->with('error', 'An error occurred during submission. Please try again.');
         }
     }

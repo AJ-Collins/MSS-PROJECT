@@ -7,7 +7,12 @@ use App\Models\AbstractDraft;
 use Illuminate\Http\Request;
 use App\Models\Author;
 use Illuminate\Support\Str;
-use App\Models\User;
+use App\Jobs\DeleteDraftJob;
+use App\Jobs\SendNotificationJob;
+use App\Jobs\CleanupSessionJob;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use App\Notifications\NewUserNotification;
 
@@ -157,61 +162,110 @@ class AbstractSubmissionController extends Controller
 
     public function postPreview(Request $request)
     {
-        $user = auth()->user();
-        $authorData = $request->session()->get('author');
-        $abstractData = $request->session()->get('abstract');
-        $allAuthors = $request->session()->get('all_authors');
+        DB::beginTransaction();
         
-        if (!$authorData || !$abstractData) {
-            return redirect()->route('user.step1')->with('error', 'No author or abstract data available.');
+        try {
+            $user = auth()->user();
+            
+            // Early check for authenticated user
+            if (!$user || !$user->reg_no) {
+                Log::error('User not properly authenticated or missing registration number');
+                return redirect()->route('login')->with('error', 'Please log in to continue.');
+            }
+            // Retrieve session data
+            $authorData = $request->session()->get('author');
+            $abstractData = $request->session()->get('abstract');
+            $allAuthors = $request->session()->get('all_authors');
+            
+            if (!$authorData || !$abstractData) {
+                return redirect()->route('user.step1')->with('error', 'No author or abstract data available.');
+            }
+            
+            // Cache the acronyms for 24 hours
+            $acronyms = Cache::remember('submission_acronyms', 60 * 60 * 24, function () {
+                return [
+                    'Transformative Education' => 'TE',
+                    'Business and Entrepreneurship' => 'BE',
+                    'Health and Food Security' => 'HFS',
+                    'Digital, Creative Economy and Contemporary Societies' => 'DCECS',
+                    'Engineering, Technology and Sustainable Environment' => 'ETSE',
+                    'Blue Economy & Maritime Affairs' => 'BEMA',
+                ];
+            });
+            
+            $subTheme = $abstractData['sub_theme'];
+            $acronym = $acronyms[$subTheme] ?? 'N/A';
+            $year = date('y');
+            
+            $uniqueCode = strtoupper(substr(uniqid() . bin2hex(random_bytes(8)), 0, 10));
+            $serialNumber = "{$acronym}-{$uniqueCode}-{$year}";
+            
+            // Create abstract submission first
+            $abstractSubmission = new AbstractSubmission();
+            $abstractSubmission->serial_number = $serialNumber;
+            $abstractSubmission->title = $abstractData['article_title'];
+            $abstractSubmission->sub_theme = $abstractData['sub_theme'];
+            $abstractSubmission->abstract = $abstractData['abstract'];
+            $abstractSubmission->keywords = json_encode($abstractData['keywords']);
+            $abstractSubmission->user_reg_no = $user->reg_no; // Explicitly set the user_reg_no
+            $abstractSubmission->final_status = "submitted";
+            $abstractSubmission->created_at = now();
+            $abstractSubmission->updated_at = now();
+            
+            // Save the abstract submission
+            if (!$abstractSubmission->save()) {
+                throw new \Exception('Failed to save abstract submission');
+            }
+            
+            // Prepare author records for bulk insert
+            $authorRecords = collect($allAuthors)->map(function ($authorData) use ($serialNumber) {
+                return array_merge($authorData, [
+                    'abstract_submission_id' => $serialNumber,
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]);
+            })->all();
+            
+            // Bulk insert authors
+            Author::insert($authorRecords);
+            
+            // Log before dispatching jobs
+            Log::info('Abstract submission data prepared', [
+                'user_id' => $user->id,
+                'reg_no' => $user->reg_no,
+                'serial_number' => $serialNumber
+            ]);
+            
+            // Dispatch jobs
+            DeleteDraftJob::dispatch($serialNumber);
+            SendNotificationJob::dispatch((int) $user->id, [
+                'message' => $abstractData['article_title'] . ' Abstract Submitted successfully',
+                'link' => '/some-link',
+            ]);
+            CleanupSessionJob::dispatch(self::SESSION_KEYS);
+            
+            Log::info('Abstract submission successful', [
+                'user_id' => $user->id,
+                'serial_number' => $serialNumber,
+                'submission_time' => now()
+            ]);
+            
+            DB::commit();
+            
+            return redirect()->route('user.dashboard')->with('success', 'Submission successful.');
+            
+        } catch (\Exception $e) {
+            DB::rollBack();
+            
+            Log::error('Abstract submission failed', [
+                'error' => $e->getMessage(),
+                'user_id' => $user->id ?? null,
+                'reg_no' => $user->reg_no ?? null,
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return redirect()->back()->with('error', 'Submission failed. Please try again.');
         }
-    
-        $subTheme = $abstractData['sub_theme'];
-        $acronyms = [
-            'Transformative Education' => 'TE',
-            'Business and Entrepreneurship' => 'BE',
-            'Health and Food Security' => 'HFS',
-            'Digital, Creative Economy and Contemporary Societies' => 'DCECS',
-            'Engineering, Technology and Sustainable Environment' => 'ETSE',
-            'Blue Economy & Maritime Affairs' => 'BEMA',
-        ];
-    
-        $acronym = $acronyms[$subTheme] ?? 'N/A';
-        $year = date('y');
-        
-        // Generate unique identifier using timestamp and uniqid
-        $uniqueCode = mb_strtoupper(Str::random(mt_rand(4, 5)) . Str::random(mt_rand(3, 5)));
-        $serialNumber = "{$acronym}-{$uniqueCode}-{$year}";
-    
-        
-    
-        $abstractSubmission = new AbstractSubmission();
-        $abstractSubmission->serial_number = $serialNumber;
-        $abstractSubmission->title = $abstractData['article_title'];
-        $abstractSubmission->sub_theme = $abstractData['sub_theme'];
-        $abstractSubmission->abstract = $abstractData['abstract'];
-        $abstractSubmission->keywords = json_encode($abstractData['keywords']);
-        $abstractSubmission->user_reg_no = auth()->user()->reg_no;
-        $abstractSubmission->final_status = "submitted";
-        $abstractSubmission->save();
-        
-        $this->deleteDraft($serialNumber);
-    
-        foreach ($allAuthors as $authorData) {
-            $authorData['abstract_submission_id'] = $serialNumber;
-            $author = new Author($authorData);
-            $author->save();
-        }
-    
-        $data = [
-            'message' => $abstractData['article_title'] . ' Abstract Submitted successfully',
-            'link' => '/some-link',
-        ];
-        
-        $user->notify(new NewUserNotification($data));
-        $request->session()->forget(self::SESSION_KEYS);
-    
-        return redirect()->route('user.dashboard')->with('success', 'Submission successful.');
     }
     
     public function saveDraft(Request $request)

@@ -90,7 +90,7 @@
                                 @if(auth()->user()->hasRole('admin'))
                                     <div class="text-xs text-gray-500">Admin</div>
                                 @elseif(auth()->user()->hasRole('reviewer'))
-                                    <div class="text-xs text-gray-500">Admin</div>
+                                    <div class="text-xs text-gray-500">Reviewer</div>
                                 @elseif(auth()->user()->hasRole('user'))
                                     <div class="text-xs text-gray-500">User</div>
                                 @endif
