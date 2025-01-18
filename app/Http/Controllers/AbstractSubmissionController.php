@@ -7,14 +7,15 @@ use App\Models\AbstractDraft;
 use Illuminate\Http\Request;
 use App\Models\Author;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Session;
+use App\Notifications\NewUserNotification;
 use App\Jobs\DeleteDraftJob;
 use App\Jobs\SendNotificationJob;
 use App\Jobs\CleanupSessionJob;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Session;
-use App\Notifications\NewUserNotification;
 
 class AbstractSubmissionController extends Controller
 {
@@ -162,6 +163,13 @@ class AbstractSubmissionController extends Controller
 
     public function postPreview(Request $request)
     {
+        $lockKey = 'submission_lock_' . auth()->id();
+
+        // Prevent duplicate submissions
+        if (!Cache::add($lockKey, true, 60)) {
+            return response()->json(['error' => 'Submission already in progress'], 429);
+        }
+
         DB::beginTransaction();
         
         try {
@@ -169,7 +177,6 @@ class AbstractSubmissionController extends Controller
             
             // Early check for authenticated user
             if (!$user || !$user->reg_no) {
-                Log::error('User not properly authenticated or missing registration number');
                 return redirect()->route('login')->with('error', 'Please log in to continue.');
             }
             // Retrieve session data
@@ -228,42 +235,22 @@ class AbstractSubmissionController extends Controller
             
             // Bulk insert authors
             Author::insert($authorRecords);
-            
-            // Log before dispatching jobs
-            Log::info('Abstract submission data prepared', [
-                'user_id' => $user->id,
-                'reg_no' => $user->reg_no,
-                'serial_number' => $serialNumber
-            ]);
-            
+
             // Dispatch jobs
-            DeleteDraftJob::dispatch($serialNumber);
-            SendNotificationJob::dispatch((int) $user->id, [
+            $userRegNo = $request->user()->reg_no;
+            DeleteDraftJob::dispatch($serialNumber, $userRegNo);
+            SendNotificationJob::dispatch($user->reg_no, [
                 'message' => $abstractData['article_title'] . ' Abstract Submitted successfully',
                 'link' => '/some-link',
             ]);
-            CleanupSessionJob::dispatch(self::SESSION_KEYS);
-            
-            Log::info('Abstract submission successful', [
-                'user_id' => $user->id,
-                'serial_number' => $serialNumber,
-                'submission_time' => now()
-            ]);
-            
+
+            $request->session()->forget(self::SESSION_KEYS);
             DB::commit();
             
             return redirect()->route('user.dashboard')->with('success', 'Submission successful.');
             
         } catch (\Exception $e) {
             DB::rollBack();
-            
-            Log::error('Abstract submission failed', [
-                'error' => $e->getMessage(),
-                'user_id' => $user->id ?? null,
-                'reg_no' => $user->reg_no ?? null,
-                'trace' => $e->getTraceAsString()
-            ]);
-            
             return redirect()->back()->with('error', 'Submission failed. Please try again.');
         }
     }

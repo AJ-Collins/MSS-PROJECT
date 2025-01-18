@@ -205,7 +205,7 @@ class ResearchSubmissionController extends Controller
         if (!Cache::add($lockKey, true, 60)) {
             return response()->json(['error' => 'Submission already in progress'], 429);
         }
-        
+
         DB::beginTransaction();
 
         try {
@@ -213,7 +213,6 @@ class ResearchSubmissionController extends Controller
 
             // Early check for authenticated user
             if (!$user || !$user->reg_no) {
-                Log::error('User not properly authenticated or missing registration number');
                 return redirect()->route('login')->with('error', 'Please log in to continue.');
             }
 
@@ -277,13 +276,14 @@ class ResearchSubmissionController extends Controller
                 Author::insert($authorRecords);
 
                 // Dispatch jobs
-                DeleteDraftJob::dispatch($serialNumber);
+                $userRegNo = $request->user()->reg_no;
+                DeleteDraftJob::dispatch($serialNumber, $userRegNo);
                 SendNotificationJob::dispatch($user->reg_no, [
-                    'message' => $submissionData['article_title'] . ' Abstract Submitted successfully',
+                    'message' => $submissionData['article_title'] . ' Proposal abstract Submitted successfully',
                     'link' => '/some-link',
                 ]);
-                CleanupSessionJob::dispatch(self::SESSION_KEYS);
-
+                
+                $request->session()->forget(self::SESSION_KEYS);
                 DB::commit();
 
                 return redirect()->route('user.dashboard')->with('success', 'Submission successful.');

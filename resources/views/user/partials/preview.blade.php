@@ -216,5 +216,7 @@
             closeModal();
         }
     });
+
+
 </script>
 @endsection
