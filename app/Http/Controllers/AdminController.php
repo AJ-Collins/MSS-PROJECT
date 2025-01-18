@@ -23,7 +23,8 @@ class AdminController extends Controller
     public function dashboard()
     {
         $admin = Auth::user();
-
+        
+        $perPage = request()->input('per_page', 5);
         $totalReviewers = Role::find(2)->users()->count();
         $totalUsers = Role::find(3)->users()->count();
         
@@ -32,10 +33,10 @@ class AdminController extends Controller
 
         $submissions = AbstractSubmission::where('reviewer_status', Null)
             ->where('final_status', '!=','accepted')
-            ->get();
+            ->paginate($perPage);
         $researchSubmissions = ResearchSubmission::where('reviewer_status', Null)
             ->where('final_status', '!=','accepted')
-            ->get();
+            ->paginate($perPage);
 
         return view('admin.partials.dashboard', compact('totalUsers', 'totalAbstracts',
                     'totalProposals', 'totalReviewers', 'submissions', 'researchSubmissions'));
@@ -173,12 +174,13 @@ class AdminController extends Controller
 
     public function reports()
     {
+        $perPage = request()->input('per_page', 10);
         $submissions = AbstractSubmission::with('user')
             ->where('score', '!=', null)
-            ->get();
+            ->paginate($perPage);
         $researchSubmissions = ResearchSubmission::with('user')
             ->where('score', '!=', null)
-            ->get();
+            ->paginate($perPage);
         $researchAssessments = ResearchAssessment::all();
 
         return view('admin.partials.reports', compact('submissions', 'researchSubmissions', 'researchAssessments'));
@@ -186,17 +188,19 @@ class AdminController extends Controller
 
     public function showAssessments($serial_number)
     {
+        $perPage = request()->input('per_page', 10);
         $assessments = ResearchAssessment::where('abstract_submission_id', $serial_number)
             ->with('reviewer', 'user') // Load related reviewer and user
-            ->get();
+            ->paginate($perPage);  // Paginate the results
 
         return view('admin.partials.research_assessments', compact('assessments', 'serial_number'));
     }
     public function showProposalAssessments($serial_number)
     {
+        $perPage = request()->input('per_page', 10);
         $proposalAssessments = ProposalAssessment::where('abstract_submission_id', $serial_number)
             ->with('reviewer', 'user') // Load related reviewer and user
-            ->get();
+            ->paginate($perPage);  // Paginate the results 
 
         return view('admin.partials.research_assessments', compact('proposalAssessments', 'serial_number'));
     }
@@ -205,17 +209,17 @@ class AdminController extends Controller
     public function documents()
     {   
         $admin = Auth::user();
-
+        $perPage = request()->input('per_page', 10);
         // Get submissions with their reviewer information
         $submissions = AbstractSubmission::leftJoin('users', 'users.reg_no', '=', 'abstract_submissions.reviewer_reg_no')
             ->select('abstract_submissions.*', 'users.first_name as reviewer_name')
             ->where('approved', '!=', true)
-            ->get();
+            ->paginate($perPage);
         // Get submissions with their reviewer information
         $researchSubmissions = ResearchSubmission::leftJoin('users', 'users.reg_no', '=', 'research_submissions.reviewer_reg_no')
             ->select('research_submissions.*', 'users.first_name as reviewer_name')
             ->where('approved', '!=', true)
-            ->get();
+            ->paginate($perPage);
         
         $reviewers = User::whereHas('roles', function ($query){
             $query->where('name', 'Reviewer');

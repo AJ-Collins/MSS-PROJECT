@@ -82,10 +82,12 @@
                                                     class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left">
                                                 Assign Role
                                             </button>
-                                            <button onclick="toggleStatus('<?php echo e($user->reg_no); ?>')" 
-                                                    class="block w-full text-left px-4 py-2 text-sm
+                                            <button 
+                                                id="toggle-status-<?php echo e($user->reg_no); ?>"
+                                                onclick="toggleStatus('<?php echo e($user->reg_no); ?>')" 
+                                                class="block w-full text-left px-4 py-2 text-sm
                                                     <?php echo e($user->active ? 'text-red-600 hover:bg-red-100' : 'text-green-600 hover:bg-green-100'); ?> 
-                                                            hover:text-gray-900">
+                                                    hover:text-gray-900">
                                                 <?php echo e($user->active ? 'Deactivate' : 'Activate'); ?>
 
                                             </button>
@@ -320,7 +322,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Toggle the user's status using AJAX
         window.toggleStatus = function (userId) {
-        fetch("/users/" + userId + "/toggle-status", {
+        fetch("/admin/users/" + userId + "/toggle-status", {
             method: "POST",
             headers: {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
@@ -330,14 +332,21 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(data => {
             if (data.active !== undefined) {
                 const statusElement = document.querySelector(`#status-${userId}`);
+                const toggleButton = document.querySelector(`#toggle-status-${userId}`);
                 if (data.active) {
                     statusElement.textContent = "Active";
+                    toggleButton.textContent = "Deactivate";
                     statusElement.classList.add('bg-green-100', 'text-green-800');
                     statusElement.classList.remove('bg-red-100', 'text-red-800');
+                    toggleButton.classList.add('text-red-600', 'hover:bg-red-100');
+                    toggleButton.classList.remove('text-green-600', 'hover:bg-green-100');
                 } else {
                     statusElement.textContent = "Inactive";
+                    toggleButton.textContent = "Activate";
                     statusElement.classList.add('bg-red-100', 'text-red-800');
                     statusElement.classList.remove('bg-green-100', 'text-green-800');
+                    toggleButton.classList.add('text-green-600', 'hover:bg-green-100');
+                    toggleButton.classList.remove('text-red-600', 'hover:bg-red-100');
                 }
             } else {
                 console.error('Error toggling status:', data);
