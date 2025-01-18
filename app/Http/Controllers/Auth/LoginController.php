@@ -63,7 +63,7 @@ class LoginController extends Controller
 
     public function redirectAfterLogin()
     {
-        $lastVisitedUrl = session('last_visited_url', route('home')); // Default to home if no session data
+        $lastVisitedUrl = session('last_visited_url', route('login')); // Default to home if no session data
         return redirect()->to($lastVisitedUrl);
     }
 }

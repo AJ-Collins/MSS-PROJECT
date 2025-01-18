@@ -11,13 +11,14 @@
         </button>
     </div>
     
-    <form action="<?php echo e(route('admin.users')); ?>" method="GET" class="mb-6">
+    <form action="<?php echo e(route('admin.users')); ?>" method="GET" class="mb-6" id="search-form">
         <div class="flex gap-4">
             <input type="text" 
-                   name="search" 
-                   value="<?php echo e(request('search')); ?>"
-                   placeholder="Search by ID, name or email" 
-                   class="flex-1 border border-gray-300 rounded-lg shadow-sm p-2">
+                name="search" 
+                value="<?php echo e(request('search')); ?>"
+                placeholder="Search by RegNo, first name, last name or email" 
+                class="flex-1 border border-gray-300 rounded-lg shadow-sm p-2"
+                id="search-input">
             <button type="submit" 
                     class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">
                 Search
@@ -46,14 +47,14 @@
                 <?php $__currentLoopData = $users; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $user): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <tr class="hover:bg-gray-50">
                         <td class="px-4 py-3 text-sm text-gray-700"><?php echo e($user->reg_no); ?></td>
-                        <td class="px-4 py-3 text-sm text-gray-700"><?php echo e($user->name); ?></td>
+                        <td class="px-4 py-3 text-sm text-gray-700"><?php echo e($user->first_name . ' ' . $user->last_name); ?></td>
                         <td class="px-4 py-3 text-sm text-gray-700"><?php echo e($user->email); ?></td>
                         <td class="px-4 py-3 text-sm text-gray-700">
                             <?php echo e($user->roles->first()->name ?? 'No Role'); ?>
 
                         </td>
                         <td class="px-4 py-3 text-sm text-gray-700">
-                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                            <span id="status-<?php echo e($user->reg_no); ?>" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
                                 <?php echo e($user->active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'); ?>">
                                 <?php echo e($user->active ? 'Active' : 'Inactive'); ?>
 
@@ -81,18 +82,20 @@
                                                     class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left">
                                                 Assign Role
                                             </button>
-                                            <form action="<?php echo e(route('users.toggle-status', $user)); ?>" method="POST" class="inline">
-                                                <?php echo csrf_field(); ?>
-                                                <button type="submit" 
-                                                        class="block w-full text-left px-4 py-2 text-sm 
-                                                            <?php echo e($user->active ? 'text-red-600 hover:bg-red-100' : 'text-green-600 hover:bg-green-100'); ?> 
+                                            <button onclick="toggleStatus('<?php echo e($user->reg_no); ?>')" 
+                                                    class="block w-full text-left px-4 py-2 text-sm
+                                                    <?php echo e($user->active ? 'text-red-600 hover:bg-red-100' : 'text-green-600 hover:bg-green-100'); ?> 
                                                             hover:text-gray-900">
-                                                    <?php echo e($user->active ? 'Deactivate' : 'Activate'); ?>
+                                                <?php echo e($user->active ? 'Deactivate' : 'Activate'); ?>
 
-                                                </button>
-                                            </form>
+                                            </button>
+                                            <button onclick="deleteUser('<?php echo e($user->reg_no); ?>')" 
+                                                class="block w-full text-left px-4 py-2 text-sm hover:bg-red-100 text-red-600 hover:text-red-900">
+                                                    Delete
+                                            </button>
                                         </div>
                                     </div>
+                                    
                                 </div>
                             </div>
                         </td>
@@ -278,6 +281,70 @@
         form.appendChild(csrfInput);
     }
     });
+});
+document.addEventListener('DOMContentLoaded', function () {
+    // Handle Real-time search
+    const searchInput = document.getElementById('search-input');
+    searchInput.addEventListener('input', function () {
+        const searchValue = searchInput.value;
+
+        fetch("<?php echo e(route('admin.users')); ?>?search=" + searchValue, {
+            method: "GET",
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.querySelector('.users-table').innerHTML = data.users;
+        });
+    });
+
+    // Handle delete user via AJAX
+    window.deleteUser = function (userId) {
+        if (confirm("Are you sure you want to delete this user?")) {
+            fetch("/delete/users/" + userId, {
+                method: "DELETE",
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                location.reload(); // Reload the page to reflect the changes
+            });
+        }
+    };
+
+    // Toggle the user's status using AJAX
+        window.toggleStatus = function (userId) {
+        fetch("/users/" + userId + "/toggle-status", {
+            method: "POST",
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            }
+        })
+        .then(response => response.json()) // Parse JSON response
+        .then(data => {
+            if (data.active !== undefined) {
+                const statusElement = document.querySelector(`#status-${userId}`);
+                if (data.active) {
+                    statusElement.textContent = "Active";
+                    statusElement.classList.add('bg-green-100', 'text-green-800');
+                    statusElement.classList.remove('bg-red-100', 'text-red-800');
+                } else {
+                    statusElement.textContent = "Inactive";
+                    statusElement.classList.add('bg-red-100', 'text-red-800');
+                    statusElement.classList.remove('bg-green-100', 'text-green-800');
+                }
+            } else {
+                console.error('Error toggling status:', data);
+            }
+        })
+        .catch(error => console.error('Error toggling status:', error));
+    };
 });
 </script>
 <?php $__env->stopSection(); ?>

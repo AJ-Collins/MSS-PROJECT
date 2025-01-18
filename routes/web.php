@@ -59,6 +59,7 @@ Route::middleware(['preventBackHistory', 'auth'])->group(function () {
         Route::get('/users', [AdminController::class, 'users'])->name('admin.users');
 
         Route::post('/users/create', [AdminController::class, 'createUser'])->name('admin.users.create');
+        Route::delete('/delete/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
         Route::post('/users/{reg_no}/update', [AdminController::class, 'updateUser'])->name('admin.users.update');
         Route::post('/users/{reg_no}/updateRole', [AdminController::class, 'updateRole'])->name('admin.users.updateRole');
         Route::post('/users/{user}/toggle-status', [AdminController::class, 'toggleStatus'])->name('users.toggle-status');

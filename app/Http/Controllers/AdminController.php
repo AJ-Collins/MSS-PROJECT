@@ -45,12 +45,19 @@ class AdminController extends Controller
         $search = $request->input('search');
         $users = User::when($search, function ($query, $search) {
             return $query->where('reg_no', 'like', "%$search%")
-                        ->orWhere('name', 'like', "%$search%")
+                        ->orWhere('first_name', 'like', "%$search%")
+                        ->orWhere('last_name', 'like', "%$search%")
                         ->orWhere('email', 'like', "%$search%");
         })
         ->paginate(10);
 
         $roles = Role::all();
+        if ($request->ajax()) {
+            return response()->json([
+                'users' => $users,
+            ]);
+        }
+
         return view('admin.partials.users', compact('users','roles'));
     }
     public function updateUser(Request $request, User $user)
@@ -115,15 +122,50 @@ class AdminController extends Controller
     }
     public function toggleStatus(User $user)
     {
-        // Toggle the user's active status
-    $user->update(['active' => !$user->active]);
+        try {
+            // Toggle the user's active status
+            $user->active = !$user->active;
+            $user->save();
 
-    // Remove the user's role(s) and set it to blank
-    $user->roles()->detach(); // This will remove all roles from the user
+            // Remove the user's role(s) and set it to blank
+            $user->roles()->detach(); // This will remove all roles from the user
 
-    return redirect()->route('admin.users')
-        ->with('success', "User deactivated successfully and roles removed.");
+            return response()->json([
+                'status' => $user->active ? 'activated' : 'deactivated',
+                'active' => $user->active,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Failed to toggle user status',
+                'message' => $e->getMessage(),
+            ], 500); // Return 500 status code if there is an error
+        }
     }
+    public function activateUser(User $user)
+    {
+        // Toggle the user's active status
+        $user->active = false;
+        $user->save();
+
+        // Remove the user's role(s) and set it to blank
+        $user->roles()->detach(); // This will remove all roles from the user
+
+        return response()->json([
+            'status' => $user->active ? 'activated' : 'deactivated',
+            'active' => $user->active,
+        ]);
+
+    }
+
+    public function destroy(User $user)
+    {
+        $user->delete();
+
+        return response()->json([
+            'message' => 'User deleted successfully!',
+        ]);
+    }
+
     public function submissions()
     {
         return view('admin.partials.submissions');
