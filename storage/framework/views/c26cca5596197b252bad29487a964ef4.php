@@ -1,6 +1,6 @@
 
 
-<?php $__env->startSection('user-content'); ?>
+<?php $__env->startSection('content'); ?>
 <!-- Document Management Section -->
 <div x-data="{ activeTab: 'articles' }">
     <div class="border-b border-gray-200 shadow-sm bg-white">
@@ -132,4 +132,4 @@
     </div>
 </div>
 <?php $__env->stopSection(); ?>
-<?php echo $__env->make('user.layouts.user', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH D:\MSS\mss-project\resources\views\user\partials\documents.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH D:\MSS\mss-project\resources\views\user\partials\documents.blade.php ENDPATH**/ ?>

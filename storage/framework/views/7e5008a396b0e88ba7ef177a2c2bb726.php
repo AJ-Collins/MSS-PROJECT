@@ -1,6 +1,6 @@
 
 
-<?php $__env->startSection('admin-content'); ?>
+<?php $__env->startSection('content'); ?>
 <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <div class="max-w-7xl mx-auto">
         <!-- Profile Header -->
@@ -167,4 +167,4 @@ function showNotification(message, type = 'info') {
 }
 </script>
 <?php $__env->stopSection(); ?>
-<?php echo $__env->make('admin.layouts.admin', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH D:\MSS\mss-project\resources\views\user\partials\profile.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH D:\MSS\mss-project\resources\views\user\partials\profile.blade.php ENDPATH**/ ?>

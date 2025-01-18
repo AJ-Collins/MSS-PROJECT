@@ -1,9 +1,9 @@
 
 
-<?php $__env->startSection('user-content'); ?>
+<?php $__env->startSection('content'); ?>
 <div class="mb-8">
     <h1 class="text-3xl font-bold text-gray-900">| Submissions Portal</h1>
-    <p class="mt-2 text-sm text-gray-600">Choose your submission type to begin the application process</p>
+    <p class="mt-2 text-sm text-gray-600">Choose your submission type to begin.</p>
 </div>
 
     <!-- Cards Section -->
@@ -72,4 +72,4 @@
 </script>
 <?php $__env->stopSection(); ?>
 
-<?php echo $__env->make('user.layouts.user', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH D:\MSS\mss-project\resources\views\user\partials\submit.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH D:\MSS\mss-project\resources\views\user\partials\submit.blade.php ENDPATH**/ ?>

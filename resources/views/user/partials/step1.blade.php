@@ -297,7 +297,7 @@
         
         const colors = {
             error: 'bg-red-500',
-            warning: 'bg-yellow-500',
+            warning: 'bg-yellow-800',
             success: 'bg-green-500',
             info: 'bg-blue-500'
         };

@@ -107,17 +107,17 @@
                                 @if(auth()->user()->hasRole('admin'))
                                     <a href="{{ route('admin.profile') }}" 
                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-200 transition duration-150">
-                                        Admin Profile
+                                        Profile
                                     </a>
                                 @elseif(auth()->user()->hasRole('user'))
                                     <a href="{{ route('user.profile') }}" 
                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-200 transition duration-150">
-                                        User Profile
+                                        Profile
                                     </a>
                                 @elseif(auth()->user()->hasRole('reviewer'))
                                     <a href="{{ route('reviewer.profile') }}" 
                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-200 transition duration-150">
-                                        Reviewer Profile
+                                        Profile
                                     </a>
                                 @endif
                             <!--<a href="#" 

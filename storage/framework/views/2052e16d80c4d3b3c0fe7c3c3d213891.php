@@ -1,6 +1,6 @@
 
 
-<?php $__env->startSection('user-content'); ?>
+<?php $__env->startSection('content'); ?>
 <div class="container mx-auto px-4 sm:px-6 lg:px-8">
     <div class="py-8">
         <div class="sm:flex sm:items-center mb-6">
@@ -176,4 +176,4 @@ async function deleteDraft(serialNumber, draftType) {
 <?php endif; ?>
 </script>
 <?php $__env->stopSection(); ?>
-<?php echo $__env->make('user.layouts.user', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH D:\MSS\mss-project\resources\views\user\partials\drafts.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH D:\MSS\mss-project\resources\views\user\partials\drafts.blade.php ENDPATH**/ ?>

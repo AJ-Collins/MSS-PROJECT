@@ -1,6 +1,6 @@
 
 
-<?php $__env->startSection('admin-content'); ?>
+<?php $__env->startSection('content'); ?>
 <div class="px-6 py-4 border-b border-gray-200 shadow-sm bg-white">
     <h2 class="text-2xl font-semibold text-gray-800 tracking-tight">Document Management</h2>
 </div>
@@ -1258,4 +1258,4 @@ document.addEventListener("DOMContentLoaded", function () {
 
 </script>
 <?php $__env->stopSection(); ?>
-<?php echo $__env->make('admin.layouts.admin', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH D:\MSS\mss-project\resources\views\admin\partials\documents.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH D:\MSS\mss-project\resources\views\admin\partials\documents.blade.php ENDPATH**/ ?>

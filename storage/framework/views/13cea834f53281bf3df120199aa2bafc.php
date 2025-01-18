@@ -1,6 +1,6 @@
 
 
-<?php $__env->startSection('admin-content'); ?>
+<?php $__env->startSection('content'); ?>
     <div class="container mx-auto p-4">
         <h1 class="text-xl font-semibold mb-4">
             Assessments for Document <?php echo e($serial_number); ?>
@@ -131,4 +131,4 @@
     </div>
 <?php $__env->stopSection(); ?>
 
-<?php echo $__env->make('admin.layouts.admin', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH D:\MSS\mss-project\resources\views\admin\partials\research_assessments.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH D:\MSS\mss-project\resources\views\admin\partials\research_assessments.blade.php ENDPATH**/ ?>

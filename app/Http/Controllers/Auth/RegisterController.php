@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
+use HTMLPurifier;
+use HTMLPurifier_Config;
 
 class RegisterController extends Controller
 {
@@ -27,8 +29,11 @@ class RegisterController extends Controller
         // Validate the incoming request data
         $this->validator($request->all())->validate();
 
+        // Sanitizing inputs before saving to the database
+        $sanitizedData = $this->sanitizeInput($request->all());
+
         // Create the user but do not log them in
-        $this->create($request->all());
+        $this->create($sanitizedData);
 
         // Redirect to the login page with a success message
         return redirect()->route('login')->with('status', 'Registration successful. Please log in.');
@@ -66,8 +71,9 @@ class RegisterController extends Controller
             'password' => bcrypt($data['password']),
         ]);
 
+        // Assign the 'user' role
         $role = DB::table('roles')->where('name', 'user')->first();
-        if($role) {
+        if ($role) {
             DB::table('role_user')->insert([
                 'role_id' => $role->id,
                 'reg_no' => $user->reg_no,
@@ -77,6 +83,23 @@ class RegisterController extends Controller
         }
 
         return $user;
+    }
 
+    /**
+     * Sanitize user input to prevent XSS.
+     */
+    private function sanitizeInput(array $data)
+    {
+        $config = HTMLPurifier_Config::createDefault();
+        $purifier = new HTMLPurifier($config);
+
+        // Sanitize individual fields
+        $data['reg_no'] = $purifier->purify($data['reg_no']);
+        $data['first_name'] = $purifier->purify($data['first_name']);
+        $data['last_name'] = $purifier->purify($data['last_name']);
+        $data['email'] = $purifier->purify($data['email']); // Sanitize email too (although this is less likely to need it)
+        $data['salutation'] = $purifier->purify($data['salutation']);
+
+        return $data;
     }
 }

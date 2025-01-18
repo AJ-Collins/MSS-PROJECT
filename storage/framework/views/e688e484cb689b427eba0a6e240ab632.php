@@ -1,6 +1,6 @@
 
 
-<?php $__env->startSection('admin-content'); ?>
+<?php $__env->startSection('content'); ?>
 <div class="min-h-screen bg-gray-50 p-8">
     <!-- Header with gradient background -->
     <div class="relative mb-8 bg-gradient-to-r from-gray-100 to-grey-200 p-6 shadow-lg">
@@ -394,4 +394,4 @@
     </script>
 </div>
 <?php $__env->stopSection(); ?>
-<?php echo $__env->make('admin.layouts.admin', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH D:\MSS\mss-project\resources\views\admin\partials\reports.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH D:\MSS\mss-project\resources\views\admin\partials\reports.blade.php ENDPATH**/ ?>

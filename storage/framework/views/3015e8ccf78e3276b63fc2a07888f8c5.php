@@ -1,6 +1,6 @@
 
 
-<?php $__env->startSection('reviewer-content'); ?>
+<?php $__env->startSection('content'); ?>
 <div class="min-h-screen bg-gray-50" x-data="assessmentForm">
     <!-- Main Content -->
     <div class="flex flex-col md:flex-row h-screen">
@@ -338,4 +338,4 @@ document.addEventListener('alpine:init', () => {
 });
 </script>
 <?php $__env->stopSection(); ?>
-<?php echo $__env->make('reviewer.layouts.reviewer', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH D:\MSS\mss-project\resources\views\reviewer\partials\assessment.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH D:\MSS\mss-project\resources\views\reviewer\partials\assessment.blade.php ENDPATH**/ ?>

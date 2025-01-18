@@ -108,17 +108,17 @@
                                 <?php if(auth()->user()->hasRole('admin')): ?>
                                     <a href="<?php echo e(route('admin.profile')); ?>" 
                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-200 transition duration-150">
-                                        Admin Profile
+                                        Profile
                                     </a>
                                 <?php elseif(auth()->user()->hasRole('user')): ?>
                                     <a href="<?php echo e(route('user.profile')); ?>" 
                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-200 transition duration-150">
-                                        User Profile
+                                        Profile
                                     </a>
                                 <?php elseif(auth()->user()->hasRole('reviewer')): ?>
                                     <a href="<?php echo e(route('reviewer.profile')); ?>" 
                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-200 transition duration-150">
-                                        Reviewer Profile
+                                        Profile
                                     </a>
                                 <?php endif; ?>
                             <!--<a href="#" 

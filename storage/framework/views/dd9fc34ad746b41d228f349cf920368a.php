@@ -1,6 +1,6 @@
 
 
-<?php $__env->startSection('user-content'); ?>
+<?php $__env->startSection('content'); ?>
 <!-- Progress Tracker -->
 <div class="max-w-4xl mx-auto mb-8">
     <div class="relative">
@@ -542,4 +542,4 @@ unset($__errorArgs, $__bag); ?>
 }
 </style>
 <?php $__env->stopSection(); ?>
-<?php echo $__env->make('user.layouts.user', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH D:\MSS\mss-project\resources\views\user\partials\step1_research.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH D:\MSS\mss-project\resources\views\user\partials\step1_research.blade.php ENDPATH**/ ?>

@@ -22,11 +22,21 @@ class AuthenticatedSessionController extends Controller
             'password' => 'required|string',
         ]);
 
-        if (!Auth::attempt($request->only('reg_no', 'password'), $request->boolean('remember'))) {
+        if (!$user = \App\Models\User::where('reg_no', $request->input('reg_no'))->first()) {
+            // Case 1: Registration number doesn't exist
             throw ValidationException::withMessages([
-                'reg_no' => __('validation.auth.failed'),
+                'reg_no' => __('No user found with this registration number'),
             ]);
         }
+        
+        if (!\Hash::check($request->input('password'), $user->password)) {
+            // Case 2: Password is incorrect
+            throw ValidationException::withMessages([
+                'password' => __('Wrong password'),
+            ]);
+        }
+        
+        Auth::login($user, $request->boolean('remember'));
 
         $request->session()->regenerate();
         $request->session()->flash('status', 'Login successful');
