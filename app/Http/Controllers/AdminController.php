@@ -118,6 +118,33 @@ class AdminController extends Controller
             ], 500);
         }
     }
+    public function deleteAssessment($serial_number)
+    {
+        try {
+            // Attempt to delete the abstract submission
+            $submissions = AbstractSubmission::where('serial_number', $serial_number)->delete();
+            $assessments = ResearchAssessment::where('abstract_submission_id', $serial_number)->delete();
+
+            // Attempt to delete the research submission, if it exists
+            $researchSumissions = ResearchSubmission::where('serial_number', $serial_number)->delete();
+            $proposalAssessments = ProposalAssessment::where('abstract_submission_id', $serial_number)->delete();
+
+            if ($submissions || $researchSumissions || $assessments || $proposalAssessments) {
+                return response()->json([
+                    'message' => 'Document deleted successfully.'
+                ], 200);
+            }
+
+            return response()->json([
+                'error' => 'No document found with the given serial number.'
+            ], 404);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'An error occurred while deleting the document. Please try again later.'
+            ], 500);
+        }
+    }
     public function updateUser(Request $request, User $user)
     {
         $request->validate([

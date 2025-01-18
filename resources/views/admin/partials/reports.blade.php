@@ -142,10 +142,11 @@
                                                 {{ $submission->approved == true ? 'Approved' : 'Not Approved' }}
                                             </span>
                                         </td>
-                                        <td class="px-6 py-4">
-                                            <div class="flex justify-center gap-2">
+                                        <td class="px-4 py-3">
+                                            <div class="flex items-center justify-center gap-2">
+                                                <!-- View Assessments Button -->
                                                 <a href="{{ route('admin.showAssessments', ['serial_number' => $submission->serial_number ]) }}" 
-                                                    class="relative p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition duration-200 group">
+                                                class="relative p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition duration-200 group">
                                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
@@ -155,6 +156,18 @@
                                                         View assessments
                                                     </span>
                                                 </a>
+
+                                                <!-- Delete Button -->
+                                                <button onclick="deleteAssessment('{{ $submission->serial_number }}')"
+                                                        class="relative p-2 text-red-600 hover:bg-red-50 rounded-lg transition duration-200 group">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                                    </svg>
+                                                    <!-- Tooltip -->
+                                                    <span class="absolute bottom-full left-1/2 transform -translate-x-1/2 px-2 py-1 text-xs text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 mb-2 whitespace-nowrap z-10">
+                                                        Delete document
+                                                    </span>
+                                                </button>
                                             </div>
                                         </td>
                                     </tr>
@@ -251,7 +264,7 @@
                                 </nav>
                             </div>
                         </div>
-                    </div></script>
+                    </div>
                     </div>
                 </div>
             </div>
@@ -317,9 +330,10 @@
                                             </span>
                                         </td>
                                         <td class="px-6 py-4">
-                                            <div class="flex justify-center gap-2">
+                                            <div class="flex items-center justify-center gap-2">
+                                                <!-- View Assessments Button -->
                                                 <a href="{{ route('admin.proposal.showAssessments', ['serial_number' => $researchSubmission->serial_number ]) }}" 
-                                                    class="relative p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition duration-200 group">
+                                                class="relative p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition duration-200 group">
                                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
@@ -329,157 +343,257 @@
                                                         View assessments
                                                     </span>
                                                 </a>
+
+                                                <!-- Delete Button -->
+                                                <button onclick="deleteAssessment('{{ $researchSubmission->serial_number }}')"
+                                                        class="relative p-2 text-red-600 hover:bg-red-50 rounded-lg transition duration-200 group">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                                    </svg>
+                                                    <!-- Tooltip -->
+                                                    <span class="absolute bottom-full left-1/2 transform -translate-x-1/2 px-2 py-1 text-xs text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 mb-2 whitespace-nowrap z-10">
+                                                        Delete document
+                                                    </span>
+                                                </button>
                                             </div>
                                         </td>
                                     </tr>
                                 @endforeach
                             </tbody>
                         </table>
+                        <!-- Pagination Container -->
+                    <div class="px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+                        <div class="flex-1 flex justify-between sm:hidden">
+                            @if ($researchSubmissions->onFirstPage())
+                                <span class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-not-allowed rounded-md">
+                                    Previous
+                                </span>
+                            @else
+                                <a href="{{ $researchSubmissions->previousPageUrl() }}" class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                                    Previous
+                                </a>
+                            @endif
+
+                            @if ($researchSubmissions->hasMorePages())
+                                <a href="{{ $researchSubmissions->nextPageUrl() }}" class="relative inline-flex items-center px-4 py-2 ml-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                                    Next
+                                </a>
+                            @else
+                                <span class="relative inline-flex items-center px-4 py-2 ml-3 text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-not-allowed rounded-md">
+                                    Next
+                                </span>
+                            @endif
+                        </div>
+
+                        <!-- Desktop View -->
+                        <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                            <div>
+                                <p class="text-sm text-gray-700">
+                                    Showing
+                                    <span class="font-medium">{{ $researchSubmissions->firstItem() }}</span>
+                                    to
+                                    <span class="font-medium">{{ $researchSubmissions->lastItem() }}</span>
+                                    of
+                                    <span class="font-medium">{{ $researchSubmissions->total() }}</span>
+                                    results
+                                </p>
+                            </div>
+
+                            <!-- Page Numbers -->
+                            <div>
+                                <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                                    {{-- Previous Page Link --}}
+                                    @if ($researchSubmissions->onFirstPage())
+                                        <span class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 cursor-not-allowed">
+                                            <span class="sr-only">Previous</span>
+                                            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                                <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                            </svg>
+                                        </span>
+                                    @else
+                                        <a href="{{ $researchSubmissions->previousPageUrl() }}" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                            <span class="sr-only">Previous</span>
+                                            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                                <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                            </svg>
+                                        </a>
+                                    @endif
+
+                                    {{-- Page Numbers --}}
+                                    @foreach ($researchSubmissions->getUrlRange(1, $researchSubmissions->lastPage()) as $page => $url)
+                                        @if ($page == $researchSubmissions->currentPage())
+                                            <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-blue-50 text-sm font-medium text-blue-600">
+                                                {{ $page }}
+                                            </span>
+                                        @else
+                                            <a href="{{ $url }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                                                {{ $page }}
+                                            </a>
+                                        @endif
+                                    @endforeach
+
+                                    {{-- Next Page Link --}}
+                                    @if ($researchSubmissions->hasMorePages())
+                                        <a href="{{ $researchSubmissions->nextPageUrl() }}" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                            <span class="sr-only">Next</span>
+                                            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                                            </svg>
+                                        </a>
+                                    @else
+                                        <span class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 cursor-not-allowed">
+                                            <span class="sr-only">Next</span>
+                                            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                                            </svg>
+                                        </span>
+                                    @endif
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        // Modal functionality
-        function openModal(modalId) {
-            document.getElementById(modalId).classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-        }
+<script>
+    // Function to show notification
+    function showNotification(type, message) {
+        // Remove any existing notifications
+        const existingNotifications = document.querySelectorAll('.notification-toast');
+        existingNotifications.forEach(notification => {
+            notification.remove();
+        });
 
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.add('hidden');
-            document.body.style.overflow = 'auto';
-        }
-
-        // Chart Configurations
-        const chartConfig = {
-            submissionTrends: {
-                type: 'line',
-                data: {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
-                    datasets: [{
-                        label: 'Submissions',
-                        data:,
-                        borderColor: 'rgb(79, 70, 229)',
-                        backgroundColor: 'rgba(79, 70, 229, 0.1)',
-                        tension: 0.4,
-                        fill: true
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: {
-                                borderDash: [2, 2]
-                            }
-                        },
-                        x: {
-                            grid: {
-                                display: false
-                            }
-                        }
-                    }
-                }
+        // Create notification container
+        const notification = document.createElement('div');
+        notification.className = `notification-toast fixed top-4 right-4 px-6 py-4 rounded-lg shadow-lg transform transition-all duration-300 ease-in-out opacity-0 z-50 flex items-center space-x-2 min-w-[300px]`;
+        
+        // Define notification types and their styles
+        const notificationTypes = {
+            error: {
+                background: 'bg-red-500',
+                icon: `<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>`
             },
-            approvalRates: {
-                type: 'doughnut',
-                data: {
-                    labels: ['Approved', 'Pending', 'Rejected'],
-                    datasets: [{
-                        data: [70, 20, 10],
-                        backgroundColor: [
-                            'rgba(34, 197, 94, 0.8)',
-                            'rgba(234, 179, 8, 0.8)',
-                            'rgba(239, 68, 68, 0.8)'
-                        ],
-                        borderWidth: 0
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                usePointStyle: true,
-                                padding: 20
-                            }
-                        }
-                    }
-                }
+            warning: {
+                background: 'bg-yellow-500',
+                icon: `<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                    </svg>`
             },
-            averageMarks: {
-                type: 'bar',
-                data: {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
-                    datasets: [{
-                        label: 'Average Marks',
-                        data: [75, 82, 78, 85, 80],
-                        backgroundColor: 'rgba(79, 70, 229, 0.8)',
-                        borderRadius: 4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: {
-                                borderDash: [2, 2]
-                            }
-                        },
-                        x: {
-                            grid: {
-                                display: false
-                            }
-                        }
-                    }
-                }
+            success: {
+                background: 'bg-green-500',
+                icon: `<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>`
+            },
+            info: {
+                background: 'bg-blue-500',
+                icon: `<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>`
             }
         };
 
-        // Initialize Charts
-        document.addEventListener('DOMContentLoaded', function() {
-            // Submission Trends Chart
-            new Chart(
-                document.getElementById('submissionTrendsChart').getContext('2d'),
-                chartConfig.submissionTrends
-            );
+        // Get notification style based on type
+        const notificationStyle = notificationTypes[type] || notificationTypes.info;
+        notification.classList.add(notificationStyle.background);
 
-            // Approval Rates Chart
-            new Chart(
-                document.getElementById('approvalRatesChart').getContext('2d'),
-                chartConfig.approvalRates
-            );
+        // Create notification content
+        const iconContainer = document.createElement('div');
+        iconContainer.className = 'flex-shrink-0';
+        iconContainer.innerHTML = notificationStyle.icon;
 
-            // Average Marks Chart
-            new Chart(
-                document.getElementById('averageMarksChart').getContext('2d'),
-                chartConfig.averageMarks
-            );
+        const messageContainer = document.createElement('div');
+        messageContainer.className = 'flex-grow text-white text-sm font-medium';
+        messageContainer.textContent = message;
+
+        const closeButton = document.createElement('button');
+        closeButton.className = 'flex-shrink-0 ml-4 text-white hover:text-gray-200 focus:outline-none';
+        closeButton.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>`;
+        
+        // Add content to notification
+        notification.appendChild(iconContainer);
+        notification.appendChild(messageContainer);
+        notification.appendChild(closeButton);
+        
+        // Add notification to DOM
+        document.body.appendChild(notification);
+
+        // Show notification with animation
+        requestAnimationFrame(() => {
+            notification.style.opacity = '1';
+            notification.style.transform = 'translateY(0)';
         });
 
-        // Add smooth scrolling to all charts
-        document.querySelectorAll('canvas').forEach(canvas => {
-            canvas.style.transition = 'all 0.3s ease';
+        // Close button functionality
+        closeButton.addEventListener('click', () => {
+            hideNotification(notification);
         });
-    </script>
+
+        // Auto-hide after delay
+        const timeout = setTimeout(() => {
+            hideNotification(notification);
+        }, 5000);
+
+        // Store timeout in notification element
+        notification.dataset.timeout = timeout;
+    }
+
+    // Function to hide notification with animation
+    function hideNotification(notification) {
+        // Clear the timeout to prevent duplicate animations
+        if (notification.dataset.timeout) {
+            clearTimeout(notification.dataset.timeout);
+        }
+
+        // Add exit animation
+        notification.style.opacity = '0';
+        notification.style.transform = 'translateY(-10px)';
+
+        // Remove notification after animation
+        setTimeout(() => {
+            if (notification && notification.parentElement) {
+                notification.remove();
+            }
+        }, 300);
+    }
+// Handle delete document via AJAX
+window.deleteAssessment = function (serialNumber) {
+    fetch(`/admin/delete/assessment/${serialNumber}`, {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content,
+            "Accept": "application/json"
+        }
+    })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            }
+            throw new Error("Network response was not OK");
+        })
+        .then(data => {
+            if (data.message) {
+                showNotification(data.message, 'success');
+                setTimeout(() => {
+                    location.reload();
+                }, 1000);
+            } else {
+                showNotification(data.error || "Failed to delete document", 'error');
+            }
+        })
+        .catch(error => {
+            showNotification(error.message || "An error occurred. Please try again later.", 'error');
+        });
+}
+</script>
 </div>
 @endsection

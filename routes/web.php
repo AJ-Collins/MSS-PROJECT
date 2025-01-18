@@ -59,6 +59,7 @@ Route::middleware(['preventBackHistory', 'auth'])->group(function () {
         Route::get('/users', [AdminController::class, 'users'])->name('admin.users');
         Route::get('/documents-search', [AdminController::class, 'documentsSearch'])->name('admin.documents-search');
         Route::delete('/delete/documents/{serial_number}', [AdminController::class, 'deleteDocuments'])->name('admin.documentsDelete');
+        Route::delete('/delete/assessment/{serial_number}', [AdminController::class, 'deleteAssessment'])->name('admin.assessmentDelete');
 
         Route::post('/users/create', [AdminController::class, 'createUser'])->name('admin.users.create');
         Route::delete('/delete/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');

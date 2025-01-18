@@ -1183,157 +1183,157 @@
 </div>
 <script>
     // Function to show notifications with enhanced styling and animations
-function showNotification(type, message) {
-    // Remove any existing notifications
-    const existingNotifications = document.querySelectorAll('.notification-toast');
-    existingNotifications.forEach(notification => {
-        notification.remove();
-    });
-
-    // Create notification container
-    const notification = document.createElement('div');
-    notification.className = `notification-toast fixed top-4 right-4 px-6 py-4 rounded-lg shadow-lg transform transition-all duration-300 ease-in-out opacity-0 z-50 flex items-center space-x-2 min-w-[300px]`;
-    
-    // Define notification types and their styles
-    const notificationTypes = {
-        error: {
-            background: 'bg-red-500',
-            icon: `<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                  </svg>`
-        },
-        warning: {
-            background: 'bg-yellow-500',
-            icon: `<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-                  </svg>`
-        },
-        success: {
-            background: 'bg-green-500',
-            icon: `<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                  </svg>`
-        },
-        info: {
-            background: 'bg-blue-500',
-            icon: `<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                  </svg>`
-        }
-    };
-
-    // Get notification style based on type
-    const notificationStyle = notificationTypes[type] || notificationTypes.info;
-    notification.classList.add(notificationStyle.background);
-
-    // Create notification content
-    const iconContainer = document.createElement('div');
-    iconContainer.className = 'flex-shrink-0';
-    iconContainer.innerHTML = notificationStyle.icon;
-
-    const messageContainer = document.createElement('div');
-    messageContainer.className = 'flex-grow text-white text-sm font-medium';
-    messageContainer.textContent = message;
-
-    const closeButton = document.createElement('button');
-    closeButton.className = 'flex-shrink-0 ml-4 text-white hover:text-gray-200 focus:outline-none';
-    closeButton.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                           </svg>`;
-    
-    // Add content to notification
-    notification.appendChild(iconContainer);
-    notification.appendChild(messageContainer);
-    notification.appendChild(closeButton);
-    
-    // Add notification to DOM
-    document.body.appendChild(notification);
-
-    // Show notification with animation
-    requestAnimationFrame(() => {
-        notification.style.opacity = '1';
-        notification.style.transform = 'translateY(0)';
-    });
-
-    // Close button functionality
-    closeButton.addEventListener('click', () => {
-        hideNotification(notification);
-    });
-
-    // Auto-hide after delay
-    const timeout = setTimeout(() => {
-        hideNotification(notification);
-    }, 5000);
-
-    // Store timeout in notification element
-    notification.dataset.timeout = timeout;
-}
-
-// Function to hide notification with animation
-function hideNotification(notification) {
-    // Clear the timeout to prevent duplicate animations
-    if (notification.dataset.timeout) {
-        clearTimeout(notification.dataset.timeout);
-    }
-
-    // Add exit animation
-    notification.style.opacity = '0';
-    notification.style.transform = 'translateY(-10px)';
-
-    // Remove notification after animation
-    setTimeout(() => {
-        if (notification && notification.parentElement) {
+    function showNotification(type, message) {
+        // Remove any existing notifications
+        const existingNotifications = document.querySelectorAll('.notification-toast');
+        existingNotifications.forEach(notification => {
             notification.remove();
+        });
+
+        // Create notification container
+        const notification = document.createElement('div');
+        notification.className = `notification-toast fixed top-4 right-4 px-6 py-4 rounded-lg shadow-lg transform transition-all duration-300 ease-in-out opacity-0 z-50 flex items-center space-x-2 min-w-[300px]`;
+        
+        // Define notification types and their styles
+        const notificationTypes = {
+            error: {
+                background: 'bg-red-500',
+                icon: `<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>`
+            },
+            warning: {
+                background: 'bg-yellow-500',
+                icon: `<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                    </svg>`
+            },
+            success: {
+                background: 'bg-green-500',
+                icon: `<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>`
+            },
+            info: {
+                background: 'bg-blue-500',
+                icon: `<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>`
+            }
+        };
+
+        // Get notification style based on type
+        const notificationStyle = notificationTypes[type] || notificationTypes.info;
+        notification.classList.add(notificationStyle.background);
+
+        // Create notification content
+        const iconContainer = document.createElement('div');
+        iconContainer.className = 'flex-shrink-0';
+        iconContainer.innerHTML = notificationStyle.icon;
+
+        const messageContainer = document.createElement('div');
+        messageContainer.className = 'flex-grow text-white text-sm font-medium';
+        messageContainer.textContent = message;
+
+        const closeButton = document.createElement('button');
+        closeButton.className = 'flex-shrink-0 ml-4 text-white hover:text-gray-200 focus:outline-none';
+        closeButton.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>`;
+        
+        // Add content to notification
+        notification.appendChild(iconContainer);
+        notification.appendChild(messageContainer);
+        notification.appendChild(closeButton);
+        
+        // Add notification to DOM
+        document.body.appendChild(notification);
+
+        // Show notification with animation
+        requestAnimationFrame(() => {
+            notification.style.opacity = '1';
+            notification.style.transform = 'translateY(0)';
+        });
+
+        // Close button functionality
+        closeButton.addEventListener('click', () => {
+            hideNotification(notification);
+        });
+
+        // Auto-hide after delay
+        const timeout = setTimeout(() => {
+            hideNotification(notification);
+        }, 5000);
+
+        // Store timeout in notification element
+        notification.dataset.timeout = timeout;
+    }
+
+    // Function to hide notification with animation
+    function hideNotification(notification) {
+        // Clear the timeout to prevent duplicate animations
+        if (notification.dataset.timeout) {
+            clearTimeout(notification.dataset.timeout);
         }
-    }, 300);
-}
 
-// Function to close modal (keeping existing functionality)
-function closeModal(modalId) {
-    document.getElementById(modalId).classList.add('hidden');
-}
+        // Add exit animation
+        notification.style.opacity = '0';
+        notification.style.transform = 'translateY(-10px)';
 
-// Function to open modal (keeping existing functionality)
-function openModal(modalId) {
-    document.getElementById(modalId).classList.remove('hidden');
-}
+        // Remove notification after animation
+        setTimeout(() => {
+            if (notification && notification.parentElement) {
+                notification.remove();
+            }
+        }, 300);
+    }
 
-// Function to toggle dropdown (keeping existing functionality)
-function toggleDropdown(dropdownId) {
-    const dropdown = document.getElementById(dropdownId);
-    const allDropdowns = document.querySelectorAll('.dropdown div[id^="actions-dropdown-"]');
-    
-    // Close all other dropdowns
-    allDropdowns.forEach(d => {
-        if (d.id !== dropdownId) {
-            d.classList.add('hidden');
+    // Function to close modal (keeping existing functionality)
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.add('hidden');
+    }
+
+    // Function to open modal (keeping existing functionality)
+    function openModal(modalId) {
+        document.getElementById(modalId).classList.remove('hidden');
+    }
+
+    // Function to toggle dropdown (keeping existing functionality)
+    function toggleDropdown(dropdownId) {
+        const dropdown = document.getElementById(dropdownId);
+        const allDropdowns = document.querySelectorAll('.dropdown div[id^="actions-dropdown-"]');
+        
+        // Close all other dropdowns
+        allDropdowns.forEach(d => {
+            if (d.id !== dropdownId) {
+                d.classList.add('hidden');
+            }
+        });
+        
+        // Toggle the clicked dropdown
+        dropdown.classList.toggle('hidden');
+    }
+
+    // Close dropdowns when clicking outside (keeping existing functionality)
+    window.addEventListener('click', function(e) {
+        if (!e.target.closest('.dropdown')) {
+            const allDropdowns = document.querySelectorAll('.dropdown div[id^="actions-dropdown-"]');
+            allDropdowns.forEach(d => d.classList.add('hidden'));
         }
     });
-    
-    // Toggle the clicked dropdown
-    dropdown.classList.toggle('hidden');
-}
 
-// Close dropdowns when clicking outside (keeping existing functionality)
-window.addEventListener('click', function(e) {
-    if (!e.target.closest('.dropdown')) {
-        const allDropdowns = document.querySelectorAll('.dropdown div[id^="actions-dropdown-"]');
-        allDropdowns.forEach(d => d.classList.add('hidden'));
-    }
-});
-
-// Add CSS to handle notification stacking
-const style = document.createElement('style');
-style.textContent = `
-    .notification-toast {
-        transform: translateY(-10px);
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    }
-    .notification-toast + .notification-toast {
-        margin-top: 1rem;
-    }
-`;
-document.head.appendChild(style);
+    // Add CSS to handle notification stacking
+    const style = document.createElement('style');
+    style.textContent = `
+        .notification-toast {
+            transform: translateY(-10px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .notification-toast + .notification-toast {
+            margin-top: 1rem;
+        }
+    `;
+    document.head.appendChild(style);
     function closeModal(modalId) {
         document.getElementById(modalId).classList.add('hidden');
     }
