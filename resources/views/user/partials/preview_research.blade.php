@@ -219,7 +219,8 @@
                         class="w-full sm:w-auto px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 transition-colors duration-200">
                     Cancel
                 </button>
-                <button type="submit" 
+                <button type="submit"
+                        id="submit"
                         form="previewForm" 
                         class="w-full sm:w-auto px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200">
                     Confirm
@@ -316,6 +317,54 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+});
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('previewForm');
+    
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const submitButton = document.getElementById('submit');
+        if (submitButton) {
+            submitButton.disabled = true;
+            submitButton.textContent = 'Processing...';
+        }
+
+        fetch(form.action, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => {
+            if (response.status === 429) {
+                return response.json().then(data => {
+                    throw new Error(data.error || 'Submission in progress, wait...');
+                });
+            }
+            
+            // Handle redirect or JSON response
+            const contentType = response.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+                return response.json().then(data => {
+                    if (data.error) throw new Error(data.error);
+                    return data;
+                });
+            } else {
+                window.location.href = response.url;
+            }
+        })
+        .catch(error => {
+            if (submitButton) {
+                submitButton.disabled = false;
+                submitButton.textContent = 'Submit';
+            }
+            alert(error.message || 'Submission failed. Please try again.');
+        });
+    });
 });
 </script>
 @endsection

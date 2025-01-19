@@ -361,6 +361,7 @@ document.addEventListener('DOMContentLoaded', function() {
         .catch(error => console.error('Error marking notification as read:', error));
     }
 
+    
     function escapeHtml(unsafe) {
         return unsafe
             .replace(/&/g, "&amp;")
@@ -379,5 +380,39 @@ document.addEventListener('DOMContentLoaded', function() {
     // Fetch notifications every 30 seconds
     setInterval(fetchNotifications, 30000);
 });
+</script>
+<script>
+function markAllAsRead() {
+    fetch('/notifications/mark-all-read', {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+        }
+    })
+    .then(response => {
+        if (response.ok) {
+            // Immediately update UI
+            const notificationBadge = document.getElementById('notification-badge');
+            notificationBadge.style.display = 'none';
+            notificationBadge.textContent = '0';
+
+            // Update background colors of all notifications to white
+            const notifications = document.querySelectorAll('#notifications-dropdown > div');
+            notifications.forEach(notification => {
+                notification.classList.remove('bg-blue-50');
+                notification.classList.add('bg-white');
+            });
+
+            // Remove all "Mark as read" buttons
+            document.querySelectorAll('#notifications-dropdown button').forEach(button => {
+                button.remove();
+            });
+
+            // Then fetch fresh data
+            fetchNotifications();
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
 </script>
 </html>

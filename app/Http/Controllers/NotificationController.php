@@ -42,8 +42,14 @@ class NotificationController extends Controller
 
     public function markAllAsRead(Request $request)
     {
-        auth()->user()->unreadNotifications->markAsRead();
-        
-        return response()->json(['success' => true]);
+        try {
+            // Mark all unread notifications for the authenticated user as read
+            auth()->user()->unreadNotifications->markAsRead();
+
+            return response()->json(['success' => true, 'message' => 'All notifications marked as read']);
+        } catch (\Exception $e) {
+            \Log::error('Error marking notifications as read: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Failed to mark notifications as read'], 500);
+        }
     }
 }

@@ -700,21 +700,25 @@ class AdminController extends Controller
     {
         return view('admin.partials.profile');
     }
-    public function requestArticleUpload (Request $request, $serial_number)
+    public function requestArticleUpload(Request $request, $serial_number)
     {
-        // Find the abstract submission by serial number
-        $submission = AbstractSubmission::where('serial_number', $serial_number)->firstOrFail();
+        // Find the abstract submission by serial number with user relationship
+        $submission = AbstractSubmission::with('user')
+            ->where('serial_number', $serial_number)
+            ->firstOrFail();
 
-        // Find the user associated with the submission
-        $user = User::where('reg_no', $submission->user_reg_no)->first();
-
+        // Update the request_made field to true
+        $submission->request_made = true;
+        $submission->save();
+        
         // Prepare data for the notification
         $dataForUser = [
             'message' => 'Your abstract ' . $submission->serial_number . ' was reviewed. Please upload your article.',
             'link' => route('user.submit.article', ['serial_number' => $submission->serial_number]),
         ];
         
-        $user->notify(new NewUserNotification($dataForUser));
+        // Dispatch notification job
+        SendNotificationJob::dispatch($submission->user_reg_no, $dataForUser);
 
         return redirect()->back()->with('success', 'User has been notified to upload article.');
     }
