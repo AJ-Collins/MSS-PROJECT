@@ -429,6 +429,7 @@ document.addEventListener('DOMContentLoaded', () => {
             loadingSpinner.classList.add('hidden');
         }
     }
+    
 
     // Function to fetch data from the backend
     async function fetchAbstracts(page = 1, search = '') {
@@ -453,47 +454,60 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Function to render proposals
     function renderProposals(data) {
-        // Render table rows
-        const rows = data.data.map(submission => `
-            <tr class="hover:bg-gray-50">
-                <td class="px-6 py-4 whitespace-nowrap">
-                    <input type="checkbox" class="abstract-submission-checkbox w-4 h-4 text-blue-600 border-gray-300 rounded" value="${submission.serial_number}">
-                </td>
-                <td class="px-6 py-4">
-                    <div class="text-sm font-medium text-gray-900">${submission.title}</div>
-                    <div class="text-sm text-gray-500">${submission.serial_number}</div>
-                </td>
-                <td class="px-6 py-4 text-sm text-gray-500">${submission.user_reg_no}</td>
-                <td class="px-6 py-4 text-sm text-gray-500">
-                    ${new Date(submission.created_at).toLocaleDateString('en-US', {
-                        year: 'numeric', // 2025
-                        month: 'numeric', // January, February, etc.
-                        day: 'numeric' // 21
-                    })}
-                </td>
-                <td class="px-6 py-4 text-sm">
-                    ${submission.score ? submission.score : '<span class="text-gray-500">Not reviewed</span>'}
-                </td>
-                <td class="px-6 py-4 text-sm">
-                    ${submission.reviewer_name || '<span class="text-red-500">Not assigned</span>'}
-                </td>
-                <td class="px-6 py-4 text-center">
-                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                        submission.final_status === 'accepted' ? 'bg-green-100 text-green-800' :
-                        submission.final_status === 'rejected' ? 'bg-red-100 text-red-800' :
-                        'bg-yellow-100 text-yellow-800'
-                    }">${submission.final_status}</span>
-                </td>
-                <td class="px-6 py-4 text-center">
-                    <a href="" class="inline-block px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
-                        Download
-                    </a>
-                    <a href="/storage/${submission.pdf_document_path}" target="_blank" class="inline-block px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50">
-                        View
-                    </a>
-                </td>
-            </tr>
-        `).join('');
+        const rows = data.data.map(submission => {
+            // Check if pdf_document_path exists for each submission
+            const pdfPath = submission.pdf_document_path || null;
+            
+            // Set view button visibility dynamically based on pdfPath
+            const viewButtonHtml = pdfPath ? `
+                <a href="/storage/${pdfPath}" target="_blank" class="inline-block px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50">
+                    View
+                </a>
+            ` : ''; // Empty string if no path
+            const reviewersList = submission.reviewers.map(reviewer => {
+                    return `<li class="text-sm text-gray-700">${reviewer.first_name} ${reviewer.last_name}</li>`;
+                }).join('');
+            return `
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <input type="checkbox" class="abstract-submission-checkbox w-4 h-4 text-blue-600 border-gray-300 rounded" value="${submission.serial_number}">
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="text-sm font-medium text-gray-900">${submission.title}</div>
+                        <div class="text-sm text-gray-500">${submission.serial_number}</div>
+                    </td>
+                    <td class="px-6 py-4 text-sm text-gray-500">${submission.user_reg_no}</td>
+                    <td class="px-6 py-4 text-sm text-gray-500">
+                        ${new Date(submission.created_at).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'numeric',
+                            day: 'numeric'
+                        })}
+                    </td>
+                    <td class="px-6 py-4 text-sm">
+                        ${submission.score ? submission.score : '<span class="text-gray-500">Not reviewed</span>'}
+                    </td>
+                    <td class="px-6 py-4 text-sm">
+                        <ul class="list-disc pl-6">
+                            ${reviewersList ? reviewersList : '<li class="text-red-500">Not assigned</li>'}
+                        </ul>
+                    </td>
+                    <td class="px-6 py-4 text-center">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                            submission.final_status === 'accepted' ? 'bg-green-100 text-green-800' :
+                            submission.final_status === 'rejected' ? 'bg-red-100 text-red-800' :
+                            'bg-yellow-100 text-yellow-800'
+                        }">${submission.final_status}</span>
+                    </td>
+                    <td class="px-6 py-4 text-center">
+                        <a href="" class="inline-block px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                            Download
+                        </a>
+                        ${viewButtonHtml} <!-- Conditionally render the View button -->
+                    </td>
+                </tr>
+            `;
+        }).join('');
 
         // Update table
         proposalsTable.innerHTML = `

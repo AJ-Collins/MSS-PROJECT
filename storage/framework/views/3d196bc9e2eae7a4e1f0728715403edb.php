@@ -80,7 +80,7 @@
                             
                             <div class="flex items-center space-x-4">
                                 <label class="flex items-center space-x-2 text-sm text-gray-600 hover:text-gray-800 cursor-pointer">
-                                    <input type="hidden" name="authors[0][is_correspondent]" value="0">
+                                    <input type="hidden" name="authors[<?php echo e($index); ?>][is_correspondent]" value="0">
                                     <input type="checkbox" 
                                            name="authors[<?php echo e($index); ?>][is_correspondent]" 
                                            value="1" 

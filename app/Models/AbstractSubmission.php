@@ -46,7 +46,9 @@ class AbstractSubmission extends Model
             'reviewer_id',                  // Foreign key on the pivot table
             'serial_number',                // Local key on the abstract_submissions table
             'reg_no'                        // Local key on the users table
-        );
+        )
+        ->withPivot('status', 'response_date')
+        ->withTimestamps();
     }
     
 }

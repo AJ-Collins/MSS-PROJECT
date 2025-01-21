@@ -334,7 +334,8 @@ class AdminController extends Controller
     $perPage = $request->input('per_page', 10);
     $search = $request->input('search', '');
 
-    $query = ResearchSubmission::query();
+    $query = ResearchSubmission::query()
+        ->with('reviewers');
 
     // Apply search filter if provided
     if (!empty($search)) {
@@ -362,7 +363,8 @@ public function fetchAbstractSubmissions(Request $request)
     $perPage = $request->input('per_page', 10);
     $search = $request->input('search', '');
 
-    $query = AbstractSubmission::query();
+    $query = AbstractSubmission::query()
+        ->with('reviewers');
 
     // Apply search filter if provided
     if (!empty($search)) {

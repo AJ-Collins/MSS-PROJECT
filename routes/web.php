@@ -124,10 +124,10 @@ Route::middleware(['preventBackHistory', 'auth'])->group(function () {
         Route::get('/assessment/proposal/{serial_number}', [ReviewerController::class, 'ProposalPreview'])->name('reviewer.assessment.proposalpreview');
         Route::get('/reviewed', [ReviewerController::class, 'revieweddocuments'])->name('reviewer.reviewed');
         Route::get('/profile', [ReviewerController::class, 'profile'])->name('reviewer.profile');
-        Route::post('/update-abstract-reviewer-status', [ReviewerController::class, 'abstractStatus'])->name('update.abstract.reviewer.status');
-        Route::post('/abstract/reject', [ReviewerController::class, 'abstractReject'])->name('reviewer.abstract.reject');
-        Route::post('/update-proposal-reviewer-status', [ReviewerController::class, 'proposalStatus'])->name('update.proposal.reviewer.status');
-        Route::post('/proposal/reject', [ReviewerController::class, 'proposalReject'])->name('reviewer.proposal.reject');
+        Route::get('/abstract/accept/{serial_number}', [ReviewerController::class, 'acceptAssignment'])->name('reviewer.abstract.accept');
+        Route::get('/abstract/reject/{serial_number}', [ReviewerController::class, 'declineAssignment'])->name('reviewer.abstract.reject');
+        Route::get('/proposal/accept/{serial_number}', [ReviewerController::class, 'acceptProposal'])->name('reviewer.proposal.accept');
+        Route::get('/proposal/reject/{serial_number}', [ReviewerController::class, 'rejectProposal'])->name('reviewer.proposal.reject');
         
 
         Route::get('/abstracts/{serial_number}', [ReviewerController::class, 'getAbstract']);

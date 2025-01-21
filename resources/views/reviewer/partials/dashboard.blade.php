@@ -116,9 +116,9 @@
                         <td class="px-4 py-3 text-sm text-gray-700">{{ $submission->title }}</td>
                         <td class="px-4 py-3 text-sm text-gray-500">{{ $submission->sub_theme }}</td>
                         <td class="px-4 py-3 text-center">
-                            <span class="px-2 py-1 text-xs font-medium {{ ($submission->reviewer_status === null || $submission->reviewer_status === '') ? 'text-red-800 bg-red-100' : 'text-yellow-800 bg-yellow-100' }} rounded-full">
-                                {{ $submission->reviewer_status === null || $submission->reviewer_status === '' ? 'Not Accepted' : $submission->reviewer_status }}
-                            </span>
+                            <div class="flex flex-col items-center space-y-2">
+                                <p>{{ $submission->pivot->status }}</p>
+                            </div>
                         </td>
                         <td class="px-4 py-3 text-center space-x-2">
                             <button 
@@ -339,21 +339,14 @@
                         <!-- Footer - Fixed -->
                         <div class="flex-none bg-gray-50 px-6 py-4 border-t border-gray-200 rounded-b-lg">
                             <div class="flex justify-end space-x-2">
-                                <form action="{{ route('update.abstract.reviewer.status') }}" method="POST" class="inline-block">
-                                    @csrf
-                                    <input type="hidden" name="serial_number" x-bind:value="$store.modal.abstract?.serial_number">
-                                    <input type="hidden" name="reviewer_status" value="accepted">
-                                    <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-full">
-                                        Accept
-                                    </button>
-                                </form>
-                                <form action="{{ route('reviewer.abstract.reject') }}" method="POST" class="inline-block">
-                                    @csrf
-                                    <input type="hidden" name="serial_number" x-bind:value="$store.modal.abstract?.serial_number">
-                                    <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-full">
-                                        Reject
-                                    </button>
-                                </form>
+                            @foreach($submissions as $submission)
+                                <a href="{{ route('reviewer.abstract.accept', ['serial_number' => $submission->serial_number]) }}">
+                                    Accept
+                                </a>
+                                @endforeach
+                                @foreach($submissions as $submission)
+                                    <a href="{{ route('reviewer.abstract.reject', ['serial_number' => $submission->serial_number]) }}">Reject</a>
+                                @endforeach
                             </div>
                         </div>
                     </div>
@@ -600,21 +593,12 @@
                         <!-- Footer - Fixed -->
                         <div class="flex-none bg-gray-50 px-6 py-4 border-t border-gray-200 rounded-b-lg">
                             <div class="flex justify-end space-x-2">
-                                <form action="{{ route('update.proposal.reviewer.status') }}" method="POST" class="inline-block">
-                                    @csrf
-                                    <input type="hidden" name="serial_number" x-bind:value="$store.proposalModal.proposal?.serial_number">
-                                    <input type="hidden" name="reviewer_status" value="accepted">
-                                    <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-full">
-                                        Accept
-                                    </button>
-                                </form>
-                                <form action="{{ route('reviewer.proposal.reject') }}" method="POST" class="inline-block">
-                                    @csrf
-                                    <input type="hidden" name="serial_number" x-bind:value="$store.proposalModal.proposal?.serial_number">
-                                    <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-full">
-                                        Reject
-                                    </button>
-                                </form>
+                            @foreach($researchSubmissions as $researchSubmission)
+                                <a href="{{ route('reviewer.proposal.accept', ['serial_number' => $researchSubmission->serial_number]) }}">
+                                    Accept
+                                </a>
+                                    <a href="{{ route('reviewer.abstract.reject', ['serial_number' => $researchSubmission->serial_number]) }}">Reject</a>
+                                @endforeach
                             </div>
                         </div>
                     </div>

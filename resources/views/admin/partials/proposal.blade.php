@@ -454,7 +454,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Function to render proposals
     function renderProposals(data) {
         // Render table rows
-        const rows = data.data.map(researchSubmission => `
+        const rows = data.data.map(researchSubmission => {
+            const reviewersList = researchSubmission.reviewers.map(reviewer => {
+                return `<li class="text-sm text-gray-700">${reviewer.first_name} ${reviewer.last_name}</li>`;
+            }).join('');
+            return`
             <tr class="hover:bg-gray-50">
                 <td class="px-6 py-4 whitespace-nowrap">
                     <input type="checkbox" class="abstract-submission-checkbox w-4 h-4 text-blue-600 border-gray-300 rounded" value="${researchSubmission.serial_number}">
@@ -475,7 +479,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     ${researchSubmission.score ? researchSubmission.score : '<span class="text-gray-500">Not reviewed</span>'}
                 </td>
                 <td class="px-6 py-4 text-sm">
-                    ${researchSubmission.reviewer_name || '<span class="text-red-500">Not assigned</span>'}
+                    <ul class="list-disc pl-6">
+                        ${reviewersList ? reviewersList : '<li class="text-red-500">Not assigned</li>'}
+                    </ul>
                 </td>
                 <td class="px-6 py-4 text-center">
                     <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
@@ -493,7 +499,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </a>
                 </td>
             </tr>
-        `).join('');
+        `}).join('');
 
         // Update table
         proposalsTable.innerHTML = `
@@ -507,7 +513,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Submitted By</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Score</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Reviewer</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Reviewers</th>
                         <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                         <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Documents</th>
                     </tr>

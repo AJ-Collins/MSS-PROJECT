@@ -22,40 +22,41 @@ class ReviewerController extends Controller
         return view('reviewer.partials.profile');
     }
     public function dashboard()
-    {
-        $reviewer = Auth::user(); // Assuming the reviewer is logged in
+{
+    $reviewer = Auth::user();
 
-        // Fetch abstracts assigned to the logged-in reviewer
-        $submissions = AbstractSubmission::where('reviewer_reg_no', $reviewer->reg_no)
-        ->where(function($query) {
-            $query->where('reviewer_status', '')
-                  ->orWhereNull('reviewer_status');
-        })
-        ->paginate(5);
-            
-        $researchSubmissions = ResearchSubmission::where('reviewer_reg_no', $reviewer->reg_no)
-        ->where(function($query) {
-            $query->where('reviewer_status', '')
-                  ->orWhereNull('reviewer_status');
-        })
+    // Fetch pending abstract submissions
+    $submissions = $reviewer->abstractSubmissions()
+        ->wherePivot('status', 'pending')
         ->paginate(5);
 
-        $abstractCount = AbstractSubmission::where('reviewer_reg_no', $reviewer->reg_no)->count();
-        $proposalCount = ResearchSubmission::where('reviewer_reg_no', $reviewer->reg_no)->count();
-        
-        $newAbstractCount = $submissions->count();
-        $newProposalCount = $researchSubmissions->count();
-        
-        
-        return view('reviewer.partials.dashboard', compact(
-            'submissions', 
-            'researchSubmissions', 
-            'abstractCount', 
-            'proposalCount',
-            'newAbstractCount',
-            'newProposalCount'));
-    }
+    // Fetch pending research submissions
+    $researchSubmissions = $reviewer->researchSubmissions()
+        ->wherePivot('status', 'pending')
+        ->paginate(5);
 
+    // Get total counts of all assignments (regardless of status)
+    $abstractCount = $reviewer->abstractSubmissions()->count();
+    $proposalCount = $reviewer->researchSubmissions()->count();
+
+    // Get counts of pending submissions
+    $newAbstractCount = $reviewer->abstractSubmissions()
+        ->wherePivot('status', 'pending')
+        ->count();
+
+    $newProposalCount = $reviewer->researchSubmissions()
+        ->wherePivot('status', 'pending')
+        ->count();
+
+    return view('reviewer.partials.dashboard', compact(
+        'submissions',
+        'researchSubmissions',
+        'abstractCount',
+        'proposalCount',
+        'newAbstractCount',
+        'newProposalCount'
+    ));
+}
     public function abstractStatus(Request $request)
     {
         $request->validate([
@@ -73,28 +74,49 @@ class ReviewerController extends Controller
         return back()->with('success', 'Reviewer status updated successfully!');
     }
 
-    public function abstractReject(Request $request)
+    public function acceptAssignment(Request $request, string $serial_number)
     {
-        $request->validate([
-            'serial_number' => 'required|exists:abstract_submissions,serial_number',
-        ]);
-
-        $submission = AbstractSubmission::find($request->serial_number);
-
-        if ($submission) {
-            // Update the reviewer status
-            $submission->reviewer_status = 'rejected';
-
-            // Remove the reviewer_reg_no (set it to null)
-            $submission->reviewer_reg_no = null;
-
-            // Save the changes
-            $submission->save();
+        $success = auth()->user()->acceptAbstractAssignment($serial_number);
+        
+        if ($success) {
+            return response()->json(['message' => 'Assignment accepted successfully']);
         }
-
-        return back()->with('success', 'Reviewer status updated and reviewer unassigned successfully!');
+        
+        return response()->json(['message' => 'Unable to accept assignment'], 404);
     }
 
+    public function declineAssignment(Request $request, string $serial_number)
+    {
+        $success = auth()->user()->declineAbstractAssignment(
+            $serial_number
+        );
+        
+        if ($success) {
+            return response()->json(['message' => 'Assignment declined successfully']);
+        }
+        
+        return response()->json(['message' => 'Unable to decline assignment'], 404);
+    }
+    public function acceptProposal(Request $request, string $serial_number)
+    {
+        $success = auth()->user()->acceptProposalAssignment($serial_number);
+        
+        if ($success) {
+            return response()->json(['message' => 'Assignment accepted successfully']);
+        }
+        
+        return response()->json(['message' => 'Unable to accept assignment'], 404);
+    }
+    public function rejectProposal(Request $request, string $serial_number)
+    {
+        $success = auth()->user()->rejectProposalAssignment($serial_number);
+        
+        if ($success) {
+            return response()->json(['message' => 'Assignment accepted successfully']);
+        }
+        
+        return response()->json(['message' => 'Unable to accept assignment'], 404);
+    }
     public function proposalStatus(Request $request)
     {
         $request->validate([
@@ -132,24 +154,29 @@ class ReviewerController extends Controller
         return back()->with('success', 'Reviewer status updated and reviewer unassigned successfully!');
     }
     public function documentsReview()
-    {
-        $reviewer = Auth::user(); // Assuming the reviewer is logged in
+{
+    $reviewer = Auth::user();
 
-        // Fetch abstracts assigned to the logged-in reviewer
-        $submissions = AbstractSubmission::where('reviewer_reg_no', $reviewer->reg_no)
-                ->where('reviewer_status', 'accepted')
-                ->whereNull('score')
-                ->paginate(10);
-        $researchSubmissions = ResearchSubmission::where('reviewer_reg_no', $reviewer->reg_no)
-                ->where('reviewer_status', 'accepted')
-                ->whereNull('score')
-                ->paginate(10);
+    // Fetch abstracts assigned to the reviewer with pending status
+    $submissions = $reviewer->abstractSubmissions()
+        ->wherePivot('status', 'accepted')  // Get only pending assignments
+        ->paginate(10);
 
-        $abstractCount = $submissions->count();
-        $proposalCount = $researchSubmissions->count();
+    // Fetch research submissions with pending status
+    $researchSubmissions = $reviewer->researchSubmissions()
+        ->wherePivot('status', 'accepted')  // Get only pending assignments
+        ->paginate(10);
 
-        return view('reviewer.partials.documents', compact('submissions', 'researchSubmissions', 'abstractCount', 'proposalCount'));
-    }
+    $abstractCount = $submissions->total();  // Use total() instead of count() for paginated results
+    $proposalCount = $researchSubmissions->total();
+
+    return view('reviewer.partials.documents', compact(
+        'submissions', 
+        'researchSubmissions', 
+        'abstractCount', 
+        'proposalCount'
+    ));
+}
     public function assignedAbstracts()
     {
         $reviewer = Auth::user(); // Assuming the reviewer is logged in
@@ -227,10 +254,10 @@ class ReviewerController extends Controller
         $reviewer = Auth::user(); // Assuming the reviewer is logged in
 
         // Fetch abstracts assigned to the logged-in reviewer
-        $submissions = AbstractSubmission::where('reviewer_reg_no', $reviewer->reg_no)
+        $submissions = $reviewer->abstractSubmissions()
                 ->whereNotNull('score')
                 ->paginate(20);
-        $researchSubmissions = ResearchSubmission::where('reviewer_reg_no', $reviewer->reg_no)
+        $researchSubmissions = $reviewer->researchSubmissions()
                 ->whereNotNull('score')
                 ->paginate(20);
 

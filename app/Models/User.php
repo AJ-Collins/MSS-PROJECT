@@ -94,6 +94,120 @@ class User extends Authenticatable implements MustVerifyEmail
             'abstract_serial_number',       // Foreign key on the pivot table
             'reg_no',                       // Local key on the users table
             'serial_number'                 // Local key on the abstract_submissions table
+        )
+        ->withPivot('status', 'decline_reason', 'response_date')
+        ->withTimestamps();
+    }
+    public function assignedProposals()
+    {
+        return $this->belongsToMany(
+            ResearchSubmission::class,
+            'proposal_abstract_submission_reviewers', // Pivot table name
+            'reviewer_id',                  // Foreign key on the pivot table
+            'abstract_serial_number',       // Foreign key on the pivot table
+            'reg_no',                       // Local key on the users table
+            'serial_number'                 // Local key on the abstract_submissions table
+        )
+        ->withPivot('status', 'decline_reason', 'response_date')
+        ->withTimestamps();
+    }
+    public function acceptAbstractAssignment(string $serial_number): bool
+    {
+        $assignment = $this->assignedAbstracts()
+            ->wherePivot('abstract_serial_number', $serial_number)
+            ->first();
+
+        if (!$assignment) {
+            return false;
+        }
+
+        return $this->assignedAbstracts()->updateExistingPivot(
+            $serial_number,
+            [
+                'status' => 'accepted',
+                'response_date' => now(),
+            ]
         );
     }
+    public function acceptProposalAssignment(string $serial_number): bool
+    {
+        $assignment = $this->assignedProposals()
+            ->wherePivot('abstract_serial_number', $serial_number)
+            ->first();
+
+        if (!$assignment) {
+            return false;
+        }
+
+        return $this->assignedProposals()->updateExistingPivot(
+            $serial_number,
+            [
+                'status' => 'accepted',
+                'response_date' => now(),
+            ]
+        );
+    }
+
+    public function declineAbstractAssignment(string $serial_number): bool
+    {
+        $assignment = $this->assignedAbstracts()
+            ->wherePivot('abstract_serial_number', $serial_number)
+            ->first();
+
+        if (!$assignment) {
+            return false;
+        }
+
+        return $this->assignedAbstracts()->updateExistingPivot(
+            $serial_number,
+            [
+                'status' => 'declined',
+                'response_date' => now(),
+            ]
+        );
+    }
+    public function declineProposalAssignment(string $serial_number): bool
+    {
+        $assignment = $this->assignedProposals()
+            ->wherePivot('abstract_serial_number', $serial_number)
+            ->first();
+
+        if (!$assignment) {
+            return false;
+        }
+
+        return $this->assignedProposals()->updateExistingPivot(
+            $serial_number,
+            [
+                'status' => 'declined',
+                'response_date' => now(),
+            ]
+        );
+    }
+    
+    public function abstractSubmissions()
+    {
+        return $this->belongsToMany(
+            AbstractSubmission::class, // Model to associate
+            'abstract_submission_reviewers', // Pivot table name
+            'reviewer_id', // Foreign key on the pivot table
+            'abstract_serial_number', // Foreign key on the pivot table
+            'reg_no', // Local key on the users table
+            'serial_number' // Local key on the abstract submissions table
+        )->withPivot('status')
+            ->withTimestamps();
+    }
+    public function researchSubmissions()
+    {
+        return $this->belongsToMany(
+            ResearchSubmission::class,  // Model to associate
+            'proposal_abstract_submission_reviewers',  // Pivot table name
+            'reviewer_id',  // Foreign key on the pivot table
+            'abstract_serial_number',  // Foreign key on the pivot table
+            'reg_no',  // Local key on the users table
+            'serial_number'  // Local key on the research submissions table
+        )->withPivot('status')
+            ->withTimestamps();
+    }
+
 }

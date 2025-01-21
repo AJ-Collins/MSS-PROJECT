@@ -87,7 +87,6 @@
                             <td class="px-4 py-3 text-center text-sm text-gray-700">Good (Remarks)</td>
                             <td class="px-4 py-3 text-center text-sm text-gray-700">
                                 <div class="flex flex-col items-center space-y-2">
-                                    <?php if($submission->final_status === 'under_review' && $submission->reviewer_status === 'accepted'): ?>
                                         <a href="<?php echo e(route('reviewer.abstract.assessment', ['serial_number' => $submission->serial_number])); ?>" 
                                         class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-all">
                                             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -95,28 +94,16 @@
                                             </svg>
                                             Assess
                                         </a>
-                                    <?php elseif($submission->final_status === 'revision_required' && $submission->reviewer_status === 'accepted'): ?>
-                                        <span class="inline-flex items-center px-4 py-2 bg-yellow-500 text-white rounded">
-                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7v4M5 7v4m4 8l4-4m0 0l4 4m-4-4v6"/>
-                                            </svg>
-                                            Requested Revision
-                                        </span>
-                                    <?php endif; ?>
                                 </div>
                             </td>
                             <td class="px-4 py-3 text-center">
                                 <div class="flex justify-center space-x-2">
-                                    <form action="<?php echo e(route('reviewer.abstract.reject')); ?>" method="POST" class="group relative p-2 text-gray-600 hover:text-red-600 rounded-full hover:bg-red-100">
-                                        <?php echo csrf_field(); ?>
-                                        <input type="hidden" name="serial_number" value="<?php echo e($submission->serial_number); ?>">
-                                        <button type="submit">
+                                        <a href="<?php echo e(route('reviewer.abstract.reject', ['serial_number' => $submission->serial_number])); ?>">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                                           </svg>
                                             <span class="absolute bottom-full left-1/2 transform -translate-x-1/2 px-2 py-1 text-xs text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200">Reject</span>
-                                        </button>
-                                    </form>
+                                        </a>
                                     <a href="<?php echo e(route('research.abstract.download', $submission->serial_number)); ?>" class="group relative p-2 text-gray-600 hover:text-indigo-600 rounded-full hover:bg-indigo-100 transition-colors duration-200">
                                         <!-- PDF icon -->
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -293,16 +280,9 @@
                         </td>
                         <td class="px-4 py-3 text-center">
                             <div class="flex justify-center space-x-2">
-                                <form action="<?php echo e(route('reviewer.proposal.reject')); ?>" method="POST" class="group relative p-2 text-gray-600 hover:text-red-600 rounded-full hover:bg-red-100">
-                                        <?php echo csrf_field(); ?>
-                                        <input type="hidden" name="serial_number" value="<?php echo e($researchSubmission->serial_number); ?>">
-                                        <button type="submit">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                                            </svg>
-                                            <span class="absolute bottom-full left-1/2 transform -translate-x-1/2 px-2 py-1 text-xs text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200">Reject</span>
-                                        </button>
-                                    </form>
+                            <?php $__currentLoopData = $researchSubmissions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $researchSubmission): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <a href="<?php echo e(route('reviewer.abstract.reject', ['serial_number' => $researchSubmission->serial_number])); ?>">Reject</a>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 <a href="<?php echo e(route('proposal.abstract.download', $researchSubmission->serial_number)); ?>" class="group relative p-2 text-gray-600 hover:text-indigo-600 rounded-full hover:bg-indigo-100 transition-colors duration-200">
                                     <!-- PDF icon -->
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
