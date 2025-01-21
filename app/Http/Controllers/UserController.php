@@ -39,17 +39,22 @@ class UserController extends Controller
         $totalArticles = AbstractSubmission::where('user_reg_no', $user->reg_no)
             ->where('pdf_path', '!=', null)
             ->count();
-        $abstractsPending = AbstractSubmission::where('user_reg_no', $user->reg_no)->where('final_status', 'Pending')->count();
+        $abstractsPending = AbstractSubmission::where('user_reg_no', $user->reg_no)
+            ->where('final_status', 'submitted')
+            
+            ->count();
         
 
         // Count total research submissions
         $totalResearchSubmissions = ResearchSubmission::where('user_reg_no', $user->reg_no)->count();
-        $proposalPending = ResearchSubmission::where('user_reg_no', $user->reg_no)->where('final_status', 'Pending')->count();
+        $proposalPending = ResearchSubmission::where('user_reg_no', $user->reg_no)->where('final_status', 'submitted')->count();
         
         $totalPendingCount = $abstractsPending + $proposalPending;
 
-        $submissions = AbstractSubmission::where('user_reg_no', $user->reg_no)->get();
-        $researchSubmissions = ResearchSubmission::where('user_reg_no', $user->reg_no)->get();
+        $submissions = AbstractSubmission::where('user_reg_no', $user->reg_no)
+            ->where('pdf_path',  null)
+            ->paginate(5);
+        $researchSubmissions = ResearchSubmission::where('user_reg_no', $user->reg_no)->paginate(5);
 
         $draft = $this->getCurrentDraft();
         
@@ -70,8 +75,9 @@ class UserController extends Controller
     {
         $user = auth()->user();
 
-        $submissions = AbstractSubmission::where('user_reg_no', $user->reg_no)->get();
-        $researchSubmissions = ResearchSubmission::where('user_reg_no', $user->reg_no)->get();
+        $submissions = AbstractSubmission::where('user_reg_no', $user->reg_no)
+            ->paginate(10);
+        $researchSubmissions = ResearchSubmission::where('user_reg_no', $user->reg_no)->paginate(10);
 
         return view('user.partials.documents', compact('submissions', 'researchSubmissions'));
     }

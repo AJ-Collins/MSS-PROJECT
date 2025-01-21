@@ -80,7 +80,7 @@
                             
                             <div class="flex items-center space-x-4">
                                 <label class="flex items-center space-x-2 text-sm text-gray-600 hover:text-gray-800 cursor-pointer">
-                                    <input type="hidden" name="authors[0][is_correspondent]" value="0">
+                                    <input type="hidden" name="authors[<?php echo e($index); ?>][is_correspondent]" value="0">
                                     <input type="checkbox" 
                                            name="authors[<?php echo e($index); ?>][is_correspondent]" 
                                            value="1" 
@@ -102,15 +102,18 @@
                         <div class="grid md:grid-cols-2 gap-6">
                             <!-- Left Column -->
                             <div class="space-y-5">
-                                <?php $__currentLoopData = ['first_name' => 'First Name', 'middle_name' => 'Middle Name', 'surname' => 'Surname']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $field => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                    <div class="form-group">
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">
-                                            <?php echo e($label); ?> <span class="text-red-500">*</span>
-                                        </label>
-                                        <input type="text" 
-                                               name="authors[<?php echo e($index); ?>][<?php echo e($field); ?>]" 
-                                               value="<?php echo e(old("authors.$index.$field", $author[$field] ?? '')); ?>"
-                                               class="form-input block w-full rounded-md border border-gray-800 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 transition px-4 py-3 text-lg <?php $__errorArgs = ["authors.$index.$field"];
+                            <?php $__currentLoopData = ['first_name' => 'First Name', 'middle_name' => 'Middle Name', 'surname' => 'Surname']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $field => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <div class="form-group">
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                                        <?php echo e($label); ?> 
+                                        <?php if($field !== 'middle_name'): ?> 
+                                            <span class="text-red-500">*</span>
+                                        <?php endif; ?>
+                                    </label>
+                                    <input type="text" 
+                                        name="authors[<?php echo e($index); ?>][<?php echo e($field); ?>]" 
+                                        value="<?php echo e(old("authors.$index.$field", $author[$field] ?? '')); ?>"
+                                        class="form-input block w-full rounded-md border border-gray-800 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 transition px-4 py-3 text-lg <?php $__errorArgs = ["authors.$index.$field"];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -118,20 +121,20 @@ $message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php unset($messag
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>"
-                                               placeholder="Enter <?php echo e(strtolower($label)); ?>"
-                                               required>
-                                        <?php $__errorArgs = ["authors.$index.$field"];
+                                        placeholder="Enter <?php echo e(strtolower($label)); ?>"
+                                        <?php if($field !== 'middle_name'): ?> required <?php endif; ?>>
+                                    <?php $__errorArgs = ["authors.$index.$field"];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?>
-                                            <div class="text-red-500 text-xs mt-1"><?php echo e($message); ?></div>
-                                        <?php unset($message);
+                                        <div class="text-red-500 text-xs mt-1"><?php echo e($message); ?></div>
+                                    <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
-                                    </div>
-                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                </div>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </div>
 
                             <!-- Right Column -->

@@ -161,12 +161,32 @@
 
     function handleDrop(event) {
         event.preventDefault();
+        event.stopPropagation();
+        
         fileUploadArea.classList.remove('bg-gray-100', 'border-indigo-300');
         
         const file = event.dataTransfer.files[0];
         if (file && validateFile(file)) {
-            fileInput.files = event.dataTransfer.files;
-            handleFileChange({ target: { files: [file] } });
+            // Create a new File object from the dropped file
+            const newFile = new File([file], file.name, {
+                type: file.type,
+                lastModified: file.lastModified,
+            });
+            
+            // Create a new FileList-like object
+            const fileList = {
+                0: newFile,
+                length: 1,
+                item: (index) => index === 0 ? newFile : null
+            };
+            
+            // Set the files property
+            Object.defineProperty(fileInput, 'files', {
+                value: fileList,
+                writable: true
+            });
+            
+            handleFileChange({ target: { files: [newFile] } });
         }
     }
 
@@ -180,7 +200,7 @@
         errorMessage.classList.add('hidden');
     }
 
-    form.addEventListener('submit', function(event) {
+    form.addEventListener('submit', async function(event) {
         event.preventDefault();
         
         if (!fileInput.files[0]) {
@@ -196,45 +216,42 @@
 
         const formData = new FormData(form);
 
-        const xhr = new XMLHttpRequest();
-        xhr.open('POST', form.action);
-        xhr.setRequestHeader('X-CSRF-TOKEN', document.querySelector('meta[name="csrf-token"]').content);
+        try {
+            const response = await fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json'
+                }
+            });
 
-        xhr.upload.addEventListener('progress', function(e) {
-            if (e.lengthComputable) {
-                const percentComplete = Math.round((e.loaded / e.total) * 100);
-                progressBar.style.width = percentComplete + '%';
-                progressText.textContent = percentComplete + '%';
-            }
-        });
+            const data = await response.json();
 
-        xhr.addEventListener('load', function() {
-            if (xhr.status === 200) {
-                // Success
+            if (response.ok) {
                 submitText.textContent = 'Upload Successful!';
                 submitSpinner.classList.add('hidden');
                 setTimeout(() => {
                     window.location.href = '/user/dashboard';
                 }, 1000);
             } else {
-                // Error
-                showError('Upload failed. Please try again.');
-                submitButton.disabled = false;
-                submitText.textContent = 'Upload Document';
-                submitSpinner.classList.add('hidden');
-                progressContainer.classList.add('hidden');
+                // Check if it's an "already uploaded" message
+                if (data.message && data.message.includes('already uploaded')) {
+                    showError('This article has already been uploaded.');
+                    submitText.textContent = 'Already Uploaded';
+                    submitButton.disabled = true;
+                    submitSpinner.classList.add('hidden');
+                } else {
+                    throw new Error(data.message || 'Upload failed');
+                }
             }
-        });
-
-        xhr.addEventListener('error', function() {
-            showError('Upload failed. Please check your connection and try again.');
+        } catch (error) {
+            showError(error.message || 'Upload failed. Please try again.');
             submitButton.disabled = false;
-            submitText.textContent = 'Upload Document';
+            submitText.textContent = 'Submit';
             submitSpinner.classList.add('hidden');
-            progressContainer.classList.add('hidden');
-        });
-
-        xhr.send(formData);
+        }
+        progressContainer.classList.add('hidden');
     });
 </script>
 @endsection

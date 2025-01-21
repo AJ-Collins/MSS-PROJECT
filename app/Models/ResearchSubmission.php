@@ -34,5 +34,17 @@ class ResearchSubmission extends Model
     {
         return $this->belongsTo(User::class, 'reviewer_reg_no', 'reg_no');
     }
+
+    public function reviewers()
+    {
+        return $this->belongsToMany(
+            User::class,
+            'proposal_abstract_submission_reviewers', // Pivot table name
+            'abstract_serial_number',       // Foreign key on the pivot table
+            'reviewer_id',                  // Foreign key on the pivot table
+            'serial_number',                // Local key on the abstract_submissions table
+            'reg_no'                        // Local key on the users table
+        );
+    }
     
 }

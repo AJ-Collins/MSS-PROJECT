@@ -31,14 +31,14 @@ class ReviewerController extends Controller
             $query->where('reviewer_status', '')
                   ->orWhereNull('reviewer_status');
         })
-        ->get();
+        ->paginate(5);
             
         $researchSubmissions = ResearchSubmission::where('reviewer_reg_no', $reviewer->reg_no)
         ->where(function($query) {
             $query->where('reviewer_status', '')
                   ->orWhereNull('reviewer_status');
         })
-        ->get();
+        ->paginate(5);
 
         $abstractCount = AbstractSubmission::where('reviewer_reg_no', $reviewer->reg_no)->count();
         $proposalCount = ResearchSubmission::where('reviewer_reg_no', $reviewer->reg_no)->count();
@@ -139,11 +139,11 @@ class ReviewerController extends Controller
         $submissions = AbstractSubmission::where('reviewer_reg_no', $reviewer->reg_no)
                 ->where('reviewer_status', 'accepted')
                 ->whereNull('score')
-                ->get();
+                ->paginate(10);
         $researchSubmissions = ResearchSubmission::where('reviewer_reg_no', $reviewer->reg_no)
                 ->where('reviewer_status', 'accepted')
                 ->whereNull('score')
-                ->get();
+                ->paginate(10);
 
         $abstractCount = $submissions->count();
         $proposalCount = $researchSubmissions->count();
@@ -229,10 +229,10 @@ class ReviewerController extends Controller
         // Fetch abstracts assigned to the logged-in reviewer
         $submissions = AbstractSubmission::where('reviewer_reg_no', $reviewer->reg_no)
                 ->whereNotNull('score')
-                ->get();
+                ->paginate(20);
         $researchSubmissions = ResearchSubmission::where('reviewer_reg_no', $reviewer->reg_no)
                 ->whereNotNull('score')
-                ->get();
+                ->paginate(20);
 
         $abstractCount = $submissions->count();
         $proposalCount = $researchSubmissions->count();

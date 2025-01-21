@@ -139,7 +139,7 @@
                                                     text-red-600  
                                                 @endif
                                             ">
-                                                {{ $submission->approved == true ? 'Approved' : 'Not Approved' }}
+                                                {{ $submission->approved == true ? 'Approved' : 'Declined' }}
                                             </span>
                                         </td>
                                         <td class="px-4 py-3">
@@ -326,7 +326,7 @@
                                                     text-red-600  
                                                 @endif
                                             ">
-                                                {{ $researchSubmission->approved == true ? 'Approved' : 'Not Approved' }}
+                                                {{ $researchSubmission->approved == true ? 'Approved' : 'Declined' }}
                                             </span>
                                         </td>
                                         <td class="px-6 py-4">

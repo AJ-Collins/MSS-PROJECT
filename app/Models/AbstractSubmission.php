@@ -37,9 +37,16 @@ class AbstractSubmission extends Model
     {
         return $this->belongsTo(User::class, 'user_reg_no', 'reg_no');
     }
-    public function reviewer()
+    public function reviewers()
     {
-        return $this->belongsTo(User::class, 'reviewer_reg_no', 'reg_no');
+        return $this->belongsToMany(
+            User::class,
+            'abstract_submission_reviewers', // Pivot table name
+            'abstract_serial_number',       // Foreign key on the pivot table
+            'reviewer_id',                  // Foreign key on the pivot table
+            'serial_number',                // Local key on the abstract_submissions table
+            'reg_no'                        // Local key on the users table
+        );
     }
     
 }

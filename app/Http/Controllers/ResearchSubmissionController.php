@@ -55,7 +55,7 @@ class ResearchSubmissionController extends Controller
             'authors.*.department' => 'required|string|max:255',
             'authors.*.university' => 'required|string|max:255',
             'authors.*.email' => 'required|email|max:255',
-            'authors.*.is_correspondent' => 'sometimes|boolean',
+            'authors.*.is_correspondent' => 'nullable|boolean',
             'submission_type' => 'required|in:abstract',
         ]);
 
@@ -267,7 +267,7 @@ class ResearchSubmissionController extends Controller
                 // Prepare author records for bulk insert
                 $authorRecords = collect($allAuthors)->map(function ($authorData) use ($serialNumber) {
                     return array_merge($authorData, [
-                        'abstract_submission_id' => $serialNumber,
+                        'research_submission_id' => $serialNumber,
                         'created_at' => now(),
                         'updated_at' => now()
                     ]);

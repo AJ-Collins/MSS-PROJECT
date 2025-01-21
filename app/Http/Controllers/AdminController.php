@@ -33,9 +33,11 @@ class AdminController extends Controller
 
         $submissions = AbstractSubmission::where('reviewer_status', Null)
             ->where('final_status', '!=','accepted')
+            ->where('final_status', '!=','rejected')
             ->paginate($perPage);
         $researchSubmissions = ResearchSubmission::where('reviewer_status', Null)
             ->where('final_status', '!=','accepted')
+            ->where('final_status', '!=','rejected')
             ->paginate($perPage);
 
         return view('admin.partials.dashboard', compact('totalUsers', 'totalAbstracts',
@@ -290,27 +292,116 @@ class AdminController extends Controller
     }
     
 
-    public function documents()
-    {   
-        $admin = Auth::user();
+    public function abstracts() {
+
         $perPage = request()->input('per_page', 10);
-        // Get submissions with their reviewer information
-        $submissions = AbstractSubmission::leftJoin('users', 'users.reg_no', '=', 'abstract_submissions.reviewer_reg_no')
-            ->select('abstract_submissions.*', 'users.first_name as reviewer_name')
+
+        // Get research submissions with their reviewer information using the relationship
+        $submissions = AbstractSubmission::with('reviewers') // Load reviewers with research submissions
             ->where('approved', '!=', true)
+            ->where('final_status', '!=', 'rejected')
+            ->where('final_status', '!=', 'submitted')
             ->paginate($perPage);
-        // Get submissions with their reviewer information
-        $researchSubmissions = ResearchSubmission::leftJoin('users', 'users.reg_no', '=', 'research_submissions.reviewer_reg_no')
-            ->select('research_submissions.*', 'users.first_name as reviewer_name')
-            ->where('approved', '!=', true)
-            ->paginate($perPage);
-        
-        $reviewers = User::whereHas('roles', function ($query){
+            
+        // Get all users with the 'Reviewer' role
+        $reviewers = User::whereHas('roles', function ($query) {
             $query->where('name', 'Reviewer');
         })->get();
 
-        return view('admin.partials.documents', compact('submissions', 'researchSubmissions', 'reviewers'));
+        return view('admin.partials.abstracts', compact('submissions', 'reviewers'));
     }
+    public function proposals() {
+
+        $perPage = request()->input('per_page', 10);
+
+        // Get research submissions with their reviewer information using the relationship
+        $researchSubmissions = ResearchSubmission::with('reviewers') // Load reviewers with research submissions
+            ->where('approved', '!=', true)
+            ->where('final_status', '!=', 'rejected')
+            ->where('final_status', '!=', 'submitted')
+            ->paginate($perPage);
+            
+        // Get all users with the 'Reviewer' role
+        $reviewers = User::whereHas('roles', function ($query) {
+            $query->where('name', 'Reviewer');
+        })->get();
+
+        return view('admin.partials.proposal', compact('researchSubmissions', 'reviewers'));
+    }
+    
+    public function fetchResearchSubmissions(Request $request)
+{
+    $perPage = $request->input('per_page', 10);
+    $search = $request->input('search', '');
+
+    $query = ResearchSubmission::query();
+
+    // Apply search filter if provided
+    if (!empty($search)) {
+        $query->where('article_title', 'LIKE', "%{$search}%")
+            ->orWhere('serial_number', 'LIKE', "%{$search}%")
+            ->orWhereHas('user', function ($q) use ($search) {
+                $q->where('reg_no', 'LIKE', "%{$search}%");
+            });
+    }
+
+    // Fetch paginated data
+    $researchSubmissions = $query->paginate($perPage);
+
+    return response()->json([
+        'data' => $researchSubmissions->items(),
+        'current_page' => $researchSubmissions->currentPage(),
+        'prev_page_url' => $researchSubmissions->previousPageUrl(),
+        'next_page_url' => $researchSubmissions->nextPageUrl(),
+        'total' => $researchSubmissions->total(),
+        'per_page' => $researchSubmissions->perPage(),
+    ]);
+}
+public function fetchAbstractSubmissions(Request $request)
+{
+    $perPage = $request->input('per_page', 10);
+    $search = $request->input('search', '');
+
+    $query = AbstractSubmission::query();
+
+    // Apply search filter if provided
+    if (!empty($search)) {
+        $query->where('title', 'LIKE', "%{$search}%")
+            ->orWhere('serial_number', 'LIKE', "%{$search}%")
+            ->orWhereHas('user', function ($q) use ($search) {
+                $q->where('reg_no', 'LIKE', "%{$search}%");
+            });
+    }
+
+    // Fetch paginated data
+    $submissions = $query->paginate($perPage);
+
+    return response()->json([
+        'data' => $submissions->items(),
+        'current_page' => $submissions->currentPage(),
+        'prev_page_url' => $submissions->previousPageUrl(),
+        'next_page_url' => $submissions->nextPageUrl(),
+        'total' => $submissions->total(),
+        'per_page' => $submissions->perPage(),
+    ]);
+}
+public function getReviewers()
+{
+    $reviewers = User::whereHas('roles', function ($query) {
+        $query->where('name', 'reviewer');
+    })->get();
+
+    // Transform the collection into an array with only the required fields
+    $reviewersArray = $reviewers->map(function ($reviewer) {
+        return [
+            'reg_no' => $reviewer->reg_no,
+            'first_name' => $reviewer->first_name,
+            'last_name' => $reviewer->last_name
+        ];
+    });
+
+    return response()->json($reviewersArray);
+}
     public function assignAbstractReviewer(Request $request, $serial_number)
     {
         $request->validate([
@@ -401,68 +492,174 @@ class AdminController extends Controller
     public function assignAbstractMassReviewer(Request $request)
     {
         $request->validate([
-            'submissions' => 'required|array|min:1',
-            'reviewer' => [
+            'submissions' => 'required|array|min:1', // Ensure at least one submission is selected
+            'reviewers' => 'required|array|min:2|max:3', // Require 2-3 reviewers
+            'reviewers.*' => [
                 'required',
-                'string',
-                'exists:users,reg_no',
+                'exists:users,reg_no', // Ensure reviewers exist
                 function ($attribute, $value, $fail) {
                     if (!User::where('reg_no', $value)
                         ->whereHas('roles', function ($query) {
-                            $query->where('name', 'reviewer');
+                            $query->where('name', 'Reviewer'); // Ensure the user has a "reviewer" role
                         })->exists()) {
                         $fail('The specified reviewer does not have the reviewer role.');
                     }
                 },
             ],
-        ]);
-
+        ],[
+                // Custom messages for validation errors (optional)
+                'submissions.required' => 'You must select at least one abstract.',
+                'submissions.min' => 'You must select at least one abstract.',
+                'reviewers.min' => 'You must select at least two reviewers.',
+                'reviewers.max' => 'You cannot select more than three reviewers.',
+        ] );
+    
         try {
             DB::transaction(function () use ($request) {
-                // Get submissions with their authors in a single query
+                // Get the selected submissions with their authors in a single query
                 $submissions = AbstractSubmission::whereIn('serial_number', $request->submissions)
-                    ->with('user:reg_no')  // Assuming there's a relationship with User model
+                    ->with('user:reg_no') // Assuming there's a relationship with the User model
                     ->get();
-
-                // Bulk update all submissions at once
-                AbstractSubmission::whereIn('serial_number', $request->submissions)
-                    ->update(['reviewer_reg_no' => $request->reviewer]);
-
-                // Get unique user reg numbers to notify
-                $uniqueUserRegNos = $submissions->pluck('user_reg_no')->unique();
-
-                // Prepare serial numbers string
+    
+                // Loop over each submission and assign reviewers
+                foreach ($submissions as $submission) {
+                    // Prepare reviewers data for syncing via the pivot table
+                    $reviewersData = [];
+                    foreach ($request->reviewers as $reviewerRegNo) {
+                        $reviewersData[$reviewerRegNo] = ['created_at' => now(), 'updated_at' => now()];
+                    }
+    
+                    // Use the 'reviewers' relationship to sync the reviewers
+                    $submission->reviewers()->syncWithoutDetaching($reviewersData);
+                }
+    
+                // Notify reviewers and authors
                 $serialNumbersList = $submissions->pluck('serial_number')->implode(', ');
-
-                // Dispatch notification job for reviewer
-                SendNotificationJob::dispatch($request->reviewer, [
-                    'message' => 'You have been assigned the following abstracts for review: ' . $serialNumbersList,
-                    'link' => '/some-link'
-                ]);
-
-                // Dispatch notification jobs for users in chunks to prevent memory issues
+    
+                // Notify reviewers
+                foreach ($request->reviewers as $reviewerRegNo) {
+                    SendNotificationJob::dispatch($reviewerRegNo, [
+                        'message' => 'You have been assigned the following abstracts for review: ' . $serialNumbersList,
+                        'link' => '/some-link'
+                    ]);
+                }
+    
+                // Notify authors
+                $uniqueUserRegNos = $submissions->pluck('user_reg_no')->unique();
                 foreach ($uniqueUserRegNos->chunk(100) as $userRegNoChunk) {
                     foreach ($userRegNoChunk as $userRegNo) {
                         SendNotificationJob::dispatch($userRegNo, [
-                            'message' => 'Abstract(s) ' . $serialNumbersList . ' are under review',
+                            'message' => 'Abstract(s) ' . $serialNumbersList . ' are under review.',
                             'link' => '/some-link'
                         ]);
                     }
                 }
             });
-
+            
             return response()->json([
                 'message' => 'Reviewers assigned successfully!',
                 'assigned_count' => count($request->submissions)
             ], 200);
-
+    
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'errors' => $e->errors(),
+                'message' => 'The given data was invalid.'
+            ], 422);
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'An error occurred while assigning reviewers.',
-                'details' => config('app.debug') ? $e->getMessage() : null
+                'message' => config('app.debug') ? $e->getMessage() : 'Server error'
             ], 500);
         }
     }
+
+    public function assignProposalMassReviewer(Request $request)
+    {
+        $request->validate([
+            'researchSubmissions' => 'required|array|min:1', // Ensure at least one submission is selected
+            'reviewers' => 'required|array|min:2|max:3', // Require 2-3 reviewers
+            'reviewers.*' => [
+                'required',
+                'exists:users,reg_no', // Ensure reviewers exist
+                function ($attribute, $value, $fail) {
+                    if (!User::where('reg_no', $value)
+                        ->whereHas('roles', function ($query) {
+                            $query->where('name', 'Reviewer'); // Ensure the user has a "reviewer" role
+                        })->exists()) {
+                        $fail('The specified reviewer does not have the reviewer role.');
+                    }
+                },
+            ],
+        ],[
+                // Custom messages for validation errors (optional)
+                'researchSubmissions.required' => 'You must select at least one abstract.',
+                'researchSubmissions.min' => 'You must select at least one abstract.',
+                'reviewers.min' => 'You must select at least two reviewers.',
+                'reviewers.max' => 'You cannot select more than three reviewers.',
+        ] );
+    
+        try {
+            DB::transaction(function () use ($request) {
+                // Get the selected submissions with their authors in a single query
+                $researchSubmissions = ResearchSubmission::whereIn('serial_number', $request->researchSubmissions)
+                    ->with('user:reg_no') // Assuming there's a relationship with the User model
+                    ->get();
+    
+                // Loop over each submission and assign reviewers
+                foreach ($researchSubmissions as $researchSubmission) {
+                    // Prepare reviewers data for syncing via the pivot table
+                    $reviewersData = [];
+                    foreach ($request->reviewers as $reviewerRegNo) {
+                        $reviewersData[$reviewerRegNo] = ['created_at' => now(), 'updated_at' => now()];
+                    }
+    
+                    // Use the 'reviewers' relationship to sync the reviewers
+                    $researchSubmission->reviewers()->syncWithoutDetaching($reviewersData);
+                }
+    
+                // Notify reviewers and authors
+                $serialNumbersList = $researchSubmission->pluck('serial_number')->implode(', ');
+    
+                // Notify reviewers
+                foreach ($request->reviewers as $reviewerRegNo) {
+                    SendNotificationJob::dispatch($reviewerRegNo, [
+                        'message' => 'You have been assigned the following abstracts for review: ' . $serialNumbersList,
+                        'link' => '/some-link'
+                    ]);
+                }
+    
+                // Notify authors
+                $uniqueUserRegNos = $researchSubmissions->pluck('user_reg_no')->unique();
+                foreach ($uniqueUserRegNos->chunk(100) as $userRegNoChunk) {
+                    foreach ($userRegNoChunk as $userRegNo) {
+                        SendNotificationJob::dispatch($userRegNo, [
+                            'message' => 'Abstract(s) ' . $serialNumbersList . ' are under review.',
+                            'link' => '/some-link'
+                        ]);
+                    }
+                }
+            });
+            
+            return response()->json([
+                'message' => 'Reviewers assigned successfully!',
+                'assigned_count' => count($request->researchSubmissions)
+            ], 200);
+    
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'errors' => $e->errors(),
+                'message' => 'The given data was invalid.'
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'An error occurred while assigning reviewers.',
+                'message' => config('app.debug') ? $e->getMessage() : 'Server error'
+            ], 500);
+        }
+    }
+
+
 
 
     public function assignProposalReviewer(Request $request, $serial_number)
@@ -493,40 +690,7 @@ class AdminController extends Controller
 
         return redirect()->back()->with('success', 'Reviewer assigned successfully.');
     }
-    public function assignProposalMassReviewer(Request $request)
-    {
-        $request->validate([
-            'submissions' => 'required|array|min:1',
-            'reviewer' => [
-                'required',
-                'string',
-                'exists:users,reg_no', // Ensure the reviewer exists in the users table
-                function ($attribute, $value, $fail) {
-                    $reviewer = User::where('reg_no', $value)
-                        ->whereHas('roles', function ($query) {
-                            $query->where('name', 'reviewer');
-                        })->first();
-
-                    if (!$reviewer) {
-                        $fail('The specified reviewer does not have the reviewer role.');
-                    }
-                },
-            ],
-        ]);
-
-        try {
-            DB::transaction(function () use ($request) {
-                foreach ($request->submissions as $serialNumber) {
-                    ResearchSubmission::where('serial_number', $serialNumber)
-                        ->update(['reviewer_reg_no' => $request->reviewer]);
-                }
-            });
-
-            return response()->json(['message' => 'Reviewers assigned successfully!'], 200);
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'An error occurred while assigning reviewers.'], 500);
-        }
-    }
+    
     public function removeProposalReviewer(Request $request, $serial_number)
     {
         // Find the abstract submission by serial number

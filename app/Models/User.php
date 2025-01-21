@@ -85,4 +85,15 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->notifications()->whereNull('read_at');
     }
+    public function assignedAbstracts()
+    {
+        return $this->belongsToMany(
+            AbstractSubmission::class,
+            'abstract_submission_reviewers', // Pivot table name
+            'reviewer_id',                  // Foreign key on the pivot table
+            'abstract_serial_number',       // Foreign key on the pivot table
+            'reg_no',                       // Local key on the users table
+            'serial_number'                 // Local key on the abstract_submissions table
+        );
+    }
 }

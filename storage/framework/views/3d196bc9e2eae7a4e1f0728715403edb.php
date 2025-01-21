@@ -105,12 +105,15 @@
                                 <?php $__currentLoopData = ['first_name' => 'First Name', 'middle_name' => 'Middle Name', 'surname' => 'Surname']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $field => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                     <div class="form-group">
                                         <label class="block text-sm font-medium text-gray-700 mb-1">
-                                            <?php echo e($label); ?> <span class="text-red-500">*</span>
+                                            <?php echo e($label); ?> 
+                                            <?php if($field !== 'middle_name'): ?> 
+                                                <span class="text-red-500">*</span>
+                                            <?php endif; ?>
                                         </label>
                                         <input type="text" 
-                                               name="authors[<?php echo e($index); ?>][<?php echo e($field); ?>]" 
-                                               value="<?php echo e(old("authors.$index.$field", $author[$field] ?? '')); ?>"
-                                               class="form-input block w-full rounded-md border border-gray-800 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 transition px-4 py-3 text-lg <?php $__errorArgs = ["authors.$index.$field"];
+                                            name="authors[<?php echo e($index); ?>][<?php echo e($field); ?>]" 
+                                            value="<?php echo e(old("authors.$index.$field", $author[$field] ?? '')); ?>"
+                                            class="form-input block w-full rounded-md border border-gray-800 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 transition px-4 py-3 text-lg <?php $__errorArgs = ["authors.$index.$field"];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -118,8 +121,8 @@ $message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php unset($messag
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>"
-                                               placeholder="Enter <?php echo e(strtolower($label)); ?>"
-                                               required>
+                                            placeholder="Enter <?php echo e(strtolower($label)); ?>"
+                                            <?php if($field !== 'middle_name'): ?> required <?php endif; ?>>
                                         <?php $__errorArgs = ["authors.$index.$field"];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -327,7 +330,7 @@ unset($__errorArgs, $__bag); ?>
         
         const colors = {
             error: 'bg-red-500',
-            warning: 'bg-yellow-500',
+            warning: 'bg-yellow-800',
             success: 'bg-green-500',
             info: 'bg-blue-500'
         };

@@ -78,7 +78,7 @@
                             
                             <div class="flex items-center space-x-4">
                                 <label class="flex items-center space-x-2 text-sm text-gray-600 hover:text-gray-800 cursor-pointer">
-                                    <input type="hidden" name="authors[0][is_correspondent]" value="0">
+                                    <input type="hidden" name="authors[{{ $index }}][is_correspondent]" value="0">
                                     <input type="checkbox" 
                                            name="authors[{{ $index }}][is_correspondent]" 
                                            value="1" 
@@ -100,22 +100,25 @@
                         <div class="grid md:grid-cols-2 gap-6">
                             <!-- Left Column -->
                             <div class="space-y-5">
-                                @foreach(['first_name' => 'First Name', 'middle_name' => 'Middle Name', 'surname' => 'Surname'] as $field => $label)
-                                    <div class="form-group">
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">
-                                            {{ $label }} <span class="text-red-500">*</span>
-                                        </label>
-                                        <input type="text" 
-                                               name="authors[{{ $index }}][{{ $field }}]" 
-                                               value="{{ old("authors.$index.$field", $author[$field] ?? '') }}"
-                                               class="form-input block w-full rounded-md border border-gray-800 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 transition px-4 py-3 text-lg @error("authors.$index.$field") border-red-500 @enderror"
-                                               placeholder="Enter {{ strtolower($label) }}"
-                                               required>
-                                        @error("authors.$index.$field")
-                                            <div class="text-red-500 text-xs mt-1">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                @endforeach
+                            @foreach(['first_name' => 'First Name', 'middle_name' => 'Middle Name', 'surname' => 'Surname'] as $field => $label)
+                                <div class="form-group">
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                                        {{ $label }} 
+                                        @if($field !== 'middle_name') 
+                                            <span class="text-red-500">*</span>
+                                        @endif
+                                    </label>
+                                    <input type="text" 
+                                        name="authors[{{ $index }}][{{ $field }}]" 
+                                        value="{{ old("authors.$index.$field", $author[$field] ?? '') }}"
+                                        class="form-input block w-full rounded-md border border-gray-800 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 transition px-4 py-3 text-lg @error("authors.$index.$field") border-red-500 @enderror"
+                                        placeholder="Enter {{ strtolower($label) }}"
+                                        @if($field !== 'middle_name') required @endif>
+                                    @error("authors.$index.$field")
+                                        <div class="text-red-500 text-xs mt-1">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            @endforeach
                             </div>
 
                             <!-- Right Column -->

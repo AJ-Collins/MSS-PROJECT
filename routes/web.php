@@ -77,7 +77,14 @@ Route::middleware(['preventBackHistory', 'auth'])->group(function () {
 
         Route::get('/submissions', [AdminController::class, 'submissions'])->name('admin.submissions');
         Route::get('/reports', [AdminController::class, 'reports'])->name('admin.reports');
-        Route::get('/documents', [AdminController::class, 'documents'])->name('admin.documents');
+        Route::get('/abstracts', [AdminController::class, 'abstracts'])->name('admin.abstracts');
+
+
+        Route::get('/proposals', [AdminController::class, 'proposals'])->name('admin.proposals');
+        Route::get('/api/research-submissions', [AdminController::class, 'fetchResearchSubmissions']);
+        Route::get('/api/abstract-submissions', [AdminController::class, 'fetchAbstractSubmissions']);
+        Route::get('/api/reviewers', [AdminController::class, 'getReviewers']);
+
         Route::get('/profile', [AdminController::class, 'profile'])->name('admin.profile');
         Route::get('/settings', [AdminController::class, 'settings'])->name('admin.settings');
         Route::post('/accept-abstract', [AdminController::class, 'acceptAbstract'])->name('accept.abstract');
