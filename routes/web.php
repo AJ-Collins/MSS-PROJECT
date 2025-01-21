@@ -109,6 +109,9 @@ Route::middleware(['preventBackHistory', 'auth'])->group(function () {
         Route::post('/reject-proposal-revision', [AdminController::class, 'rejectProposalRevision'])->name('reject.proposal.revision');
         Route::post('/reject/proposal-assessment/{serial_number}', [AdminController::class, 'rejectProposalAssessment'])->name('reject.proposal.assessment');
         Route::post('/reviewer-proposal-revision/{serial_number}', [AdminController::class, 'returnProposalRevision'])->name('return.reviewer.proposal.revision');
+
+        Route::get('/abstract/details/{serial_number}', [AdminController::class, 'abstractDetails'])->name('admin.abstract.details');
+        Route::get('/proposal/details/{serial_number}', [AdminController::class, 'proposalDetails'])->name('admin.proposal.details');
     });
 
     //Reviewer routes

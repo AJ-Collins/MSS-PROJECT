@@ -369,7 +369,6 @@ function fetchReviewers() {
     })
     .then(response => response.json())
     .then(data => {
-        console.log('Reviewers:', data); // Log the reviewers data
         reviewersData = data; // Store reviewers data in reviewersData variable
         populateReviewerDropdown(data); // Pass the data to the dropdown population function
     })
@@ -444,13 +443,16 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
             renderProposals(data);
         } catch (error) {
-            console.error('Error fetching proposals:', error);
             proposalsTable.innerHTML = '<p class="text-red-500 text-center py-4">Failed to load data. Please try again later.</p>';
         } finally {
             setLoading(false); // Hide loading spinner
         }
     }
-
+     // Define handleRowClick first
+     window.handleRowClick = function(event, serial_number) {
+        event.preventDefault();
+        window.location.href = `/admin/proposal/details/${serial_number}`;
+    };
     // Function to render proposals
     function renderProposals(data) {
         // Render table rows
@@ -460,7 +462,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }).join('');
             return`
             <tr class="hover:bg-gray-50">
-                <td class="px-6 py-4 whitespace-nowrap">
+                <td class="px-6 py-4 whitespace-nowrap" onclick="event.stopPropagation()">
                     <input type="checkbox" class="abstract-submission-checkbox w-4 h-4 text-blue-600 border-gray-300 rounded" value="${researchSubmission.serial_number}">
                 </td>
                 <td class="px-6 py-4">
@@ -485,17 +487,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 </td>
                 <td class="px-6 py-4 text-center">
                     <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                        researchSubmission.final_status === 'accepted' ? 'bg-green-100 text-green-800' :
-                        researchSubmission.final_status === 'rejected' ? 'bg-red-100 text-red-800' :
-                        'bg-yellow-100 text-yellow-800'
-                    }">${researchSubmission.final_status}</span>
+                        researchSubmission.final_status === 'accepted' 
+                            ? 'bg-green-200 text-green-800' 
+                            : researchSubmission.final_status === 'rejected' 
+                            ? 'bg-red-200 text-red-800' 
+                            : researchSubmission.final_status === 'under_review' 
+                            ? 'bg-blue-100 text-blue-800' 
+                            : researchSubmission.final_status === 'revision_required' 
+                            ? 'bg-orange-100 text-orange-800' 
+                            : 'bg-yellow-100 text-yellow-800'
+                    }">
+                        ${researchSubmission.final_status
+                            .replace(/_/g, ' ') // Replace underscores with spaces
+                            .replace(/\b\w/g, char => char.toUpperCase())} <!-- Capitalize first letter of each word -->
+                    </span>
                 </td>
-                <td class="px-6 py-4 text-center">
-                    <a href="" class="inline-block px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
-                        Download
-                    </a>
-                    <a href="/storage/${researchSubmission.pdf_document_path}" target="_blank" class="inline-block px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50">
-                        View
+                <td class="px-6 py-4 text-center" onclick="event.stopPropagation()">
+                    <a href="javascript:void(0)" onclick="handleRowClick(event, '${researchSubmission.serial_number}')"
+                    class="text-blue-600 hover:text-blue-800">
+                        Details
                     </a>
                 </td>
             </tr>
@@ -512,7 +522,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Submitted By</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Score</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Avg. Score</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Reviewers</th>
                         <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                         <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Documents</th>

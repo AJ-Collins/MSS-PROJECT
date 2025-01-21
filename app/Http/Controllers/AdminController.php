@@ -364,8 +364,28 @@ public function fetchAbstractSubmissions(Request $request)
     $search = $request->input('search', '');
 
     $query = AbstractSubmission::query()
-        ->with('reviewers');
-
+        ->with('reviewers')
+        ->leftJoin('research_assessments', 'abstract_submissions.serial_number', '=', 'research_assessments.abstract_submission_id')
+        ->select(
+            'abstract_submissions.serial_number',
+            'abstract_submissions.title',
+            'abstract_submissions.created_at',
+            'abstract_submissions.updated_at',
+            'abstract_submissions.final_status', 
+            'abstract_submissions.user_reg_no',
+            // Add any other specific columns you need from abstract_submissions
+            DB::raw('AVG(research_assessments.total_score) as average_score'),
+            DB::raw('COUNT(research_assessments.abstract_submission_id) as total_reviews')
+        )
+        ->groupBy(
+            'abstract_submissions.serial_number',
+            'abstract_submissions.title',
+            'abstract_submissions.created_at',
+            'abstract_submissions.updated_at',
+            'abstract_submissions.final_status', 
+            'abstract_submissions.user_reg_no', 
+            // Add the same columns here as in the select
+        );
     // Apply search filter if provided
     if (!empty($search)) {
         $query->where('title', 'LIKE', "%{$search}%")
@@ -1038,5 +1058,30 @@ public function getReviewers()
                 'message' => 'Failed to request revision. Please try again later.',
             ], 500);
         }
+    }
+
+    public function abstractDetails($serial_number)
+{
+    // Find the submission with related reviewers
+    $submission = AbstractSubmission::with(['reviewers' => function ($query) {
+        $query->select('reg_no', 'first_name', 'last_name'); // Select necessary user fields
+    }])
+    ->where('serial_number', $serial_number)
+    ->firstOrFail();
+
+    // Pass the submission to the view
+    return view('admin.partials.abstract_details', compact('submission'));
+}
+    public function proposalDetails($serial_number)
+    {
+        // Find the submission with related reviewers
+        $researchSubmission = ResearchSubmission::with(['reviewers' => function ($query) {
+            $query->select('reg_no', 'first_name', 'last_name'); // Select necessary user fields
+        }])
+        ->where('serial_number', $serial_number)
+        ->firstOrFail();
+
+        // Pass the submission to the view
+        return view('admin.partials.proposal_details', compact('researchSubmission'));
     }
 }

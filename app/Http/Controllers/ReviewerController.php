@@ -391,10 +391,6 @@ class ReviewerController extends Controller
             ])
         );
 
-        AbstractSubmission::where('serial_number', $serial_number)->update([
-            'score' => $validated['total_score']
-        ]);
-
         return response()->json([
             'success' => true,
             'message' => 'Abstract assessment submitted successfully',
