@@ -27,6 +27,7 @@
                 <p class="font-medium"><?php echo e(session('success')); ?></p>
             </div>
         <?php endif; ?>
+        
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
                 <tr>
@@ -160,6 +161,7 @@
                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </tbody>
         </table>
+        
         <!-- Pagination Container -->
         <div class="px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
                         <div class="flex-1 flex justify-between sm:hidden">

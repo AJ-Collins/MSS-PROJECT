@@ -9,6 +9,7 @@ use App\Models\AbstractSubmission;
 use App\Models\ResearchSubmission;
 use App\Models\ResearchAssessment;
 use App\Models\ProposalAssessment;
+use App\Models\SubmissionType;
 use Illuminate\Support\Facades\DB;
 use App\Models\Role;
 use Dompdf\Dompdf;
@@ -244,7 +245,7 @@ class AdminController extends Controller
 
     }
 
-    public function destroy(User $user)
+    public function deleteUser(User $user)
     {
         $user->delete();
 
@@ -1083,5 +1084,67 @@ public function getReviewers()
 
         // Pass the submission to the view
         return view('admin.partials.proposal_details', compact('researchSubmission'));
+    }
+
+    public function index()
+    {
+        $submissionTypes = SubmissionType::all();
+        return view('admin.partials.submissionsType', compact('submissionTypes'));
+    }
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'type' => 'required|in:conference,research',
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'status' => 'required|in:active,inactive',
+            'deadline' => 'required|date',
+            'format' => 'required|string|max:255',
+            'guidelines' => 'nullable|string',
+        ]);
+    
+        // Remove the dd() which was interrupting the process
+        SubmissionType::create($validated);
+    
+        return redirect()->route('submission-types.index')
+            ->with('success', 'Submission type created successfully.');
+    }
+
+    public function edit($id)
+    {
+        $submissionType = SubmissionType::findOrFail($id);
+        return response()->json($submissionType);
+    }
+
+    public function update(Request $request, SubmissionType $submissionType)
+    {
+        $validated = $request->validate([
+            'type' => 'required|in:conference,research',
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'status' => 'required|in:active,inactive',
+            'deadline' => 'required|date',
+            'format' => 'required|string|max:255',
+            'submission_window' => 'required|string|max:255',
+            'guidelines' => 'nullable|string',
+        ]);
+
+        $submissionType->update($validated);
+
+        return redirect()->route('submission-types.index')
+            ->with('success', 'Submission type updated successfully.');
+    }
+
+    public function destroy(SubmissionType $submissionType)
+    {
+        try {
+            $submissionType->delete();
+    
+            return redirect()->route('submission-types.index')
+                ->with('success', 'Submission type deleted successfully.');
+        } catch (\Exception $e) {
+            return redirect()->route('submission-types.index')
+                ->with('error', 'Failed to delete submission type: ' . $e->getMessage());
+        }
     }
 }

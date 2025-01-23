@@ -339,14 +339,13 @@
                         <!-- Footer - Fixed -->
                         <div class="flex-none bg-gray-50 px-6 py-4 border-t border-gray-200 rounded-b-lg">
                             <div class="flex justify-end space-x-2">
-                            <?php $__currentLoopData = $submissions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $submission): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                <a href="<?php echo e(route('reviewer.abstract.accept', ['serial_number' => $submission->serial_number])); ?>">
+                                <a href="<?php echo e(route('reviewer.abstract.accept', ['serial_number' => $submission->serial_number])); ?>"
+                                class="px-2 py-1 text-xs font-medium text-white bg-green-600 hover:bg-blue-700 rounded-full">
                                     Accept
                                 </a>
-                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                <?php $__currentLoopData = $submissions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $submission): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                    <a href="<?php echo e(route('reviewer.abstract.reject', ['serial_number' => $submission->serial_number])); ?>">Reject</a>
-                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                    <a href="<?php echo e(route('reviewer.abstract.reject', ['serial_number' => $submission->serial_number])); ?>"
+                                    class="px-2 py-1 text-xs font-medium text-white bg-red-600 hover:bg-blue-700 rounded-full">Reject</a>
+                                
                             </div>
                         </div>
                     </div>
@@ -596,12 +595,13 @@
                         <!-- Footer - Fixed -->
                         <div class="flex-none bg-gray-50 px-6 py-4 border-t border-gray-200 rounded-b-lg">
                             <div class="flex justify-end space-x-2">
-                            <?php $__currentLoopData = $researchSubmissions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $researchSubmission): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                <a href="<?php echo e(route('reviewer.proposal.accept', ['serial_number' => $researchSubmission->serial_number])); ?>">
+                                <a href="<?php echo e(route('reviewer.proposal.accept', ['serial_number' => $researchSubmission->serial_number])); ?>"
+                                class="px-2 py-1 text-xs font-medium text-white bg-green-600 hover:bg-blue-700 rounded-full">
                                     Accept
                                 </a>
-                                    <a href="<?php echo e(route('reviewer.abstract.reject', ['serial_number' => $researchSubmission->serial_number])); ?>">Reject</a>
-                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                    <a href="<?php echo e(route('reviewer.abstract.reject', ['serial_number' => $researchSubmission->serial_number])); ?>"
+                                    class="px-2 py-1 text-xs font-medium text-white bg-red-600 hover:bg-blue-700 rounded-full">Reject</a>
+                                
                             </div>
                         </div>
                     </div>

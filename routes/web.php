@@ -13,6 +13,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\AbstractsController;
 use App\Http\Controllers\ProposalController;
+use App\Http\Controllers\RoleSwitcher;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Storage;
@@ -47,7 +48,11 @@ Route::get('/', function () {
 });
 
 Route::middleware(['preventBackHistory', 'auth'])->group(function () {
-
+    
+    //Role switching
+    Route::post('/switch-role', [RoleSwitcher::class, 'switchRole'])
+        ->name('switch.role');
+    
      //Notifications
      Route::get('/notifications', [NotificationController::class, 'getNotifications']);
      Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
@@ -62,7 +67,7 @@ Route::middleware(['preventBackHistory', 'auth'])->group(function () {
         Route::delete('/delete/assessment/{serial_number}', [AdminController::class, 'deleteAssessment'])->name('admin.assessmentDelete');
 
         Route::post('/users/create', [AdminController::class, 'createUser'])->name('admin.users.create');
-        Route::delete('/delete/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+        Route::delete('/delete/users/{user}', [UserController::class, 'deleteUser'])->name('users.destroy');
         Route::post('/users/{reg_no}/update', [AdminController::class, 'updateUser'])->name('admin.users.update');
         Route::post('/users/{reg_no}/updateRole', [AdminController::class, 'updateRole'])->name('admin.users.updateRole');
         Route::post('/users/{user}/toggle-status', [AdminController::class, 'toggleStatus'])->name('users.toggle-status');
@@ -112,6 +117,13 @@ Route::middleware(['preventBackHistory', 'auth'])->group(function () {
 
         Route::get('/abstract/details/{serial_number}', [AdminController::class, 'abstractDetails'])->name('admin.abstract.details');
         Route::get('/proposal/details/{serial_number}', [AdminController::class, 'proposalDetails'])->name('admin.proposal.details');
+
+        Route::get('/submission-types', [AdminController::class, 'index'])->name('submission-types.index');
+        Route::post('/submission-types/store', [AdminController::class, 'store'])->name('admin.submission-types.store');
+        Route::delete('/submission-types/{submissionType}', [AdminController::class, 'destroy'])->name('admin.submission-types.destroy');
+        Route::get('/submission-types/{id}/edit', [AdminController::class, 'edit'])->name('admin.submission-types.edit');
+        Route::put('/submission-types/{submissionType}', [AdminController::class, 'update'])
+            ->name('admin.submission-types.update');
     });
 
     //Reviewer routes

@@ -210,4 +210,26 @@ class User extends Authenticatable implements MustVerifyEmail
             ->withTimestamps();
     }
 
+    public function switchRole(string $roleName)
+    {
+        // Check if the user already has this role
+        if (!$this->hasRole($roleName)) {
+            // If not, attach the role
+            $role = Role::where('name', $roleName)->firstOrFail();
+            $this->roles()->attach($role);
+        }
+        
+        // Optionally, set a session variable to track the current active role
+        session(['current_role' => $roleName]);
+        
+        return true;
+    }
+
+    public function getCurrentRole()
+    {
+        // Return the current active role from session, 
+        // or default to the first role if not set
+        return session('current_role') ?? $this->roles->first()->name;
+    }
+
 }

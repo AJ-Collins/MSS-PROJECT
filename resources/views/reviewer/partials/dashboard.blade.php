@@ -339,14 +339,13 @@
                         <!-- Footer - Fixed -->
                         <div class="flex-none bg-gray-50 px-6 py-4 border-t border-gray-200 rounded-b-lg">
                             <div class="flex justify-end space-x-2">
-                            @foreach($submissions as $submission)
-                                <a href="{{ route('reviewer.abstract.accept', ['serial_number' => $submission->serial_number]) }}">
+                                <a href="{{ route('reviewer.abstract.accept', ['serial_number' => $submission->serial_number]) }}"
+                                class="px-2 py-1 text-xs font-medium text-white bg-green-600 hover:bg-blue-700 rounded-full">
                                     Accept
                                 </a>
-                                @endforeach
-                                @foreach($submissions as $submission)
-                                    <a href="{{ route('reviewer.abstract.reject', ['serial_number' => $submission->serial_number]) }}">Reject</a>
-                                @endforeach
+                                    <a href="{{ route('reviewer.abstract.reject', ['serial_number' => $submission->serial_number]) }}"
+                                    class="px-2 py-1 text-xs font-medium text-white bg-red-600 hover:bg-blue-700 rounded-full">Reject</a>
+                                
                             </div>
                         </div>
                     </div>
@@ -593,12 +592,13 @@
                         <!-- Footer - Fixed -->
                         <div class="flex-none bg-gray-50 px-6 py-4 border-t border-gray-200 rounded-b-lg">
                             <div class="flex justify-end space-x-2">
-                            @foreach($researchSubmissions as $researchSubmission)
-                                <a href="{{ route('reviewer.proposal.accept', ['serial_number' => $researchSubmission->serial_number]) }}">
+                                <a href="{{ route('reviewer.proposal.accept', ['serial_number' => $researchSubmission->serial_number]) }}"
+                                class="px-2 py-1 text-xs font-medium text-white bg-green-600 hover:bg-blue-700 rounded-full">
                                     Accept
                                 </a>
-                                    <a href="{{ route('reviewer.abstract.reject', ['serial_number' => $researchSubmission->serial_number]) }}">Reject</a>
-                                @endforeach
+                                    <a href="{{ route('reviewer.abstract.reject', ['serial_number' => $researchSubmission->serial_number]) }}"
+                                    class="px-2 py-1 text-xs font-medium text-white bg-red-600 hover:bg-blue-700 rounded-full">Reject</a>
+                                
                             </div>
                         </div>
                     </div>

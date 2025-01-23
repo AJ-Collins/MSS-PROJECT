@@ -4,22 +4,10 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
-use App\Models\Role;
 use Illuminate\Http\Request;
 
 class LoginController extends Controller
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Login Controller
-    |--------------------------------------------------------------------------
-    |
-    | This controller handles authenticating users for the application and
-    | redirecting them to your home screen. The controller uses a trait
-    | to conveniently provide its functionality to your applications.
-    |
-    */
-
     use AuthenticatesUsers;
 
     public function username()
@@ -27,17 +15,12 @@ class LoginController extends Controller
         return 'reg_no';
     }
 
-
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
     public function __construct()
     {
         $this->middleware('guest')->except('logout');
         $this->middleware('auth')->only('logout');
     }
+
     /**
      * The user has been authenticated.
      *
@@ -47,23 +30,33 @@ class LoginController extends Controller
      */
     protected function authenticated(Request $request, $user)
     {
+        // Load the user's roles and set the first role as the default
         $user->load('roles');
         $roles = $user->roles->pluck('name');
 
-        if ($roles->contains('admin')) {
-            return redirect()->route('admin.dashboard');
-        } elseif ($roles->contains('reviewer')) {
-            return redirect()->route('reviewer.dashboard');
-        } elseif ($roles->contains('user')) {
-            return redirect()->route('user.dashboard');
-        }
+        // Set the default role in the session
+        session(['current_role' => $roles->first()]);
 
-        return redirect()->route('login'); // Default fallback
+        // Redirect based on the user's role
+        $currentRole = $user->getCurrentRole();
+
+        return match($currentRole) {
+            'admin' => redirect()->route('admin.dashboard'),
+            'reviewer' => redirect()->route('reviewer.dashboard'),
+            'user' => redirect()->route('user.dashboard'),
+            default => redirect()->route('login'),
+        };
     }
 
+    /**
+     * Redirect the user after login.
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function redirectAfterLogin()
     {
-        $lastVisitedUrl = session('last_visited_url', route('login')); // Default to home if no session data
+        // If last visited URL is available in the session, use it, otherwise default to the dashboard
+        $lastVisitedUrl = session('last_visited_url', route('dashboard')); 
         return redirect()->to($lastVisitedUrl);
     }
 }

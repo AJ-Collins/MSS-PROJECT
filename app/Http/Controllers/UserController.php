@@ -7,6 +7,7 @@ use App\Models\AbstractSubmission;
 use App\Models\ResearchSubmission;
 use App\Models\AbstractDraft;
 use App\Traits\DynamicTitleTrait;
+use App\Models\SubmissionType;
 
 class UserController extends Controller
 {
@@ -99,7 +100,8 @@ class UserController extends Controller
     
     public function submit()
     {
-        return view('user.partials.submit');
+        $submissionTypes = SubmissionType::all();
+        return view('user.partials.submit', compact('submissionTypes'));
     }
     public function step2()
     {

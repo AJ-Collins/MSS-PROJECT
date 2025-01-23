@@ -79,10 +79,10 @@ class ReviewerController extends Controller
         $success = auth()->user()->acceptAbstractAssignment($serial_number);
         
         if ($success) {
-            return response()->json(['message' => 'Assignment accepted successfully']);
+            return redirect()->back()->with(['message' => 'Assignment accepted successfully']);
         }
         
-        return response()->json(['message' => 'Unable to accept assignment'], 404);
+        return redirect()->back()->with(['message' => 'Unable to accept assignment'], 404);
     }
 
     public function declineAssignment(Request $request, string $serial_number)
@@ -102,10 +102,10 @@ class ReviewerController extends Controller
         $success = auth()->user()->acceptProposalAssignment($serial_number);
         
         if ($success) {
-            return response()->json(['message' => 'Assignment accepted successfully']);
+            return redirect()->back()->with('success', 'Assignment accepted successfully');
         }
         
-        return response()->json(['message' => 'Unable to accept assignment'], 404);
+        return redirect()->back()->with('error', 'Unable to accept assignment');
     }
     public function rejectProposal(Request $request, string $serial_number)
     {
