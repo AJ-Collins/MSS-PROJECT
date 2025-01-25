@@ -166,8 +166,8 @@ class AbstractSubmissionController extends Controller
         $lockKey = 'submission_lock_' . auth()->id();
 
         // Prevent duplicate submissions
-        if (!Cache::add($lockKey, true, 60)) {
-            return response()->json(['error' => 'Submission already in progress'], 429);
+        if (!Cache::add($lockKey, true, 10)) {
+            return response()->json(['error' => 'Submission already in progress. Please wait...'], 429);
         }
 
         DB::beginTransaction();

@@ -88,39 +88,58 @@
     </div>
 
     <!-- Document Preview -->
-    <div class="bg-white shadow overflow-hidden">
-        <div class="px-4 py-5 sm:px-6">
-            <h3 class="text-lg leading-6 font-medium text-gray-900">Document Preview</h3>
-            <div class="mt-4 flex space-x-4">
-                <?php if( $researchSubmission->pdf_document_path ): ?>
-                <a href="<?php echo e(asset('storage/' . $researchSubmission->pdf_document_path)); ?>" target="_blank" 
-                   class="flex items-center text-blue-600 hover:text-blue-800">
-                    <svg class="mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                    </svg>
-                    View Article
-                </a>
+    <div class="bg-white shadow-md overflow-hidden relative">
+    <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
+        <h3 class="text-lg leading-6 font-semibold text-gray-900">Document Preview</h3>
+    </div>
+    
+    <div class="p-4 sm:p-6">
+        <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 items-start">
+            <div class="flex-grow space-y-3">
+                <?php if($researchSubmission->pdf_document_path): ?>
+                    <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
+                        <a href="<?php echo e(asset('storage/' . $researchSubmission->pdf_document_path)); ?>" target="_blank" 
+                           class="flex items-center text-blue-600 hover:text-blue-800 w-full sm:w-auto">
+                            <svg class="mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                            <span class="whitespace-nowrap">View Article</span>
+                        </a>
+                        <a href="<?php echo e(route('proposal.abstract.download', ['serial_number' => $researchSubmission->serial_number])); ?>" 
+                           class="flex items-center text-blue-600 hover:text-blue-800 w-full sm:w-auto">
+                            <svg class="mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                            </svg>
+                            <span class="whitespace-nowrap">Download (PDF)</span>
+                        </a>
+                        <a href="<?php echo e(route('proposal.abstractWord.download', ['serial_number' => $researchSubmission->serial_number])); ?>" 
+                           class="flex items-center text-blue-600 hover:text-blue-800 w-full sm:w-auto">
+                            <svg class="mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                            </svg>
+                            <span class="whitespace-nowrap">Download (Word)</span>
+                        </a>
+                    </div>
                 <?php else: ?>
-                    <p class="text-gray-500">Article not available.</p>
+                    <p class="text-gray-500 italic">No document available for preview.</p>
                 <?php endif; ?>
-                <a href="<?php echo e(route('proposal.abstract.download', ['serial_number' => $researchSubmission->serial_number])); ?>" 
-                   class="flex items-center text-blue-600 hover:text-blue-800">
-                    <svg class="mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                    </svg>
-                    Download(pdf)
-                </a>
-                <a href="<?php echo e(route('proposal.abstractWord.download', ['serial_number' => $researchSubmission->serial_number])); ?>" 
-                   class="flex items-center text-blue-600 hover:text-blue-800">
-                    <svg class="mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                    </svg>
-                    Download(word)
-                </a>
+            </div>
+
+            <div class="w-full sm:w-auto">
+                <form action="<?php echo e(route('approve.proposal', ['serial_number' => $researchSubmission->serial_number])); ?>" method="POST" class="w-full sm:w-auto">
+                    <?php echo csrf_field(); ?>
+                    <button type="submit" class="w-full sm:w-auto px-4 py-2 rounded-md bg-green-500 text-white font-semibold hover:bg-green-600 transition-colors flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                        </svg>
+                        Approve
+                    </button>
+                </form>
             </div>
         </div>
     </div>
+</div>
 </div>
 
 <script>

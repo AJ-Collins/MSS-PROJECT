@@ -11,7 +11,7 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <!-- Left Column: Profile Photo Section -->
-            <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+            <div class="bg-white shadow-sm overflow-hidden">
                 <div class="p-6">
                     <div class="flex flex-col items-center">
                         <div class="relative group">
@@ -40,7 +40,7 @@
 
             <!-- Right Column: User Details Section -->
             <div class="lg:col-span-2">
-                <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                <div class="bg-white shadow-sm overflow-hidden">
                     <div class="p-6">
                         <h2 class="text-lg font-medium text-gray-900">Personal Information</h2>
                         
@@ -55,7 +55,7 @@
                             </div>
 
                             <div class="pt-6">
-                                <dt class="text-sm font-medium text-gray-500">Middle Name</dt>
+                                <dt class="text-sm font-medium text-gray-500">Last Name</dt>
                                 <dd class="mt-1 text-sm text-gray-900"><?php echo e($user->last_name); ?></dd>
                             </div>
 

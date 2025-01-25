@@ -444,7 +444,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             const data = await response.json();
             console.log('Received data:', data);
-            renderProposals(data);
+            renderAbstracts(data);
         } catch (error) {
             console.error('Error fetching proposals:', error);
             proposalsTable.innerHTML = '<p class="text-red-500 text-center py-4">Failed to load data. Please try again later.</p>';
@@ -459,7 +459,7 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = `/admin/abstract/details/${serial_number}`;
     };
     // Function to render proposals
-    function renderProposals(data) {
+    function renderAbstracts(data) {
     const rows = data.data.map(submission => {
         const pdfPath = submission.pdf_document_path || null;
         
@@ -470,7 +470,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ` : '';
         
         const reviewersList = submission.reviewers.map(reviewer => {
-            return `<li class="text-sm text-gray-700">${reviewer.first_name} ${reviewer.last_name}</li>`;
+            return `<li class="text-sm text-gray-700">${reviewer.first_name}</li>`;
         }).join('');
         const avgScore = submission.average_score ? parseFloat(submission.average_score).toFixed(1) : '<span class="text-gray-500">Not reviewed</span>';
         return `

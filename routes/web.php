@@ -96,7 +96,7 @@ Route::middleware(['preventBackHistory', 'auth'])->group(function () {
         Route::post('/reject-abstract', [AdminController::class, 'rejectAbstract'])->name('reject.abstract');
         Route::post('/accept-proposal', [AdminController::class, 'acceptProposal'])->name('accept.proposal');
         Route::post('/reject-proposal', [AdminController::class, 'rejectProposal'])->name('reject.proposal');
-        Route::post('/request-article-upload/{serial_number}', [AdminController::class, 'requestArticleUpload'])->name('request.article.upload');
+        Route::get('/request-article-upload/{serial_number}', [AdminController::class, 'requestArticleUpload'])->name('request.article.upload');
         Route::post('/approve-abstract', [AdminController::class, 'approveAbstract'])->name('approve.abstract');
         Route::post('/unapprove-abstract', [AdminController::class, 'unapproveAbstract'])->name('unapprove.abstract');
         Route::post('/approve-proposal', [AdminController::class, 'approveProposal'])->name('approve.proposal');

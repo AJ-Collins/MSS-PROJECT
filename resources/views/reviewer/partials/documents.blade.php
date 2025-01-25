@@ -129,7 +129,7 @@
                     @empty
                         <tr>
                             <td colspan="7" class="px-4 py-2 text-center text-sm text-gray-600">
-                                No articles assigned yet.
+                                No documents assigned to review yet.
                             </td>
                         </tr>
                     @endforelse
@@ -229,7 +229,7 @@
 
         </div>
         <!-- Research Proposals Tab (Hidden by default) -->
-        <div x-show="activeTab === 'proposals'" class="p-4" style="display: none;">
+        <div x-show="activeTab === 'proposals'" class="overflow-x-auto" style="display: none;">
         <table class="min-w-full table-auto">
             <thead class="bg-gray-100">
                 <tr>
@@ -274,9 +274,12 @@
                         </td>
                         <td class="px-4 py-3 text-center">
                             <div class="flex justify-center space-x-2">
-                            @foreach($researchSubmissions as $researchSubmission)
-                            <a href="{{ route('reviewer.abstract.reject', ['serial_number' => $researchSubmission->serial_number]) }}">Reject</a>
-                            @endforeach
+                                {{-- <a href="{{ route('reviewer.abstract.reject', ['serial_number' => $researchSubmission->serial_number]) }}">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                    </svg>
+                                </a>--}}
+                            
                                 <a href="{{ route('proposal.abstract.download', $researchSubmission->serial_number) }}" class="group relative p-2 text-gray-600 hover:text-indigo-600 rounded-full hover:bg-indigo-100 transition-colors duration-200">
                                     <!-- PDF icon -->
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -304,7 +307,7 @@
                 @empty
                     <tr>
                         <td colspan="7" class="px-4 py-2 text-center text-sm text-gray-600">
-                            No articles assigned yet.
+                            No documents assigned to review yet.
                         </td>
                     </tr>
                 @endforelse
@@ -408,7 +411,7 @@
 
 <!-- Enhanced Document Review Form -->
 <!-- Enhanced Document Review Form -->
-<div class="mt-8 bg-white p-6 rounded-lg shadow-sm" x-data="{ rating: 0, feedbackType: 'general', showGuide: false }">
+<div class="mt-8 bg-white p-6 shadow-sm" x-data="{ rating: 0, feedbackType: 'general', showGuide: false }">
     <div class="flex justify-between items-center mb-6">
         <button 
             @click="showGuide = !showGuide"
@@ -421,7 +424,7 @@
     </div>
 
     <!-- Review Guidelines Panel -->
-    <div x-show="showGuide" class="mb-6 bg-indigo-50 p-4 rounded-lg">
+    <div x-show="showGuide" class="mb-6 bg-indigo-50 p-4">
         <h4 class="font-medium text-indigo-800 mb-2">Review Guidelines</h4>
         <ul class="text-sm text-indigo-700 space-y-2">
             <li class="flex items-start gap-2">

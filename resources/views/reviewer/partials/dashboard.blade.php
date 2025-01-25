@@ -72,7 +72,7 @@
 <!-- Document Management Section -->
 <div x-data="{ activeTab: 'articles' }">
     <div class="border-b border-gray-200 shadow-sm bg-white">
-        <h2 class="text-2xl font-semibold text-gray-800 tracking-tight p-4">Document Management</h2>
+        <h2 class="text-2xl font-semibold text-gray-800 tracking-tight p-4">Recents</h2>
     </div>
 
     <!-- Tabbed Navigation Menu -->
@@ -116,9 +116,9 @@
                         <td class="px-4 py-3 text-sm text-gray-700">{{ $submission->title }}</td>
                         <td class="px-4 py-3 text-sm text-gray-500">{{ $submission->sub_theme }}</td>
                         <td class="px-4 py-3 text-center">
-                            <div class="flex flex-col items-center space-y-2">
-                                <p>{{ $submission->pivot->status }}</p>
-                            </div>
+                            <span class="px-2 py-1 text-xs font-medium {{ ($submission->reviewer_status === null || $submission->reviewer_status === '') ? 'text-red-800 bg-red-100' : 'text-yellow-800 bg-yellow-100' }} rounded-full">
+                                {{ $submission->reviewer_status === null || $submission->reviewer_status === '' ? 'Pending' : $submission->reviewer_status }}
+                            </span>
                         </td>
                         <td class="px-4 py-3 text-center space-x-2">
                             <button 
@@ -137,7 +137,7 @@
                     </tr>
                     @empty
                     <tr>
-                    <td colspan="3" class="px-4 py-2 text-center">No abstracts assigned yet.</td>
+                    <td colspan="3" class="px-4 py-2 text-center">No documents assigned to review yet.</td>
                 </tr>
             @endforelse
                 </tbody>
@@ -339,12 +339,15 @@
                         <!-- Footer - Fixed -->
                         <div class="flex-none bg-gray-50 px-6 py-4 border-t border-gray-200 rounded-b-lg">
                             <div class="flex justify-end space-x-2">
-                                <a href="{{ route('reviewer.abstract.accept', ['serial_number' => $submission->serial_number]) }}"
+                                <a x-show="$store.modal.abstract" 
+                                x-bind:href="`{{ url('reviewer/abstract/accept') }}/${$store.modal.abstract.serial_number}`"
                                 class="px-2 py-1 text-xs font-medium text-white bg-green-600 hover:bg-blue-700 rounded-full">
                                     Accept
                                 </a>
-                                    <a href="{{ route('reviewer.abstract.reject', ['serial_number' => $submission->serial_number]) }}"
-                                    class="px-2 py-1 text-xs font-medium text-white bg-red-600 hover:bg-blue-700 rounded-full">Reject</a>
+                                    <a x-show="$store.modal.abstract"
+                                    x-bind:href="`{{ url('reviewer/abstract/reject') }}/${$store.modal.abstract.serial_number}`"
+                                    class="px-2 py-1 text-xs font-medium text-white bg-red-600 hover:bg-blue-700 rounded-full">
+                                    Reject</a>
                                 
                             </div>
                         </div>
@@ -354,9 +357,9 @@
         </div>
 
         <!-- Research Proposals Tab (Similar Layout as Abstracts) -->
-        <div x-show="activeTab === 'proposals'" class="p-4">
+        <div x-show="activeTab === 'proposals'" class="overflow-x-auto">
             <table class="min-w-full table-auto">
-                <thead class="bg-gray-50">
+                <thead class="bg-gray-100">
                     <tr>
                         <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600">Serial_No</th>
                         <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600">Title</th>
@@ -373,7 +376,7 @@
                         <td class="px-4 py-3 text-sm text-gray-500">{{ $researchSubmission->sub_theme }}</td>
                         <td class="px-4 py-3 text-center">
                             <span class="px-2 py-1 text-xs font-medium {{ ($researchSubmission->reviewer_status === null || $researchSubmission->reviewer_status === '') ? 'text-red-800 bg-red-100' : 'text-yellow-800 bg-yellow-100' }} rounded-full">
-                                {{ $researchSubmission->reviewer_status === null || $researchSubmission->reviewer_status === '' ? 'Not Accepted' : $researchSubmission->reviewer_status }}
+                                {{ $researchSubmission->reviewer_status === null || $researchSubmission->reviewer_status === '' ? 'Pending' : $researchSubmission->reviewer_status }}
                             </span>
                         </td>
                         <td class="px-4 py-3 text-center space-x-2">
@@ -390,7 +393,7 @@
                         </td>
                         @empty
                         <tr>
-                            <td colspan="3" class="px-4 py-2 text-center">No proposals assigned yet.</td>
+                            <td colspan="3" class="px-4 py-2 text-center">No documents assigned to review yet.</td>
                         </tr>
                         @endforelse
                 </tbody>
@@ -592,11 +595,13 @@
                         <!-- Footer - Fixed -->
                         <div class="flex-none bg-gray-50 px-6 py-4 border-t border-gray-200 rounded-b-lg">
                             <div class="flex justify-end space-x-2">
-                                <a href="{{ route('reviewer.proposal.accept', ['serial_number' => $researchSubmission->serial_number]) }}"
+                                <a x-show="$store.proposalModal.proposal"
+                                x-bind:href="`{{ url('reviewer/proposal/accept') }}/${$store.proposalModal.proposal.serial_number}`"
                                 class="px-2 py-1 text-xs font-medium text-white bg-green-600 hover:bg-blue-700 rounded-full">
                                     Accept
                                 </a>
-                                    <a href="{{ route('reviewer.abstract.reject', ['serial_number' => $researchSubmission->serial_number]) }}"
+                                <a x-show="$store.proposalModal.proposal"
+                                    x-bind:href="`{{ url('reviewer/proposal/reject') }}/${$store.proposalModal.proposal.serial_number}`"
                                     class="px-2 py-1 text-xs font-medium text-white bg-red-600 hover:bg-blue-700 rounded-full">Reject</a>
                                 
                             </div>

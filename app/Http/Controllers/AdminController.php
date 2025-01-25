@@ -172,16 +172,18 @@ class AdminController extends Controller
     public function updateRole(Request $request, $reg_no)
     {
         $validated = $request->validate([
-            'role_id' => 'required|exists:roles,id',
+            'roles' => 'sometimes|array',
+            'roles.*' => 'exists:roles,id'
         ]);
-        $user = User::where('reg_no', $reg_no)->with('roles')->first();
+        $user = User::where('reg_no', $reg_no)->first();
 
         if (!$user) {
             return redirect()->back()->withErrors(['msg' => 'User not found.']);
         }
     
         // Sync the role with the user
-        $user->roles()->sync([$validated['role_id']]);
+        $user->roles()->sync($validated['roles'] ?? []);
+
     
         return redirect()->route('admin.users')->with('success', 'Role updated successfully.');
     }
@@ -298,10 +300,7 @@ class AdminController extends Controller
         $perPage = request()->input('per_page', 10);
 
         // Get research submissions with their reviewer information using the relationship
-        $submissions = AbstractSubmission::with('reviewers') // Load reviewers with research submissions
-            ->where('approved', '!=', true)
-            ->where('final_status', '!=', 'rejected')
-            ->where('final_status', '!=', 'submitted')
+        $submissions = AbstractSubmission::with('reviewers')         
             ->paginate($perPage);
             
         // Get all users with the 'Reviewer' role
@@ -316,10 +315,7 @@ class AdminController extends Controller
         $perPage = request()->input('per_page', 10);
 
         // Get research submissions with their reviewer information using the relationship
-        $researchSubmissions = ResearchSubmission::with('reviewers') // Load reviewers with research submissions
-            ->where('approved', '!=', true)
-            ->where('final_status', '!=', 'rejected')
-            ->where('final_status', '!=', 'submitted')
+        $researchSubmissions = ResearchSubmission::with('reviewers')
             ->paginate($perPage);
             
         // Get all users with the 'Reviewer' role
@@ -336,8 +332,29 @@ class AdminController extends Controller
     $search = $request->input('search', '');
 
     $query = ResearchSubmission::query()
-        ->with('reviewers');
-
+        ->where('approved', '!=', true)
+        ->with('reviewers')
+        ->leftJoin('proposal_assessments', 'research_submissions.serial_number', '=', 'proposal_assessments.abstract_submission_id')
+        ->select(
+            'research_submissions.serial_number',
+            'research_submissions.article_title',
+            'research_submissions.created_at',
+            'research_submissions.updated_at',
+            'research_submissions.final_status', 
+            'research_submissions.user_reg_no',
+            // Add any other specific columns you need from abstract_submissions
+            DB::raw('AVG(proposal_assessments.total_score) as average_score'),
+            DB::raw('COUNT(proposal_assessments.abstract_submission_id) as total_reviews')
+        )
+        ->groupBy(
+            'research_submissions.serial_number',
+            'research_submissions.article_title',
+            'research_submissions.created_at',
+            'research_submissions.updated_at',
+            'research_submissions.final_status', 
+            'research_submissions.user_reg_no', 
+            // Add the same columns here as in the select
+        );
     // Apply search filter if provided
     if (!empty($search)) {
         $query->where('article_title', 'LIKE', "%{$search}%")
@@ -365,6 +382,7 @@ public function fetchAbstractSubmissions(Request $request)
     $search = $request->input('search', '');
 
     $query = AbstractSubmission::query()
+        ->where('approved', '!=', true)
         ->with('reviewers')
         ->leftJoin('research_assessments', 'abstract_submissions.serial_number', '=', 'research_assessments.abstract_submission_id')
         ->select(

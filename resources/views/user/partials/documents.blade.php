@@ -40,7 +40,7 @@
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
-                    @foreach ($submissions as $submission)
+                    @forelse ($submissions as $submission)
                         <tr>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="text-sm font-medium text-gray-900">{{ $submission->title }}</div>
@@ -114,7 +114,11 @@
                                 <a href="#" class="text-indigo-600 hover:text-indigo-900 mr-3">view</a>
                             </td>-->
                         </tr>
-                    @endforeach                   
+                    @empty
+                        <tr>
+                            <td colspan="3" class="px-4 py-2 text-center">Not submitted any documents yet.</td>
+                        </tr>
+                    @endforelse                      
                 </tbody>
             </table>
             <!-- Pagination Container -->
@@ -228,7 +232,7 @@
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
-                    @foreach ($researchSubmissions as $researchSubmission)
+                    @forelse ($researchSubmissions as $researchSubmission)
                         <tr>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="text-sm font-medium text-gray-900">{{ $researchSubmission->article_title }}</div>
@@ -302,7 +306,11 @@
                                 <a href="#" class="text-indigo-600 hover:text-indigo-900 mr-3">view</a>
                             </td>-->
                         </tr>
-                    @endforeach                   
+                    @empty
+                        <tr>
+                            <td colspan="3" class="px-4 py-2 text-center">Not submitted any documents yet.</td>
+                        </tr>
+                    @endforelse                      
                 </tbody>
             </table>
             <!-- Pagination Container -->

@@ -14,7 +14,7 @@
     <!-- Submission Cards -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
         @forelse($submissionTypes as $type)
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-all duration-300">
+        <div class="bg-white shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-all duration-300">
             <div class="p-6">
                 <div class="flex items-center justify-between mb-4">
                     <span class="px-3 py-1 text-xs font-semibold text-{{ $type->status === 'active' ? 'green' : 'red' }}-700 bg-{{ $type->status === 'active' ? 'green' : 'red' }}-100 rounded-full">
@@ -57,13 +57,13 @@
             @endif
         </div>
         @empty
-            <p class="mt-2 text-sm text-center text-gray-600">No submissions for ow. Will be available soon...</p>
+            <p class="mt-2 text-sm text-center text-gray-600">No submissions for now. Will be available soon...</p>
         @endforelse
 
     </div>
 
     <!-- Help Section -->
-    <div class="bg-gray-50 rounded-lg p-6 text-center border border-gray-200">
+    <div class="bg-gray-50 p-6 text-center border border-gray-200">
         <h3 class="text-lg font-semibold text-gray-800 mb-2">Need Assistance?</h3>
         <p class="text-gray-600 mb-4">Our support team is here to help you with any questions or concerns.</p>
         <div class="flex justify-center space-x-4">

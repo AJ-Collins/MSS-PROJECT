@@ -142,7 +142,7 @@
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                         <tr>
                             <td colspan="7" class="px-4 py-2 text-center text-sm text-gray-600">
-                                No articles assigned yet.
+                                No documents assigned to review yet.
                             </td>
                         </tr>
                     <?php endif; ?>
@@ -244,7 +244,7 @@
 
         </div>
         <!-- Research Proposals Tab (Hidden by default) -->
-        <div x-show="activeTab === 'proposals'" class="p-4" style="display: none;">
+        <div x-show="activeTab === 'proposals'" class="overflow-x-auto" style="display: none;">
         <table class="min-w-full table-auto">
             <thead class="bg-gray-100">
                 <tr>
@@ -324,7 +324,7 @@
                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                     <tr>
                         <td colspan="7" class="px-4 py-2 text-center text-sm text-gray-600">
-                            No articles assigned yet.
+                            No documents assigned to review yet.
                         </td>
                     </tr>
                 <?php endif; ?>

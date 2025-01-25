@@ -118,7 +118,7 @@
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
-                    <?php $__currentLoopData = $submissions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $submission): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <?php $__empty_1 = true; $__currentLoopData = $submissions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $submission): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                         <tr>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="text-sm font-medium text-gray-900"><?php echo e($submission->title); ?></div>
@@ -189,7 +189,11 @@
                                 <?php endif; ?>
                             </td>
                         </tr>
-                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>                  
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                        <tr>
+                            <td colspan="3" class="px-4 py-2 text-center">Not submitted any documents yet.</td>
+                        </tr>
+                    <?php endif; ?>                  
                 </tbody>
             </table>
             <!-- Pagination Container -->
@@ -303,7 +307,7 @@
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
-                    <?php $__currentLoopData = $researchSubmissions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $researchSubmission): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <?php $__empty_1 = true; $__currentLoopData = $researchSubmissions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $researchSubmission): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                         <tr>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="text-sm font-medium text-gray-900"><?php echo e($researchSubmission->article_title); ?></div>
@@ -359,7 +363,11 @@
                                 <a href="#" class="text-indigo-600 hover:text-indigo-900 mr-3">view</a>
                             </td>-->
                         </tr>
-                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>                   
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                        <tr>
+                            <td colspan="3" class="px-4 py-2 text-center">Not submitted any documents yet.</td>
+                        </tr>
+                    <?php endif; ?>                  
                 </tbody>
             </table>
             <!-- Pagination Container -->

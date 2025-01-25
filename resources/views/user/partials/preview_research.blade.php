@@ -187,6 +187,19 @@
 
             <!-- Important Notes -->
             <div class="space-y-4 border-t border-gray-200 pt-4 sm:pt-6">
+
+            <div class="flex items-start">
+                    <div class="flex-shrink-0">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <h4 class="text-sm font-medium text-gray-800">Important Notice</h4>
+                        <p class="text-xs sm:text-sm text-gray-600">Once submitted, you cannot make changes to your abstract. Please ensure all details are correct.</p>
+                    </div>
+                </div>
+                
                 <div class="flex items-start">
                     <div class="flex-shrink-0">
                         <svg class="w-5 h-5 sm:w-6 sm:h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -199,17 +212,7 @@
                     </div>
                 </div>
 
-                <div class="flex items-start">
-                    <div class="flex-shrink-0">
-                        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-                        </svg>
-                    </div>
-                    <div class="ml-3">
-                        <h4 class="text-sm font-medium text-gray-800">Important Notice</h4>
-                        <p class="text-xs sm:text-sm text-gray-600">Once submitted, you cannot make changes to your abstract. Please ensure all details are correct.</p>
-                    </div>
-                </div>
+                
             </div>
 
             <!-- Modal Buttons -->

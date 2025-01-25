@@ -21,13 +21,7 @@
         </div>
     </form>
     
-    <div class="bg-white shadow overflow-hidden h-96">
-        <?php if(session('success')): ?>
-            <div class="bg-green-100 border border-green-500 text-green-700 p-4 mb-6 rounded-lg">
-                <p class="font-medium"><?php echo e(session('success')); ?></p>
-            </div>
-        <?php endif; ?>
-        
+    <div class="bg-white shadow overflow-hidden h-96 overflow-y-auto">
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
                 <tr>
@@ -46,8 +40,12 @@
                         <td class="px-4 py-3 text-sm text-gray-700"><?php echo e($user->first_name . ' ' . $user->last_name); ?></td>
                         <td class="px-4 py-3 text-sm text-gray-700"><?php echo e($user->email); ?></td>
                         <td class="px-4 py-3 text-sm text-gray-700">
-                            <?php echo e($user->roles->first()->name ?? 'No Role'); ?>
-
+                        <?php if($user->roles->count() > 0): ?>
+                            <?php echo e($user->roles->pluck('name')->implode(', ')); ?> 
+                            <span class="text-xs text-gray-500 ml-2">(<?php echo e($user->roles->count()); ?> roles)</span>
+                        <?php else: ?>
+                            <span class="text-gray-500">No Roles</span>
+                        <?php endif; ?>
                         </td>
                         <td class="px-4 py-3 text-sm text-gray-700">
                             <span id="status-<?php echo e($user->reg_no); ?>" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
@@ -131,33 +129,59 @@
                         </div>
                     </div>
                   <!-- Assign Role Modal -->
-                    <div id="open-role-modal-<?php echo e($user->reg_no); ?>" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center">
-                        <div class="bg-white rounded-lg shadow-md p-6 w-full max-w-lg">
-                            <h3 class="text-lg font-medium text-gray-800 mb-4">Assign Role to User</h3>
+                  <div id="open-role-modal-<?php echo e($user->reg_no); ?>" 
+                    class="fixed inset-0 z-50 hidden bg-black bg-opacity-30 flex items-center justify-center p-4">
+                    <div class="bg-white rounded-lg shadow-xl w-full max-w-md">
+                        <div class="p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h2 class="text-lg font-semibold text-gray-800">Assign Roles</h2>
+                                <button 
+                                    onclick="closeModal('open-role-modal-<?php echo e($user->reg_no); ?>')" 
+                                    class="text-gray-500 hover:text-gray-700">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+
                             <form 
                                 action="<?php echo e(route('admin.users.updateRole', ['reg_no' => $user->reg_no])); ?>"
                                 method="POST">
-                                <?php echo csrf_field(); ?>                            
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700">Role</label>
-                                    <select name="role_id" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-2">
-                                        <?php $__currentLoopData = $roles; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $role): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                            <option value="<?php echo e($role->id); ?>"><?php echo e($role->name); ?></option>
-                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                    </select>
+                                <?php echo csrf_field(); ?>
+                                
+                                <div class="space-y-4">
+                                    <?php $__currentLoopData = $roles; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $role): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <label class="flex items-center cursor-pointer">
+                                            <input 
+                                                type="checkbox" 
+                                                name="roles[]" 
+                                                value="<?php echo e($role->id); ?>"
+                                                class="form-checkbox h-4 w-4 text-indigo-600 rounded border-gray-300 mr-2"
+                                                <?php echo e($user->roles->contains('id', $role->id) ? 'checked' : ''); ?>
+
+                                            >
+                                            <span class="text-sm text-gray-700"><?php echo e($role->name); ?></span>
+                                        </label>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 </div>
-                                <div class="mt-6 flex justify-end gap-3">
-                                    <button type="button" onclick="closeModal('open-role-modal-<?php echo e($user->reg_no); ?>')" 
-                                            class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">
+
+                                <div class="mt-6 flex justify-end space-x-2">
+                                    <button 
+                                        type="button"
+                                        onclick="closeModal('open-role-modal-<?php echo e($user->reg_no); ?>')"
+                                        class="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-md">
                                         Cancel
                                     </button>
-                                    <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
-                                        Assign Role
+                                    <button 
+                                        type="submit" 
+                                        class="px-4 py-2 text-sm bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
+                                        Update Roles
                                     </button>
                                 </div>
                             </form>
                         </div>
                     </div>
+                </div>
                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </tbody>
         </table>
@@ -366,6 +390,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         })
         .then(response => response.json()) // Parse JSON response
+        window.location.reload()
         .then(data => {
             if (data.active !== undefined) {
                 const statusElement = document.querySelector(`#status-${userId}`);
@@ -385,6 +410,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     toggleButton.classList.add('text-green-600', 'hover:bg-green-100');
                     toggleButton.classList.remove('text-red-600', 'hover:bg-red-100');
                 }
+                
             } else {
                 console.error('Error toggling status:', data);
             }

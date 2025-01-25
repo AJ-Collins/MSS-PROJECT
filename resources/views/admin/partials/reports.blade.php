@@ -3,34 +3,51 @@
 @section('content')
 <div class="min-h-screen bg-gray-50 p-8">
     <!-- Header with gradient background -->
-    <div class="relative mb-8 bg-gradient-to-r from-gray-100 to-grey-200 p-6 shadow-lg">
+    <div class="relative mb-8 bg-gradient-to-r from-blue-50 to-blue-100 p-6 shadow-lg border border-blue-200">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0">
-            <h1 class="text-3xl font-bold text-black">Reports</h1>
+            <div>
+                <h1 class="text-2xl font-bold text-blue-900 mb-2">Document Downloads</h1>
+                <p class="text-sm text-blue-700">Download all documents in various formats</p>
+            </div>
             <div class="flex flex-wrap gap-3">
-                <a href="{{ route('abstract.downloadAll') }}" class="px-4 py-2 bg-white/10 backdrop-blur-md text-black rounded-lg hover:bg-white/20 transition duration-200 flex items-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4 4m0 0l-4-4m4 4V4"/>
-                    </svg>
-                    Abstracts PDF
-                </a>
-                <a href="{{ route('abstracts.download.word') }}" class="px-4 py-2 bg-white/10 backdrop-blur-md text-black rounded-lg hover:bg-white/20 transition duration-200 flex items-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                    </svg>
-                    Abstracts Word
-                </a>
-                <a href="{{ route('proposal.downloadAll') }}" class="px-4 py-2 bg-white/10 backdrop-blur-md text-black rounded-lg hover:bg-white/20 transition duration-200 flex items-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4 4m0 0l-4-4m4 4V4"/>
-                    </svg>
-                    Proposals PDF
-                </a>
-                <a href="{{ route('proposal.downloadAllWord') }}" class="px-4 py-2 bg-white/10 backdrop-blur-md text-black rounded-lg hover:bg-white/20 transition duration-200 flex items-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                    </svg>
-                    Proposals Word
-                </a>
+                <div class="space-y-2">
+                    <h3 class="text-sm font-semibold text-blue-800">Abstracts</h3>
+                    <div class="flex gap-2">
+                        <a href="{{ route('abstract.downloadAll') }}" 
+                        class="px-3 py-2 bg-white text-blue-700 rounded-lg hover:bg-blue-50 transition duration-200 flex items-center gap-2 border border-blue-200 shadow-sm">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"/>
+                            </svg>
+                            PDF
+                        </a>
+                        <a href="{{ route('abstracts.download.word') }}" 
+                        class="px-3 py-2 bg-white text-blue-700 rounded-lg hover:bg-blue-50 transition duration-200 flex items-center gap-2 border border-blue-200 shadow-sm">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            Word
+                        </a>
+                    </div>
+                </div>
+                <div class="space-y-2">
+                    <h3 class="text-sm font-semibold text-blue-800">Proposals</h3>
+                    <div class="flex gap-2">
+                        <a href="{{ route('proposal.downloadAll') }}" 
+                        class="px-3 py-2 bg-white text-blue-700 rounded-lg hover:bg-blue-50 transition duration-200 flex items-center gap-2 border border-blue-200 shadow-sm">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"/>
+                            </svg>
+                            PDF
+                        </a>
+                        <a href="{{ route('proposal.downloadAllWord') }}" 
+                        class="px-3 py-2 bg-white text-blue-700 rounded-lg hover:bg-blue-50 transition duration-200 flex items-center gap-2 border border-blue-200 shadow-sm">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            Word
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -84,16 +101,9 @@
             </div>
         </div>
         <div x-show="activeTab === 'abstracts'">
-            <div class="mt-6 px-6 py-4 bg-white rounded-lg shadow-md border border-gray-200">
-                @if (session('success'))
-                    <div class="bg-green-100 border border-green-500 text-green-700 p-4 mb-6 rounded-lg">
-                        <p class="font-medium">{{ session('success') }}</p>
-                    </div>
-                @endif
-
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="bg-white shadow-sm border border-gray-100 overflow-hidden">
                     <div class="p-6 border-b border-gray-100">
-                        <h2 class="text-xl font-semibold text-gray-800">Document Reports</h2>
+                        <h2 class="text-xl font-semibold text-gray-800">Documents</h2>
                     </div>
                     <div class="overflow-x-auto">
                         <table class="w-full">
@@ -267,20 +277,12 @@
                     </div>
                     </div>
                 </div>
-            </div>
         </div>
 
         <div x-show="activeTab === 'proposals'">
-            <div class="mt-6 px-6 py-4 bg-white rounded-lg shadow-md border border-gray-200">
-                @if (session('success'))
-                    <div class="bg-green-100 border border-green-500 text-green-700 p-4 mb-6 rounded-lg">
-                        <p class="font-medium">{{ session('success') }}</p>
-                    </div>
-                @endif
-
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="bg-white shadow-sm border border-gray-100 overflow-hidden">
                     <div class="p-6 border-b border-gray-100">
-                        <h2 class="text-xl font-semibold text-gray-800">Document Reports</h2>
+                        <h2 class="text-xl font-semibold text-gray-800">Documents</h2>
                     </div>
                     <div class="overflow-x-auto">
                         <table class="w-full">
@@ -289,9 +291,9 @@
                                     <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Title</th>
                                     <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Submitted By</th>
                                     <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Uploaded On</th>
-                                    <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Reviewer By</th>
+                                    <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Reviewed By</th>
                                     <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Score</th>
-                                    <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Final status</th>                        
+                                    <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Final Status</th>                        
                                     <th class="px-6 py-4 text-center text-sm font-semibold text-gray-600">Actions</th>
                                 </tr>
                             </thead>
@@ -454,7 +456,6 @@
                     </div>
                     </div>
                 </div>
-            </div>
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

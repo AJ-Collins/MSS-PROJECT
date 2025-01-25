@@ -5,6 +5,8 @@ namespace App\Providers;
 use Illuminate\Auth\Events\Registered;
 use App\Listeners\AssignRoleToNewUser;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
+use App\Models\ProposalAssessment;
+use App\Observers\ProposalAssessmentObserver;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -25,6 +27,8 @@ class EventServiceProvider extends ServiceProvider
     public function boot(): void
     {
         parent::boot();
+        ProposalAssessment::observe(ProposalAssessmentObserver::class);
+        
 
         // Additional event boot logic if needed
     }
