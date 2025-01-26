@@ -5,15 +5,17 @@
 <div class="mb-6 flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
     <!-- Search Section -->
     <div class="flex flex-col sm:flex-row items-center sm:max-w-xs sm:w-auto space-y-4 sm:space-y-0 sm:space-x-4">
-        <div class="relative w-full sm:max-w-xs">
-            <input id="search-input" type="text" placeholder="Search by Serial number, Submitted by or Title"
-                   class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 pr-10">
-            <!-- Search Icon -->
-            <svg id="search-icon" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-500 absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm0 0l6 6"></path>
-            </svg>
-        </div>
+    <div class="relative w-full sm:max-w-xs">
+        <input 
+        id="search-input" 
+        type="text" 
+        placeholder="Search by Serial number, Submitted by or Title"
+               class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 pr-10">
+        <svg id="search-icon" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-500 absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm0 0l6 6"></path>
+        </svg>
     </div>
+</div>
 
     <!-- Reviewer Selection and Assign Button -->
     <div class="flex items-center space-x-6 mt-4 sm:mt-0">

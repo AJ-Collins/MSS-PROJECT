@@ -21,11 +21,12 @@ use App\Traits\DynamicTitleTrait;
 class AdminController extends Controller
 {
     use DynamicTitleTrait;
-    public function dashboard()
+    public function dashboard(Request $request)
     {
         $admin = Auth::user();
+        $searchQuery = $request->input('search', '');
         
-        $perPage = request()->input('per_page', 5);
+        $perPage = request()->input('per_page', 10);
         $totalReviewers = Role::find(2)->users()->count();
         $totalUsers = Role::find(3)->users()->count();
         
@@ -35,14 +36,30 @@ class AdminController extends Controller
         $submissions = AbstractSubmission::where('reviewer_status', Null)
             ->where('final_status', '!=','accepted')
             ->where('final_status', '!=','rejected')
+            ->where(function ($query) use ($searchQuery) {
+                $query->where('title', 'like', "%{$searchQuery}%")
+                    ->orWhere('serial_number', 'like', "%{$searchQuery}%")
+                    ->orWhere('sub_theme', 'like', "%{$searchQuery}%");
+            })
             ->paginate($perPage);
         $researchSubmissions = ResearchSubmission::where('reviewer_status', Null)
             ->where('final_status', '!=','accepted')
             ->where('final_status', '!=','rejected')
+            ->where(function ($query) use ($searchQuery) {
+                $query->where('article_title', 'like', "%{$searchQuery}%")
+                    ->orWhere('serial_number', 'like', "%{$searchQuery}%")
+                    ->orWhere('sub_theme', 'like', "%{$searchQuery}%");
+            })
             ->paginate($perPage);
 
-        return view('admin.partials.dashboard', compact('totalUsers', 'totalAbstracts',
-                    'totalProposals', 'totalReviewers', 'submissions', 'researchSubmissions'));
+        return view('admin.partials.dashboard', compact(
+            'totalUsers',
+             'totalAbstracts',
+                    'totalProposals', 
+                    'totalReviewers', 
+                    'submissions', 
+                    'researchSubmissions',
+                    'searchQuery'));
     }
     public function users(Request $request)
     {
@@ -261,23 +278,35 @@ class AdminController extends Controller
         return view('admin.partials.submissions');
     }
 
-    public function reports()
+    public function reports(Request $request)
     {
-        $perPage = request()->input('per_page', 10);
-        $data = [
-            'submissions' => AbstractSubmission::with('user')
-                ->whereNotNull('score')
-                ->orWhere('score', '!=', '')
-                ->paginate($perPage),
-            'researchSubmissions' => ResearchSubmission::with('user')
-                ->whereNotNull('score')
-                ->orWhere('score', '!=', '')
-                ->paginate($perPage),
-            'researchAssessments' => ResearchAssessment::with('abstractSubmission')->get(),
-            'proposalAssessments' => ProposalAssessment::with('proposalSubmission')->get()
-        ];
-    
-        return view('admin.partials.reports', $data);
+    $searchQuery = $request->input('search', '');
+    $perPage = request()->input('per_page', 10);
+    $data = [
+        'submissions' => AbstractSubmission::with('user')
+            ->whereNotNull('score')
+            ->where('score', '!=', '')
+            ->where(function ($query) use ($searchQuery) {
+                $query->where('title', 'like', "%{$searchQuery}%")
+                    ->orWhere('serial_number', 'like', "%{$searchQuery}%")
+                    ->orWhere('sub_theme', 'like', "%{$searchQuery}%");
+            })
+            ->paginate($perPage),
+        'researchSubmissions' => ResearchSubmission::with('user')
+            ->whereNotNull('score')
+            ->where('score', '!=', '')
+            ->where(function ($query) use ($searchQuery) {
+                $query->where('article_title', 'like', "%{$searchQuery}%")
+                    ->orWhere('serial_number', 'like', "%{$searchQuery}%")
+                    ->orWhere('sub_theme', 'like', "%{$searchQuery}%");
+            })
+            ->paginate($perPage),
+        'researchAssessments' => ResearchAssessment::with('abstractSubmission')->get(),
+        'proposalAssessments' => ProposalAssessment::with('proposalSubmission')->get(),
+        'searchQuery' => $searchQuery
+    ];
+
+    return view('admin.partials.reports', $data);
     }
 
     public function showAssessments($serial_number)
@@ -538,58 +567,80 @@ public function getReviewers()
     public function assignAbstractMassReviewer(Request $request)
     {
         $request->validate([
-            'submissions' => 'required|array|min:1', // Ensure at least one submission is selected
-            'reviewers' => 'required|array|min:2|max:3', // Require 2-3 reviewers
+            'submissions' => 'required|array|min:1',
+            'reviewers' => 'required|array|min:2|max:3',
             'reviewers.*' => [
                 'required',
-                'exists:users,reg_no', // Ensure reviewers exist
+                'exists:users,reg_no',
                 function ($attribute, $value, $fail) {
                     if (!User::where('reg_no', $value)
                         ->whereHas('roles', function ($query) {
-                            $query->where('name', 'Reviewer'); // Ensure the user has a "reviewer" role
+                            $query->where('name', 'Reviewer');
                         })->exists()) {
                         $fail('The specified reviewer does not have the reviewer role.');
                     }
                 },
             ],
         ],[
-                // Custom messages for validation errors (optional)
-                'submissions.required' => 'You must select at least one abstract.',
-                'submissions.min' => 'You must select at least one abstract.',
-                'reviewers.min' => 'You must select at least two reviewers.',
-                'reviewers.max' => 'You cannot select more than three reviewers.',
-        ] );
-    
+            'submissions.required' => 'You must select at least one abstract.',
+            'submissions.min' => 'You must select at least one abstract.',
+            'reviewers.min' => 'You must select at least two reviewers.',
+            'reviewers.max' => 'You cannot select more than three reviewers.',
+        ]);
+
         try {
             DB::transaction(function () use ($request) {
-                // Get the selected submissions with their authors in a single query
+                // Get the selected submissions with their current reviewers
                 $submissions = AbstractSubmission::whereIn('serial_number', $request->submissions)
-                    ->with('user:reg_no') // Assuming there's a relationship with the User model
+                    ->with('reviewers', 'user:reg_no')
                     ->get();
-    
+
+                // Track reassigned reviewers
+                $reassignedReviewers = [];
+
                 // Loop over each submission and assign reviewers
                 foreach ($submissions as $submission) {
                     // Prepare reviewers data for syncing via the pivot table
                     $reviewersData = [];
                     foreach ($request->reviewers as $reviewerRegNo) {
                         $reviewersData[$reviewerRegNo] = ['created_at' => now(), 'updated_at' => now()];
+
+                        // Check if this reviewer was already assigned to this submission
+                        $existingReviewer = $submission->reviewers()->where('users.reg_no', $reviewerRegNo)->first();
+                        if ($existingReviewer) {
+                            // Track reassigned reviewers
+                            $reassignedReviewers[] = $reviewerRegNo;
+
+                            // Delete assessments for the reassigned reviewer
+                            DB::table('research_assessments')
+                                ->where('abstract_submission_id', $submission->serial_number)
+                                ->where('reviewer_reg_no', $reviewerRegNo)
+                                ->delete();
+                        }
                     }
-    
-                    // Use the 'reviewers' relationship to sync the reviewers
+
+                    // Sync reviewers
                     $submission->reviewers()->syncWithoutDetaching($reviewersData);
                 }
-    
+
+                // Remove duplicates from reassigned reviewers
+                $reassignedReviewers = array_unique($reassignedReviewers);
+
                 // Notify reviewers and authors
                 $serialNumbersList = $submissions->pluck('serial_number')->implode(', ');
-    
-                // Notify reviewers
+
+                // Notify new and reassigned reviewers
                 foreach ($request->reviewers as $reviewerRegNo) {
+                    $message = in_array($reviewerRegNo, $reassignedReviewers)
+                        ? 'You have been reassigned the following abstracts for review: ' . $serialNumbersList
+                        : 'You have been assigned the following abstracts for review: ' . $serialNumbersList;
+
                     SendNotificationJob::dispatch($reviewerRegNo, [
-                        'message' => 'You have been assigned the following abstracts for review: ' . $serialNumbersList,
-                        'link' => '/some-link'
+                        'message' => $message,
+                        'link' => "/reviewer/assessment/abstract/{$submission->serial_number}"
                     ]);
                 }
-    
+
                 // Notify authors
                 $uniqueUserRegNos = $submissions->pluck('user_reg_no')->unique();
                 foreach ($uniqueUserRegNos->chunk(100) as $userRegNoChunk) {
@@ -606,7 +657,7 @@ public function getReviewers()
                 'message' => 'Reviewers assigned successfully!',
                 'assigned_count' => count($request->submissions)
             ], 200);
-    
+
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
                 'errors' => $e->errors(),
@@ -619,7 +670,6 @@ public function getReviewers()
             ], 500);
         }
     }
-
     public function assignProposalMassReviewer(Request $request)
     {
         $request->validate([
@@ -651,6 +701,9 @@ public function getReviewers()
                 $researchSubmissions = ResearchSubmission::whereIn('serial_number', $request->researchSubmissions)
                     ->with('user:reg_no') // Assuming there's a relationship with the User model
                     ->get();
+                
+                // Track reassigned reviewers
+                $reassignedReviewers = [];
     
                 // Loop over each submission and assign reviewers
                 foreach ($researchSubmissions as $researchSubmission) {
@@ -658,20 +711,40 @@ public function getReviewers()
                     $reviewersData = [];
                     foreach ($request->reviewers as $reviewerRegNo) {
                         $reviewersData[$reviewerRegNo] = ['created_at' => now(), 'updated_at' => now()];
+
+                        // Check if this reviewer was already assigned to this submission
+                        $existingReviewer = $researchSubmission->reviewers()->where('users.reg_no', $reviewerRegNo)->first();
+                        if ($existingReviewer) {
+                            // Track reassigned reviewers
+                            $reassignedReviewers[] = $reviewerRegNo;
+
+                            // Delete assessments for the reassigned reviewer
+                            DB::table('proposal_assessments')
+                                ->where('abstract_submission_id', $researchSubmission->serial_number)
+                                ->where('reviewer_reg_no', $reviewerRegNo)
+                                ->delete();
+                        }
                     }
     
                     // Use the 'reviewers' relationship to sync the reviewers
                     $researchSubmission->reviewers()->syncWithoutDetaching($reviewersData);
                 }
+
+                // Remove duplicates from reassigned reviewers
+                $reassignedReviewers = array_unique($reassignedReviewers);
     
                 // Notify reviewers and authors
                 $serialNumbersList = $researchSubmission->pluck('serial_number')->implode(', ');
     
-                // Notify reviewers
+                // Notify new and reassigned reviewers
                 foreach ($request->reviewers as $reviewerRegNo) {
+                    $message = in_array($reviewerRegNo, $reassignedReviewers)
+                        ? 'You have been reassigned the following abstracts for review: ' . $serialNumbersList
+                        : 'You have been assigned the following abstracts for review: ' . $serialNumbersList;
+
                     SendNotificationJob::dispatch($reviewerRegNo, [
-                        'message' => 'You have been assigned the following abstracts for review: ' . $serialNumbersList,
-                        'link' => '/some-link'
+                        'message' => $message,
+                        'link' => "/reviewer/assessment/proposal-view/{$researchSubmission->serial_number}"
                     ]);
                 }
     
@@ -1148,7 +1221,6 @@ public function getReviewers()
             'status' => 'required|in:active,inactive',
             'deadline' => 'required|date',
             'format' => 'required|string|max:255',
-            'submission_window' => 'required|string|max:255',
             'guidelines' => 'nullable|string',
         ]);
 

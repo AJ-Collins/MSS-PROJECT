@@ -49,7 +49,7 @@
                         {{ $type->deadline->format('M d, Y') }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <!--<button onclick="editSubmissionType({{ $type->id }})"
+                        <button onclick="editSubmissionType({{ $type->id }})"
                                 class="text-blue-600 hover:text-blue-900 mr-3 transition-colors duration-150">
                             <span class="flex items-center">
                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -57,11 +57,12 @@
                                 </svg>
                                 Edit
                             </span>
-                        </button>-->
-                        <form action="{{ route('admin.submission-types.destroy', $type->id) }}"
-                              method="POST"
-                              class="inline"
-                              onsubmit="return confirm('Are you sure you want to delete this submission type?')">
+                        </button>
+                        <form 
+                            action="{{ route('admin.submission-types.destroy', $type->id) }}"
+                            method="POST"
+                            class="inline"
+                            onsubmit="return confirm('Are you sure you want to delete this submission type?')">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="text-red-600 hover:text-red-900 transition-colors duration-150">
@@ -168,25 +169,34 @@ function editSubmissionType(id) {
             // Update modal title
             document.getElementById('modalTitle').textContent = 'Edit Submission Type';
             
-            // Set form action and method
+            // Set form action to update route
             const form = document.getElementById('submissionForm');
             form.action = `/admin/submission-types/${id}`;
             
-            // Add hidden method input for PUT request
-            if (!form.querySelector('input[name="_method"]')) {
-                const methodInput = document.createElement('input');
-                methodInput.type = 'hidden';
-                methodInput.name = '_method';
-                methodInput.value = 'PUT';
-                form.appendChild(methodInput);
+            // Remove any existing method input
+            const existingMethodInput = form.querySelector('input[name="_method"]');
+            if (existingMethodInput) {
+                existingMethodInput.remove();
             }
+            
+            // Add hidden method input for PUT request
+            const methodInput = document.createElement('input');
+            methodInput.type = 'hidden';
+            methodInput.name = '_method';
+            methodInput.value = 'PUT';
+            form.appendChild(methodInput);
             
             // Populate form fields with fetched data
             form.querySelector('[name="type"]').value = data.type;
             form.querySelector('[name="title"]').value = data.title;
             form.querySelector('[name="description"]').value = data.description;
             form.querySelector('[name="status"]').value = data.status;
-            form.querySelector('[name="deadline"]').value = data.deadline.slice(0, 16);
+            
+            // Convert deadline to local datetime-local format
+            const deadline = new Date(data.deadline);
+            const formattedDeadline = deadline.toISOString().slice(0, 16);
+            form.querySelector('[name="deadline"]').value = formattedDeadline;
+            
             form.querySelector('[name="format"]').value = data.format;
             form.querySelector('[name="guidelines"]').value = data.guidelines;
             

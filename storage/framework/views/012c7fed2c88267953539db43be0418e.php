@@ -3,8 +3,24 @@
 <?php $__env->startSection('content'); ?>
 <!-- Document Management Section -->
 <div x-data="{ activeTab: 'articles' }">
-    <div class="border-b border-gray-200 shadow-sm bg-white">
-        <h2 class="text-2xl font-semibold text-gray-800 tracking-tight p-4">Recents</h2>
+    <div class="flex justify-between items-center p-4">
+        <h2 class="text-2xl font-semibold text-gray-800 tracking-tight p-4">Submissions</h2>
+            <div class="relative">
+                <form x-data="{ searchQuery: '<?php echo e($searchQuery); ?>' }" 
+                    x-on:submit.prevent="window.location.href = '?search=' + searchQuery">
+                    <input 
+                        type="text" 
+                        x-model="searchQuery" 
+                        placeholder="Search documents..."
+                        class="w-64 px-4 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    >
+                    <button type="submit" class="absolute right-3 top-2.5">
+                        <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </button>
+                </form>
+            </div> 
     </div>
 
     <!-- Tabs -->
@@ -119,9 +135,14 @@
                             </td>-->
                         </tr>
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
-                        <tr>
-                            <td colspan="3" class="px-4 py-2 text-center">Not submitted any documents yet.</td>
-                        </tr>
+                    <tr>
+                        <td colspan="5" class="px-4 py-2 text-center">
+                            <?php echo e($searchQuery 
+                                ? "No documents found matching '" . htmlspecialchars($searchQuery) . "'" 
+                                : "No documents assigned to review yet."); ?>
+
+                        </td>
+                    </tr>
                     <?php endif; ?>                      
                 </tbody>
             </table>
@@ -318,7 +339,12 @@
                         </tr>
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                         <tr>
-                            <td colspan="3" class="px-4 py-2 text-center">Not submitted any documents yet.</td>
+                            <td colspan="5" class="px-4 py-2 text-center">
+                                <?php echo e($searchQuery 
+                                    ? "No documents found matching '" . htmlspecialchars($searchQuery) . "'" 
+                                    : "No documents assigned to review yet."); ?>
+
+                            </td>
                         </tr>
                     <?php endif; ?>                      
                 </tbody>

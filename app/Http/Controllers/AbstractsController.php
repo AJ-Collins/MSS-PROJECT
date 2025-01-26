@@ -200,6 +200,137 @@ class AbstractsController extends Controller
             ->header('Pragma', 'no-cache')
             ->header('Expires', '0');
     }
+    public function reviwerDownloadPdf($serial_number)
+    {
+        // Fetch the abstract submission by ID with the authors relationship
+        $submission = AbstractSubmission::with('authors')->findOrFail($serial_number);
+
+        // Extract relevant data
+        $title = $submission->title;
+        $abstract = $submission->abstract;
+        $keywords = json_decode($submission->keywords, true) ?? [];
+        $subTheme = $submission->sub_theme;
+
+        $html = '
+        <html>
+        <head>
+            <style>
+                body {
+                    font-family: Book Antiqua;
+                    line-height: 1.6;
+                    margin: 30px;
+                    color: #333;
+                    font-size: 12px;
+                }
+                .letterhead {
+                    text-align: center;
+                    margin-bottom: 20px;
+                }
+                .logo-text {
+                    font-size: 20px;
+                    font-weight: bold;
+                    margin-bottom: 5px;
+                }
+                .header {
+                    text-align: center;
+                    margin-bottom: 30px;
+                    padding-bottom: 10px;
+                }
+                .title {
+                    font-size: 20px;
+                    font-weight: bold;
+                    text-align: center;
+                    margin: 15px 0;
+                }
+                .authors-section {
+                    margin: 20px 0;
+                    text-align: center;
+                }
+                .authors-list {
+                    margin-bottom: 10px;
+                    font-size: 14px;
+                }
+                .institutions-list {
+                    margin: 10px 0;
+                    font-size: 14px;
+                }
+                .email-correspondence {
+                    font-style: italic;
+                    font-size: 13px;
+                    margin: 10px 0;
+                    font-weight: bold;
+                }
+                .section-title {
+                    font-size: 18px;
+                    font-weight: bold;
+                    margin: 15px 0 10px 0;
+                    padding-bottom: 5px;
+                }
+                .content-section {
+                    margin: 15px 0;
+                    text-align: justify;
+                    font-size: 16px;
+                }
+                .keywords-section {
+                    margin: 15px 0;
+                    text-align: justify;
+                    font-size: 16px;
+                }
+                sup {
+                    font-size: 9px;
+                    font-weight: bold;
+                }
+                .institutions-list {
+                    margin: 10px 0;
+                    font-size: 12px;
+                    text-align: left;
+                    padding-left: 200px;
+                    
+                }
+                .asterix {
+                    font-weight: bold;
+                }
+            </style>
+        </head>
+        <body>';
+
+        // Title
+        $html .= '<div class="title">' . htmlspecialchars($title) . '</div>';
+
+        // Abstract
+        $html .= '
+            <div class="section-title">Abstract</div>
+            <div class="content-section">' . nl2br(htmlspecialchars($abstract)) . '</div>';
+
+        // Keywords
+        $html .= '
+            <div class="section-title">Keywords</div>
+            <div class="keywords-section">' . htmlspecialchars(implode(', ', $keywords)) . '</div>';
+
+        // Sub-theme
+        $html .= '
+            <div class="section-title">Sub-Theme</div>
+            <div class="content-section">' . htmlspecialchars($subTheme) . '</div>';
+
+        $html .= '</body></html>';
+
+        // Generate the PDF using Dompdf
+        $options = new Options();
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('isRemoteEnabled', true);
+
+        $dompdf = new Dompdf($options);
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        return response($dompdf->output())
+            ->header('Content-Type', 'application/pdf')
+            ->header('Content-Disposition', 'attachment; filename="abstract_' . $submission->serial_number . '.pdf"')
+            ->header('Cache-Control', 'private, no-transform, no-store, must-revalidate')
+            ->header('Pragma', 'no-cache')
+            ->header('Expires', '0');
+    }
 
     public function downloadAllAbstracts()
     {
@@ -379,6 +510,89 @@ class AbstractsController extends Controller
                 $textrun->addText(implode('; ', $correspondingEmails), ['size' => 10]);
             }
         }
+
+        // Abstract
+        $section->addText('Abstract', ['bold' => true, 'size' => 14]);
+        $section->addText(
+            htmlspecialchars($submission->abstract), 
+            ['size' => 12], 
+            ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::BOTH]
+        );
+
+        // Keywords
+        $section->addText('Keywords', ['bold' => true, 'size' => 14]);
+        $keywords = json_decode($submission->keywords, true) ?? [];
+        $section->addText(
+            htmlspecialchars(implode(', ', $keywords)), 
+            ['size' => 12]
+        );
+
+        // Sub-theme
+        $section->addText('Sub-Theme', ['bold' => true, 'size' => 14]);
+        $section->addText(
+            htmlspecialchars($submission->sub_theme), 
+            ['size' => 12]
+        );
+
+        try {
+            // Use storage path instead of temp directory
+            $storage_path = storage_path('app/public/word_exports');
+            
+            // Create directory if it doesn't exist
+            if (!file_exists($storage_path)) {
+                mkdir($storage_path, 0755, true);
+            }
+
+            $fileName = 'abstract_' . $submission->serial_number . '.docx';
+            $filePath = $storage_path . '/' . $fileName;
+
+            // Save file
+            $writer = IOFactory::createWriter($phpWord, 'Word2007');
+            $writer->save($filePath);
+
+            // Check if file exists and is readable
+            if (!file_exists($filePath) || !is_readable($filePath)) {
+                throw new \Exception('Generated file is not accessible');
+            }
+
+            // Return file download response
+            return response()->download($filePath, $fileName, [
+                'Content-Type' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                'Content-Disposition' => 'attachment; filename="' . $fileName . '"',
+            ])->deleteFileAfterSend(true);
+
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to generate Word document'], 500);
+        }
+    }
+    public function reviwerDownloadWord($serial_number)
+    {
+        // Fetch the abstract submission by ID with the authors relationship
+        $submission = AbstractSubmission::with('authors')->findOrFail($serial_number);
+
+        // Create new PHPWord instance
+        $phpWord = new PhpWord();
+        
+        // Set default font
+        $phpWord->setDefaultFontName('Book Antiqua');
+        $phpWord->setDefaultFontSize(12);
+
+        // Add a section with proper page settings
+        $section = $phpWord->addSection([
+            'marginLeft' => 1440,    // 1 inch
+            'marginRight' => 1440,   // 1 inch
+            'marginTop' => 1440,     // 1 inch
+            'marginBottom' => 1440,  // 1 inch
+            'pageSizeW' => 12240,    // A4 width in twips
+            'pageSizeH' => 15840,    // A4 height in twips
+        ]);
+
+        // Title
+        $section->addText(
+            htmlspecialchars($submission->title),  // Sanitize input
+            ['bold' => true, 'size' => 18],
+            ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER, 'spacingAfter' => 300]
+        );
 
         // Abstract
         $section->addText('Abstract', ['bold' => true, 'size' => 14]);

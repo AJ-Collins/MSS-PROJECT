@@ -8,16 +8,21 @@
             <h2 class="text-2xl font-semibold text-gray-800 tracking-tight">Completed</h2>
             <div class="flex items-center gap-4">
                 <div class="relative">
-                    <input 
-                        type="text" 
-                        x-model="searchQuery" 
-                        placeholder="Search documents..."
-                        class="w-64 px-4 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                    >
-                    <svg class="absolute right-3 top-2.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                    </svg>
-                </div>
+                    <form x-data="{ searchQuery: '<?php echo e($searchQuery); ?>' }" 
+                        x-on:submit.prevent="window.location.href = '?search=' + searchQuery">
+                        <input 
+                            type="text" 
+                            x-model="searchQuery" 
+                            placeholder="Search documents..."
+                            class="w-64 px-4 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        >
+                        <button type="submit" class="absolute right-3 top-2.5">
+                            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                            </svg>
+                        </button>
+                    </form>
+                </div> 
             </div>
         </div>
     </div>
@@ -115,7 +120,7 @@
                             </td>
                             <td class="px-4 py-3 text-center">
                                 <div class="flex justify-center space-x-2">
-                                    <a href="<?php echo e(route('research.abstract.download', $submission->serial_number)); ?>" class="group relative p-2 text-gray-600 hover:text-indigo-600 rounded-full hover:bg-indigo-100 transition-colors duration-200">
+                                    <a href="<?php echo e(route('research.areviewerAbstract.download', $submission->serial_number)); ?>" class="group relative p-2 text-gray-600 hover:text-indigo-600 rounded-full hover:bg-indigo-100 transition-colors duration-200">
                                         <!-- PDF icon -->
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
@@ -125,7 +130,7 @@
                                             Download PDF
                                         </span>
                                     </a>
-                                    <a href="<?php echo e(route('abstract.abstractWord.download', $submission->serial_number)); ?>" class="group relative p-2 text-gray-600 hover:text-indigo-600 rounded-full hover:bg-indigo-100 transition-colors duration-200">
+                                    <a href="<?php echo e(route('abstract.reviwerAbstractWord.download', $submission->serial_number)); ?>" class="group relative p-2 text-gray-600 hover:text-indigo-600 rounded-full hover:bg-indigo-100 transition-colors duration-200">
                                         <!-- Word document icon -->
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
@@ -140,11 +145,14 @@
                             </td>
                         </tr>
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
-                        <tr>
-                            <td colspan="7" class="px-4 py-2 text-center text-sm text-gray-600">
-                                No documents assigned to review yet.
-                            </td>
-                        </tr>
+                    <tr>
+                        <td colspan="5" class="px-4 py-2 text-center">
+                            <?php echo e($searchQuery 
+                                ? "No documents found matching '" . htmlspecialchars($searchQuery) . "'" 
+                                : "No documents assigned to review yet."); ?>
+
+                        </td>
+                    </tr>
                     <?php endif; ?>
                 </tbody>
             </table>
@@ -297,7 +305,7 @@
                         </td>
                         <td class="px-4 py-3 text-center">
                             <div class="flex justify-center space-x-2">
-                                <a href="<?php echo e(route('proposal.abstract.download', $researchSubmission->serial_number)); ?>" class="group relative p-2 text-gray-600 hover:text-indigo-600 rounded-full hover:bg-indigo-100 transition-colors duration-200">
+                                <a href="<?php echo e(route('proposal.reviewerAbstract.download', $researchSubmission->serial_number)); ?>" class="group relative p-2 text-gray-600 hover:text-indigo-600 rounded-full hover:bg-indigo-100 transition-colors duration-200">
                                     <!-- PDF icon -->
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
@@ -307,7 +315,7 @@
                                         Download PDF
                                     </span>
                                 </a>
-                                <a href="<?php echo e(route('proposal.abstractWord.download', $researchSubmission->serial_number)); ?>" class="group relative p-2 text-gray-600 hover:text-indigo-600 rounded-full hover:bg-indigo-100 transition-colors duration-200">
+                                <a href="<?php echo e(route('proposal.reviewerAbstractWord.download', $researchSubmission->serial_number)); ?>" class="group relative p-2 text-gray-600 hover:text-indigo-600 rounded-full hover:bg-indigo-100 transition-colors duration-200">
                                     <!-- Word document icon -->
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
@@ -323,8 +331,11 @@
                     </tr>
                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                     <tr>
-                        <td colspan="7" class="px-4 py-2 text-center text-sm text-gray-600">
-                            No documents assigned to review yet.
+                        <td colspan="5" class="px-4 py-2 text-center">
+                            <?php echo e($searchQuery 
+                                ? "No documents found matching '" . htmlspecialchars($searchQuery) . "'" 
+                                : "No documents assigned to review yet."); ?>
+
                         </td>
                     </tr>
                 <?php endif; ?>

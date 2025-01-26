@@ -19,7 +19,7 @@ class DefaultAdminSeeder extends Seeder
             ['email' => 'kiprocolloaj@gmail.com'], // Unique email to prevent duplicates
             [
                 'reg_no' => 'BSCS219J2023', // Unique registration number
-                'salutation' => 'Dr',
+                'salutation' => 'Dr.',
                 'first_name' => 'Collins',
                 'last_name' => 'Kiprotich',
                 'email' => 'kiprocolloaj@gmail.com',

@@ -21,42 +21,54 @@ class ReviewerController extends Controller
     {
         return view('reviewer.partials.profile');
     }
-    public function dashboard()
-{
-    $reviewer = Auth::user();
+    public function dashboard(Request $request)
+    {
+        $reviewer = Auth::user();
+        $searchQuery = $request->input('search', '');
 
-    // Fetch pending abstract submissions
-    $submissions = $reviewer->abstractSubmissions()
-        ->wherePivot('status', 'pending')
-        ->paginate(5);
+        // Fetch pending abstract submissions with search
+        $submissions = $reviewer->abstractSubmissions()
+            ->wherePivot('status', 'pending')
+            ->where(function ($query) use ($searchQuery) {
+                $query->where('title', 'like', "%{$searchQuery}%")
+                    ->orWhere('serial_number', 'like', "%{$searchQuery}%")
+                    ->orWhere('sub_theme', 'like', "%{$searchQuery}%");
+            })
+            ->paginate(5);
 
-    // Fetch pending research submissions
-    $researchSubmissions = $reviewer->researchSubmissions()
-        ->wherePivot('status', 'pending')
-        ->paginate(5);
+        // Fetch pending research submissions with search
+        $researchSubmissions = $reviewer->researchSubmissions()
+            ->wherePivot('status', 'pending')
+            ->where(function ($query) use ($searchQuery) {
+                $query->where('article_title', 'like', "%{$searchQuery}%")
+                    ->orWhere('serial_number', 'like', "%{$searchQuery}%")
+                    ->orWhere('sub_theme', 'like', "%{$searchQuery}%");
+            })
+            ->paginate(5);
 
-    // Get total counts of all assignments (regardless of status)
-    $abstractCount = $reviewer->abstractSubmissions()->count();
-    $proposalCount = $reviewer->researchSubmissions()->count();
+        // Get total counts of all assignments (regardless of status)
+        $abstractCount = $reviewer->abstractSubmissions()->count();
+        $proposalCount = $reviewer->researchSubmissions()->count();
 
-    // Get counts of pending submissions
-    $newAbstractCount = $reviewer->abstractSubmissions()
-        ->wherePivot('status', 'pending')
-        ->count();
+        // Get counts of pending submissions
+        $newAbstractCount = $reviewer->abstractSubmissions()
+            ->wherePivot('status', 'pending')
+            ->count();
 
-    $newProposalCount = $reviewer->researchSubmissions()
-        ->wherePivot('status', 'pending')
-        ->count();
+        $newProposalCount = $reviewer->researchSubmissions()
+            ->wherePivot('status', 'pending')
+            ->count();
 
-    return view('reviewer.partials.dashboard', compact(
-        'submissions',
-        'researchSubmissions',
-        'abstractCount',
-        'proposalCount',
-        'newAbstractCount',
-        'newProposalCount'
-    ));
-}
+        return view('reviewer.partials.dashboard', compact(
+            'submissions',
+            'researchSubmissions',
+            'abstractCount',
+            'proposalCount',
+            'newAbstractCount',
+            'newProposalCount',
+            'searchQuery'
+        ));
+    }
     public function abstractStatus(Request $request)
     {
         $request->validate([
@@ -153,9 +165,10 @@ class ReviewerController extends Controller
 
         return back()->with('success', 'Reviewer status updated and reviewer unassigned successfully!');
     }
-    public function documentsReview()
+    public function documentsReview(Request $request)
     {
         $reviewer = Auth::user();
+        $searchQuery = $request->input('search', '');
 
         // Fetch abstracts assigned to the reviewer with pending status
         $submissions = $reviewer->abstractSubmissions()
@@ -168,6 +181,11 @@ class ReviewerController extends Controller
                 'abstract_submissions.*', 
                 'research_assessments.total_score as reviewer_total_score'
             )
+            ->where(function ($query) use ($searchQuery) {
+                $query->where('abstract_submissions.title', 'like', "%{$searchQuery}%")
+                    ->orWhere('abstract_submissions.serial_number', 'like', "%{$searchQuery}%")
+                    ->orWhere('abstract_submissions.sub_theme', 'like', "%{$searchQuery}%");
+            })
             ->paginate(10);
 
         // Fetch research submissions with pending status
@@ -181,6 +199,11 @@ class ReviewerController extends Controller
                 'research_submissions.*', 
                 'proposal_assessments.total_score as reviewer_total_score'
             )
+            ->where(function ($query) use ($searchQuery) {
+                $query->where('research_submissions.article_title', 'like', "%{$searchQuery}%")
+                    ->orWhere('research_submissions.serial_number', 'like', "%{$searchQuery}%")
+                    ->orWhere('research_submissions.sub_theme', 'like', "%{$searchQuery}%");
+            })
             ->paginate(10);
 
         $abstractCount = $submissions->total();
@@ -190,7 +213,8 @@ class ReviewerController extends Controller
             'submissions', 
             'researchSubmissions', 
             'abstractCount', 
-            'proposalCount'
+            'proposalCount',
+            'searchQuery'
         ));
     }
     public function assignedAbstracts()
@@ -265,9 +289,10 @@ class ReviewerController extends Controller
             'authors' => $authors,
         ]);
     }
-    public function revieweddocuments()
+    public function revieweddocuments(Request $request)
     {
         $reviewer = Auth::user(); // Assuming the reviewer is logged in
+        $searchQuery = $request->input('search', '');
 
         // Fetch abstracts reviewed by the logged-in reviewer
         $submissions = $reviewer->abstractSubmissions()
@@ -280,6 +305,11 @@ class ReviewerController extends Controller
                 'research_assessments.total_score as reviewer_total_score'
             )
             ->whereNotNull('research_assessments.total_score')
+            ->where(function ($query) use ($searchQuery) {
+                $query->where('abstract_submissions.title', 'like', "%{$searchQuery}%")
+                      ->orWhere('abstract_submissions.serial_number', 'like', "%{$searchQuery}%")
+                      ->orWhere('abstract_submissions.sub_theme', 'like', "%{$searchQuery}%");
+            })
             ->paginate(20);
 
         // Fetch research submissions reviewed by the logged-in reviewer
@@ -293,12 +323,22 @@ class ReviewerController extends Controller
                 'proposal_assessments.total_score as reviewer_total_score'
             )
             ->whereNotNull('proposal_assessments.total_score')
+            ->where(function ($query) use ($searchQuery) {
+                $query->where('research_submissions.article_title', 'like', "%{$searchQuery}%")
+                      ->orWhere('research_submissions.serial_number', 'like', "%{$searchQuery}%")
+                      ->orWhere('research_submissions.sub_theme', 'like', "%{$searchQuery}%");
+            })
             ->paginate(20);
 
         $abstractCount = $submissions->total();
         $proposalCount = $researchSubmissions->total();
 
-        return view('reviewer.partials.revieweddocuments', compact('submissions', 'researchSubmissions', 'abstractCount', 'proposalCount'));
+        return view('reviewer.partials.revieweddocuments', compact(
+            'submissions', 
+            'researchSubmissions', 
+            'abstractCount', 
+            'proposalCount',
+            'searchQuery'));
     }
 
     public function AbstractAssessment($serial_number)
@@ -335,7 +375,6 @@ class ReviewerController extends Controller
     public function AbstracPreview($serial_number)
     {
         $abstract = AbstractSubmission::where('serial_number', $serial_number)
-            ->whereNull('score')
             ->with(['authors' => function ($query) {
                 $query->select('first_name', 'middle_name', 'surname', 'abstract_submission_id')->distinct();
             }])
@@ -348,7 +387,7 @@ class ReviewerController extends Controller
         return response()->json([
             'title' => $abstract->title,
             'content' => $abstract->abstract,
-            'keywords' => $abstract->keywords,
+            'keywords' => json_decode($abstract->keywords, true) ?? [],
             'sub_theme' => $abstract->sub_theme,
             'authors' => $abstract->authors->map(function ($author) {
                 return [
@@ -362,7 +401,6 @@ class ReviewerController extends Controller
     public function ProposalPreview($serial_number)
     {
         $abstract = ResearchSubmission::where('serial_number', $serial_number)
-            ->whereNull('score')
             ->with(['authors' => function ($query) {
                 $query->select('first_name', 'middle_name', 'surname', 'research_submission_id')->distinct();
             }])
@@ -375,7 +413,7 @@ class ReviewerController extends Controller
         return response()->json([
             'title' => $abstract->article_title,
             'content' => $abstract->abstract,
-            'keywords' => $abstract->keywords,
+            'keywords' => json_decode($abstract->keywords, true) ?? [],
             'sub_theme' => $abstract->sub_theme,
             'authors' => $abstract->authors->map(function ($author) {
                 return [

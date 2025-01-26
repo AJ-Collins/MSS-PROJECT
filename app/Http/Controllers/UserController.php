@@ -31,9 +31,10 @@ class UserController extends Controller
         
         return view('user.partials.profile');
     }
-    public function dashboard()
+    public function dashboard(Request $request)
     {
         $user = auth()->user();
+        $searchQuery = $request->input('search', '');
         
         // Count total abstracts 
         $totalAbstracts = AbstractSubmission::where('user_reg_no', $user->reg_no)->count();
@@ -54,8 +55,19 @@ class UserController extends Controller
 
         $submissions = AbstractSubmission::where('user_reg_no', $user->reg_no)
             ->where('pdf_path',  null)
-            ->paginate(5);
-        $researchSubmissions = ResearchSubmission::where('user_reg_no', $user->reg_no)->paginate(5);
+            ->where(function ($query) use ($searchQuery) {
+                $query->where('title', 'like', "%{$searchQuery}%")
+                    ->orWhere('serial_number', 'like', "%{$searchQuery}%")
+                    ->orWhere('sub_theme', 'like', "%{$searchQuery}%");
+            })
+            ->paginate(10);
+        $researchSubmissions = ResearchSubmission::where('user_reg_no', $user->reg_no)
+            ->where(function ($query) use ($searchQuery) {
+                $query->where('article_title', 'like', "%{$searchQuery}%")
+                    ->orWhere('serial_number', 'like', "%{$searchQuery}%")
+                    ->orWhere('sub_theme', 'like', "%{$searchQuery}%");
+            })
+            ->paginate(10);
 
         $draft = $this->getCurrentDraft();
         
@@ -68,19 +80,35 @@ class UserController extends Controller
             'draft' => $draft,
             'notifications' => $this->notifications,
             'unreadCount' => $this->unreadCount,
-            'totalArticles' => $totalArticles
+            'totalArticles' => $totalArticles,
+            'searchQuery' => $searchQuery
 
         ]);
     }
-    public function documents()
+    public function documents(Request $request)
     {
         $user = auth()->user();
+        $searchQuery = $request->input('search', '');
 
         $submissions = AbstractSubmission::where('user_reg_no', $user->reg_no)
+            ->where(function ($query) use ($searchQuery) {
+                $query->where('title', 'like', "%{$searchQuery}%")
+                    ->orWhere('serial_number', 'like', "%{$searchQuery}%")
+                    ->orWhere('sub_theme', 'like', "%{$searchQuery}%");
+            })
             ->paginate(10);
-        $researchSubmissions = ResearchSubmission::where('user_reg_no', $user->reg_no)->paginate(10);
+        $researchSubmissions = ResearchSubmission::where('user_reg_no', $user->reg_no)
+            ->where(function ($query) use ($searchQuery) {
+                $query->where('article_title', 'like', "%{$searchQuery}%")
+                    ->orWhere('serial_number', 'like', "%{$searchQuery}%")
+                    ->orWhere('sub_theme', 'like', "%{$searchQuery}%");
+            })
+            ->paginate(10);
 
-        return view('user.partials.documents', compact('submissions', 'researchSubmissions'));
+        return view('user.partials.documents', compact(
+            'submissions', 
+            'researchSubmissions',
+            'searchQuery'));
     }
     public function viewProposal($serial_number)
     {

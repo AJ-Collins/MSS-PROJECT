@@ -94,6 +94,55 @@ class ProposalController extends Controller
         // Return the generated PDF as a downloadable response
         return $dompdf->stream('abstract_' . $researchSubmission->serial_number . '.pdf');
     }
+    public function reviewerDownloadPdf($serial_number)
+    {
+        // Fetch the abstract submission by ID with the authors relationship
+        $researchSubmission = ResearchSubmission::with('authors')->findOrFail($serial_number);
+
+        // Extract relevant data
+        $title = $researchSubmission->article_title;
+        $abstract = $researchSubmission->abstract;
+        $keywords = json_decode($researchSubmission->keywords, true) ?? [];
+        $subTheme = $researchSubmission->sub_theme;
+
+        // Generate the HTML content for the PDF
+        $html = '<html><head><title>' . $title . '</title>';
+        $html .= '<style>';
+        $html .= 'body { font-family: "Times New Roman", Times, serif; font-size: 14px; line-height: 1.6; }';
+        $html .= 'h1 { text-align: center; font-weight: bold; font-size: 20px; }';
+        $html .= 'p, ul { text-align: justify; }';
+        $html .= '.author-list { text-align: center; margin-bottom: 20px; }'; // Center container
+        $html .= '.author-list p { margin: 5px 0; }'; // Center paragraphs
+        $html .= '.author-email { color: blue; font-style: italic; }';
+        $html .= '</style>';
+        $html .= '</head><body>';
+
+        // Title
+        $html .= '<h1>' . $title . '</h1>';
+
+        // Abstract
+        $html .= '<h3>ABSTRACT</h3>';
+        $html .= '<p>' . $abstract . '</p>';
+
+        // Keywords
+        $html .= '<h3>Keywords</h3>';
+        $html .= '<p>' . implode(', ', $keywords) . '</p>';
+
+        // Sub-theme
+        $html .= '<h3>Sub-Theme</h3>';
+        $html .= '<p>' . $subTheme . '</p>';
+
+        $html .= '</body></html>';
+
+        // Generate the PDF using Dompdf
+        $dompdf = new Dompdf();
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        // Return the generated PDF as a downloadable response
+        return $dompdf->stream('abstract_' . $researchSubmission->serial_number . '.pdf');
+    }
     public function downloadProposalWord($serial_number)
     {
         // Fetch the research submission by serial number with the authors relationship
@@ -171,6 +220,76 @@ class ProposalController extends Controller
 
         $section->addText($universitiesText, ['size' => 11], 'Center');
         $section->addText($departmentsText, ['size' => 10], 'Center');
+
+        // Abstract
+        $section->addTitle('ABSTRACT', 2);
+        $section->addText($researchSubmission->abstract, ['size' => 11], 'Normal');
+
+        // Keywords
+        $keywords = json_decode($researchSubmission->keywords, true) ?? [];
+        $section->addTitle('Keywords', 2);
+        $section->addText(implode(', ', $keywords), ['size' => 11], 'Normal');
+
+        // Sub-theme
+        $section->addTitle('Sub-Theme', 2);
+        $section->addText($researchSubmission->sub_theme, ['size' => 11], 'Normal');
+
+        // Generate the Word document
+        $fileName = 'proposal_' . $researchSubmission->serial_number . '.docx';
+        $tempFilePath = storage_path($fileName);
+        $writer = IOFactory::createWriter($phpWord, 'Word2007');
+        $writer->save($tempFilePath);
+
+        // Return the Word document as a downloadable response
+        return response()->download($tempFilePath)->deleteFileAfterSend(true);
+    }
+    public function downloadReviewerProposalWord($serial_number)
+    {
+        // Fetch the research submission by serial number with the authors relationship
+        $researchSubmission = ResearchSubmission::with('authors')->findOrFail($serial_number);
+
+        // Initialize PhpWord
+        $phpWord = new PhpWord();
+
+        // Define styles
+        $phpWord->addTitleStyle(1, [
+            'bold' => true, 
+            'size' => 14,
+            'spaceAfter' => 120
+        ], [
+            'alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER
+        ]);
+
+        $phpWord->addTitleStyle(2, [
+            'bold' => true, 
+            'size' => 12,
+            'spaceAfter' => 120
+        ], [
+            'alignment' => \PhpOffice\PhpWord\SimpleType\Jc::BOTH
+        ]);
+
+        // Define paragraph styles
+        $phpWord->addParagraphStyle('Normal', [
+            'alignment' => \PhpOffice\PhpWord\SimpleType\Jc::BOTH,
+            'lineHeight' => 1.15,
+            'spaceAfter' => 120
+        ]);
+
+        $phpWord->addParagraphStyle('Center', [
+            'alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER,
+            'spaceAfter' => 120
+        ]);
+
+        // Create single section with margins
+        $section = $phpWord->addSection([
+            'marginLeft' => 1440,   // 1 inch in twips
+            'marginRight' => 1440,
+            'marginTop' => 1440,
+            'marginBottom' => 1440
+        ]);
+
+        // Title
+        $section->addTitle($researchSubmission->article_title, 1);
 
         // Abstract
         $section->addTitle('ABSTRACT', 2);

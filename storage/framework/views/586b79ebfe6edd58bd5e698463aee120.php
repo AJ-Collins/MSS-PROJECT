@@ -102,8 +102,24 @@
         </div>
         <div x-show="activeTab === 'abstracts'">
                 <div class="bg-white shadow-sm border border-gray-100 overflow-hidden">
-                    <div class="p-6 border-b border-gray-100">
+                    <div class="flex justify-between items-center p-4">
                         <h2 class="text-xl font-semibold text-gray-800">Documents</h2>
+                        <div class="relative">
+                            <form x-data="{ searchQuery: '<?php echo e($searchQuery); ?>' }" 
+                                x-on:submit.prevent="window.location.href = '?search=' + searchQuery">
+                                <input 
+                                    type="text" 
+                                    x-model="searchQuery" 
+                                    placeholder="Search documents..."
+                                    class="w-64 px-4 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                >
+                                <button type="submit" class="absolute right-3 top-2.5">
+                                    <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                    </svg>
+                                </button>
+                            </form>
+                        </div>
                     </div>
                     <div class="overflow-x-auto">
                         <table class="w-full">
@@ -119,7 +135,7 @@
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-100">
-                            <?php $__currentLoopData = $submissions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $submission): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <?php $__empty_1 = true; $__currentLoopData = $submissions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $submission): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                                     <tr class="hover:bg-gray-50 transition duration-150">
                                         <td class="px-4 py-3 text-sm text-gray-700">
                                             <div class="font-medium"><?php echo e($submission->title); ?></div>
@@ -182,7 +198,16 @@
                                             </div>
                                         </td>
                                     </tr>
-                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                                <tr>
+                                    <td colspan="5" class="px-4 py-2 text-center">
+                                        <?php echo e($searchQuery 
+                                            ? "No documents found matching '" . htmlspecialchars($searchQuery) . "'" 
+                                            : "No documents assigned to review yet."); ?>
+
+                                    </td>
+                                </tr>
+                                <?php endif; ?>
                             </tbody>
                         </table>
                         <!-- Pagination Container -->
@@ -284,8 +309,24 @@
 
         <div x-show="activeTab === 'proposals'">
                 <div class="bg-white shadow-sm border border-gray-100 overflow-hidden">
-                    <div class="p-6 border-b border-gray-100">
+                <div class="flex justify-between items-center p-4">
                         <h2 class="text-xl font-semibold text-gray-800">Documents</h2>
+                        <div class="relative">
+                            <form x-data="{ searchQuery: '<?php echo e($searchQuery); ?>' }" 
+                                x-on:submit.prevent="window.location.href = '?search=' + searchQuery">
+                                <input 
+                                    type="text" 
+                                    x-model="searchQuery" 
+                                    placeholder="Search documents..."
+                                    class="w-64 px-4 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                >
+                                <button type="submit" class="absolute right-3 top-2.5">
+                                    <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                    </svg>
+                                </button>
+                            </form>
+                        </div>
                     </div>
                     <div class="overflow-x-auto">
                         <table class="w-full">
@@ -301,7 +342,7 @@
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-100">
-                            <?php $__currentLoopData = $researchSubmissions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $researchSubmission): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <?php $__empty_1 = true; $__currentLoopData = $researchSubmissions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $researchSubmission): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                                     <tr class="hover:bg-gray-50 transition duration-150">
                                         <td class="px-4 py-3 text-sm text-gray-700">
                                             <div class="font-medium"><?php echo e($researchSubmission->article_title); ?></div>
@@ -364,7 +405,16 @@
                                             </div>
                                         </td>
                                     </tr>
-                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                                <tr>
+                                    <td colspan="5" class="px-4 py-2 text-center">
+                                        <?php echo e($searchQuery 
+                                            ? "No documents found matching '" . htmlspecialchars($searchQuery) . "'" 
+                                            : "No documents assigned to review yet."); ?>
+
+                                    </td>
+                                </tr>
+                                <?php endif; ?>
                             </tbody>
                         </table>
                         <!-- Pagination Container -->

@@ -25,10 +25,10 @@
     
     <style>
         :root {
-            --primary-color:rgb(147, 142, 2);
+            --primary-color:rgb(216, 152, 55);
             --primary-dark: #004F8F;
             --secondary-color: #FFB81C;
-            --accent-color:rgb(8, 94, 116);
+            --accent-color:rgb(216, 152, 55);
         }
 
         /* Enhanced Loading Bar Styles */
@@ -192,7 +192,7 @@
         }
         .profile-photo {
             @apply h-8 w-8 rounded-full object-cover;
-            border: 2px solid rgba(255, 255, 255, 0.8);
+            border: 2px solid rgba(0, 0, 0, 0.8);
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
@@ -234,13 +234,13 @@
                 <!-- Left Section -->
                 <div class="flex items-center">
                     <button @click="sidebarOpen = !sidebarOpen" 
-                            class="p-2 rounded-md text-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/30 transition-all duration-200"
+                            class="p-2 rounded-md text-gray-800 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-white/30 transition-all duration-200"
                             aria-label="Toggle Sidebar">
                         <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                         </svg>
                     </button>
-                    <h2 class="ml-4 text-2xl font-bold text-white flex items-center">
+                    <h2 class="ml-4 text-2xl font-bold text-gray-800 flex items-center">
                         {{ $pageTitle }}
                     </h2>
                 </div>
@@ -250,7 +250,7 @@
                     <!-- Quick Submit Button -->
                     @if($currentRole == 'user')
                     <a href="{{route('user.submit')}}" 
-                    class="hidden md:flex items-center px-4 py-2 bg-white/10 text-white rounded-md hover:bg-gray-100 hover:text-gray-800 transition-all duration-200">
+                    class="hidden md:flex items-center px-4 py-2 text-gray-800 rounded-md border border-gray-800 hover:bg-gray-100 hover:text-gray-800 transition-all duration-200">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                         </svg>
@@ -261,7 +261,7 @@
                     <!-- Notifications with Badge -->
                     <div class="relative" x-data="{ open: false }">
                         <button @click="open = !open" 
-                                class="p-2 text-white hover:text-gray-500 hover:bg-gray-100 rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                class="p-2 text-gray-800 hover:text-gray-500 hover:bg-gray-100 rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-500">
                             <span class="sr-only">View notifications</span>
                             <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
@@ -295,17 +295,17 @@
                     <div class="relative" x-data="{ open: false }">
                         <button @click="open = !open" 
                                 class="flex items-center space-x-2 text-white rounded-md hover:text-gray-800 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-white/30 group">
-                            <img class="h-8 w-8 rounded-full" 
+                            <img class="h-8 w-8 rounded-full border border-gray-800" 
                                 src="{{ asset('storage/' . $user->profile_photo_url ?? 'default-profile.png') }}" 
                                 alt="{{ $user->first_name }}">
                             <div class="hidden md:block text-left">
-                                <div class="text-sm font-semibold text-white group-hover:text-gray-800">{{ $user->salutation .  ' ' . $user->first_name }}</div>
+                                <div class="text-sm font-semibold text-gray-800 group-hover:text-gray-800">{{ $user->salutation .  ' ' . $user->first_name }}</div>
                                 @if($currentRole == 'admin')
-                                    <div class="text-xs text-white group-hover:text-gray-800">Admin</div>
+                                    <div class="text-xs text-gray-800 group-hover:text-gray-800">Admin</div>
                                 @elseif($currentRole == 'reviewer')
-                                    <div class="text-xs text-white group-hover:text-gray-800">Reviewer</div>
+                                    <div class="text-xs text-gray-800 group-hover:text-gray-800">Reviewer</div>
                                 @elseif($currentRole == 'user')
-                                    <div class="text-xs text-white group-hover:text-gray-800">User</div>
+                                    <div class="text-xs text-gray-800 group-hover:text-gray-800">User</div>
                                 @endif
                             </div>
                         </button>
@@ -373,7 +373,7 @@
         <!-- Enhanced Sidebar -->
         <aside x-cloak
             :class="{'translate-x-0': sidebarOpen, '-translate-x-full': !sidebarOpen}"
-            class="fixed inset-y-0 left-0 z-40 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0">
+            class="fixed inset-y-0 left-0 z-40 w-64 shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0" style="background-color: rgb(0, 128, 55);">
             <nav class="mt-16 lg:mt-4 p-4 space-y-4">
 
                 <!-- Author Section for Admins -->
@@ -383,39 +383,39 @@
                         Home
                     </div>-->
                     <!-- Enhanced Navigation Items with Icons -->
-                    <a href="{{ route('admin.dashboard') }}" class="flex items-center text-gray-800 hover:bg-gray-200 hover:text-gray-900 rounded-md px-3 py-2 transition-colors duration-200">
-                        <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <a href="{{ route('admin.dashboard') }}" class="flex items-center text-gray-100 font-medium hover:text-gray-400 group hover:bg-green-800 rounded-md px-3 py-2 transition-colors duration-200">
+                        <svg class="w-5 h-5 mr-2 text-green-500 group-hover:text-gray-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
                         </svg>
                         Dashboard
                     </a>
-                    <a href="{{ route('admin.abstracts') }}" class="flex items-center text-gray-800 hover:bg-gray-200 hover:text-gray-900 rounded-md px-3 py-2 transition-colors duration-200">
-                        <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <a href="{{ route('admin.abstracts') }}" class="flex items-center text-gray-100 font-medium hover:text-gray-400 group hover:bg-green-800 rounded-md px-3 py-2 transition-colors duration-200">
+                        <svg class="w-5 h-5 mr-2 text-green-500 group-hover:text-gray-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
                         Conference Papers
                     </a>
-                    <a href="{{ route('admin.proposals') }}" class="flex items-center text-gray-800 hover:bg-gray-200 hover:text-gray-900 rounded-md px-3 py-2 transition-colors duration-200">
-                        <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <a href="{{ route('admin.proposals') }}" class="flex items-center text-gray-100 font-medium hover:text-gray-400 group hover:bg-green-800 rounded-md px-3 py-2 transition-colors duration-200">
+                        <svg class="w-5 h-5 mr-2 text-green-500 group-hover:text-gray-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                         </svg>
                         Proposal Papers
                     </a>
-                    <a href="{{ route('admin.reports') }}" class="flex items-center text-gray-800 hover:bg-gray-200 hover:text-gray-900 rounded-md px-3 py-2 transition-colors duration-200">
-                        <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <a href="{{ route('admin.reports') }}" class="flex items-center text-gray-100 font-medium hover:text-gray-400 group hover:bg-green-800 rounded-md px-3 py-2 transition-colors duration-200">
+                        <svg class="w-5 h-5 mr-2 text-green-500 group-hover:text-gray-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
                         </svg>
                         Completed
                     </a>
-                    <a href="{{ route('admin.users') }}" class="flex items-center text-gray-800 hover:bg-gray-200 hover:text-gray-900 rounded-md px-3 py-2 transition-colors duration-200">
-                        <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <a href="{{ route('admin.users') }}" class="flex items-center text-gray-100 font-medium hover:text-gray-400 group hover:bg-green-800 rounded-md px-3 py-2 transition-colors duration-200">
+                        <svg class="w-5 h-5 mr-2 text-green-500 group-hover:text-gray-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                         </svg>
                         Manage Users
                     </a>
                     
-                    <a href="{{ route('submission-types.index')}}" class="flex items-center text-gray-800 hover:bg-gray-200 hover:text-gray-900 rounded-md px-3 py-2 transition-colors duration-200">
-                        <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <a href="{{ route('submission-types.index')}}" class="flex items-center text-gray-100 font-medium hover:text-gray-400 group hover:bg-green-800 rounded-md px-3 py-2 transition-colors duration-200">
+                        <svg class="w-5 h-5 mr-2 text-green-500 group-hover:text-gray-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                         </svg>
                         Submission Types
@@ -447,10 +447,10 @@
                             }" class="relative">
                                 <button 
                                     @click="open = !open"
-                                    class="w-full flex items-center justify-between px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+                                    class="w-full flex items-center justify-between px-3 py-2 font-medium text-gray-100 group hover:text-gray-400 hover:bg-green-800 rounded-md transition-colors"
                                 >
                                     <span class="flex items-center">
-                                        <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="w-5 h-5 mr-2 text-green-500 group-hover:text-gray-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
                                         </svg>
                                         Switch Roles
@@ -465,17 +465,20 @@
                                 <div 
                                     x-show="open"
                                     @click.outside="open = false"
-                                    class="absolute z-10 w-full mt-1 bg-white shadow-lg rounded-md"
+                                    class="absolute z-10 w-full mt-1 shadow-lg rounded-md" style="background-color: rgb(0, 121, 52);"
                                 >
                                     <div class="p-2">
                                         @foreach(auth()->user()->roles as $role)
-                                            <button 
-                                                @click="switchRole('{{ $role->name }}')"
-                                                class="w-full text-left px-3 py-2 hover:bg-gray-100 rounded-md 
-                                                    {{ session('current_role') == $role->name ? 'bg-blue-50 text-blue-700' : 'text-gray-700' }}" 
+                                        <button
+                                            @click="switchRole('{{ $role->name }}')"
+                                            class="flex items-center w-full text-left px-3 py-2 text-gray-100 font-medium group hover:text-gray-400 hover:bg-green-800 rounded-md transition-colors duration-200"
+                                        >
+                                            <span
+                                                class="{{ session('current_role') == $role->name ? 'text-gray-700' : 'text-gray-100 group-hover:text-gray-400' }}"
                                             >
                                                 {{ ucfirst($role->name) }} Role
-                                            </button>
+                                            </span>
+                                        </button>
                                         @endforeach
                                     </div>
                                 </div>
@@ -491,27 +494,27 @@
                         Home
                     </div>-->
                     <!-- Enhanced Navigation Items with Icons -->
-                    <a href="{{ route('reviewer.dashboard') }}" class="flex items-center text-gray-800 hover:bg-gray-200 hover:text-gray-900 rounded-md px-3 py-2 transition-colors duration-200">
-                        <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <a href="{{ route('reviewer.dashboard') }}" class="flex items-center text-gray-100 font-medium hover:text-gray-400 group hover:bg-green-800 rounded-md px-3 py-2 transition-colors duration-200">
+                        <svg class="w-5 h-5 mr-2 text-green-500 group-hover:text-gray-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
                         </svg>
                         Dashboard
                     </a>
-                    <a href="{{ route('reviewer.documents') }}" class="flex items-center text-gray-800 hover:bg-gray-200 hover:text-gray-900 rounded-md px-3 py-2 transition-colors duration-200">
-                        <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <a href="{{ route('reviewer.documents') }}" class="flex items-center text-gray-100 hover:text-gray-400 group font-medium hover:bg-green-800 rounded-md px-3 py-2 transition-colors duration-200">
+                        <svg class="w-5 h-5 mr-2 text-green-500 group-hover:text-gray-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                         </svg>
                         To Review
                     </a>
-                    <a href="{{ route('reviewer.reviewed')}}" class="flex items-center text-gray-800 hover:bg-gray-200 hover:text-gray-900 rounded-md px-3 py-2 transition-colors duration-200">
-                        <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <a href="{{ route('reviewer.reviewed')}}" class="flex items-center text-gray-100 hover:text-gray-400 group font-medium hover:bg-green-800 rounded-md px-3 py-2 transition-colors duration-200">
+                        <svg class="w-5 h-5 mr-2 text-green-500 group-hover:text-gray-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
                         </svg>
                         Reviewed
                     </a>
-                    <a href="{{ route('reviewer.profile') }}" class="flex items-center text-gray-800 hover:bg-gray-200 hover:text-gray-900 rounded-md px-3 py-2 transition-colors duration-200">
-                        <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <a href="{{ route('reviewer.profile') }}" class="flex items-center text-gray-100 hover:text-gray-400 group font-medium hover:bg-green-800 rounded-md px-3 py-2 transition-colors duration-200">
+                        <svg class="w-5 h-5 mr-2 text-green-500 group-hover:text-gray-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                         </svg>
                         Profile
@@ -543,10 +546,10 @@
                             }" class="relative">
                                 <button 
                                     @click="open = !open"
-                                    class="w-full flex items-center justify-between px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+                                    class="w-full flex items-center justify-between px-3 py-2 font-medium text-gray-100 group hover:text-gray-400 hover:bg-green-800 rounded-md transition-colors"
                                 >
                                     <span class="flex items-center">
-                                        <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="w-5 h-5 mr-2 text-green-500 group-hover:text-gray-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
                                         </svg>
                                         Switch Roles
@@ -561,17 +564,20 @@
                                 <div 
                                     x-show="open"
                                     @click.outside="open = false"
-                                    class="absolute z-10 w-full mt-1 bg-white shadow-lg rounded-md"
+                                    class="absolute z-10 w-full mt-1 shadow-lg rounded-md" style="background-color: rgb(0, 121, 52);"
                                 >
                                     <div class="p-2">
                                         @foreach(auth()->user()->roles as $role)
-                                            <button 
-                                                @click="switchRole('{{ $role->name }}')"
-                                                class="w-full text-left px-3 py-2 hover:bg-gray-100 rounded-md 
-                                                    {{ session('current_role') == $role->name ? 'bg-blue-50 text-blue-700' : 'text-gray-700' }}" 
+                                        <button
+                                            @click="switchRole('{{ $role->name }}')"
+                                            class="flex items-center w-full text-left px-3 py-2 text-gray-100 font-medium group hover:text-gray-400 hover:bg-green-800 rounded-md transition-colors duration-200"
+                                        >
+                                            <span
+                                                class="{{ session('current_role') == $role->name ? 'text-gray-700' : 'text-gray-100 group-hover:text-gray-400' }}"
                                             >
                                                 {{ ucfirst($role->name) }} Role
-                                            </button>
+                                            </span>
+                                        </button>
                                         @endforeach
                                     </div>
                                 </div>
@@ -587,33 +593,33 @@
                         Home
                     </div>-->
                     <!-- Enhanced Navigation Items with Icons -->
-                    <a href="{{route('user.dashboard')}}" class="flex items-center text-gray-800 hover:bg-gray-200 hover:text-gray-900 rounded-md px-3 py-2 transition-colors duration-200">
-                        <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <a href="{{route('user.dashboard')}}" class="flex items-center text-gray-100 font-medium hover:text-gray-400 group hover:bg-green-800 rounded-md px-3 py-2 transition-colors duration-200">
+                        <svg class="w-5 h-5 mr-2 text-green-500 group-hover:text-gray-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
                         </svg>
                         Dashboard
                     </a>
-                    <a href="{{route('user.submit')}}" class="flex items-center text-gray-800 hover:bg-gray-200 hover:text-gray-900 rounded-md px-3 py-2 transition-colors duration-200">
-                        <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <a href="{{route('user.submit')}}" class="flex items-center text-gray-100 font-medium hover:text-gray-400 group hover:bg-green-800 rounded-md px-3 py-2 transition-colors duration-200">
+                        <svg class="w-5 h-5 mr-2 text-green-500 group-hover:text-gray-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                         </svg>
                         Submit
                     </a>
-                    <a href="{{route('user.documents')}}" class="flex items-center text-gray-800 hover:bg-gray-200 hover:text-gray-900 rounded-md px-3 py-2 transition-colors duration-200">
-                        <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <a href="{{route('user.documents')}}" class="flex items-center text-gray-100 font-medium hover:text-gray-400 group hover:bg-green-800 rounded-md px-3 py-2 transition-colors duration-200">
+                        <svg class="w-5 h-5 mr-2 text-green-500 group-hover:text-gray-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
                         Submissions
                     </a>
-                    <a href="{{ route('user.drafts') }}" class="flex items-center text-gray-800 hover:bg-gray-200 hover:text-gray-900 rounded-md px-3 py-2 transition-colors duration-200">
-                        <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <a href="{{ route('user.drafts') }}" class="flex items-center text-gray-100 font-medium hover:text-gray-400 group hover:bg-green-800 rounded-md px-3 py-2 transition-colors duration-200">
+                        <svg class="w-5 h-5 mr-2 text-green-500 group-hover:text-gray-100" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
                         </svg>
                         Drafts
                     </a>
                     
-                    <a href="{{ route('user.profile') }}" class="flex items-center text-gray-800 hover:bg-gray-200 hover:text-gray-900 rounded-md px-3 py-2 transition-colors duration-200">
-                        <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <a href="{{ route('user.profile') }}" class="flex items-center text-gray-100 font-medium hover:text-gray-400 group hover:bg-green-800 rounded-md px-3 py-2 transition-colors duration-200">
+                        <svg class="w-5 h-5 mr-2 text-green-500 group-hover:text-gray-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                         </svg>
                         Profile
@@ -645,10 +651,10 @@
                             }" class="relative">
                                 <button 
                                     @click="open = !open"
-                                    class="w-full flex items-center justify-between px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+                                    class="w-full flex items-center justify-between px-3 py-2 font-medium text-gray-100 group hover:text-gray-400 hover:bg-green-800 rounded-md transition-colors"
                                 >
                                     <span class="flex items-center">
-                                        <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="w-5 h-5 mr-2 text-green-500 group-hover:text-gray-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
                                         </svg>
                                         Switch Roles
@@ -663,17 +669,20 @@
                                 <div 
                                     x-show="open"
                                     @click.outside="open = false"
-                                    class="absolute z-10 w-full mt-1 bg-white shadow-lg rounded-md"
+                                    class="absolute z-10 w-full mt-1 shadow-lg rounded-md" style="background-color: rgb(0, 121, 52);"
                                 >
                                     <div class="p-2">
                                         @foreach(auth()->user()->roles as $role)
-                                            <button 
-                                                @click="switchRole('{{ $role->name }}')"
-                                                class="w-full text-left px-3 py-2 hover:bg-gray-100 rounded-md 
-                                                    {{ session('current_role') == $role->name ? 'bg-blue-50 text-blue-700' : 'text-gray-700' }}" 
+                                        <button
+                                            @click="switchRole('{{ $role->name }}')"
+                                            class="flex items-center w-full text-left px-3 py-2 text-gray-100 font-medium group hover:text-gray-400 hover:bg-green-800 rounded-md transition-colors duration-200"
+                                        >
+                                            <span
+                                                class="{{ session('current_role') == $role->name ? 'text-gray-700' : 'text-gray-100 group-hover:text-gray-400' }}"
                                             >
                                                 {{ ucfirst($role->name) }} Role
-                                            </button>
+                                            </span>
+                                        </button>
                                         @endforeach
                                     </div>
                                 </div>

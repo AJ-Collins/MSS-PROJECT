@@ -5,8 +5,7 @@
     <!-- Main Content -->
     <div class="flex flex-col md:flex-row h-screen">
         <!-- Left Panel - Assessment Form -->
-        <div class="w-full md:w-1/2 h-full flex flex-col border-r border-gray-200 bg-white">
-            <!-- Header -->
+        <div id="left-panel" class="w-full md:w-1/2 h-full flex flex-col border-r border-gray-200 bg-white resizeable-panel">
             <div class="flex-none bg-white border-b border-gray-200">
                 <div class="px-6 py-4">
                     <div class="flex items-center justify-between">
@@ -25,7 +24,6 @@
                 </div>
             </div>
 
-            <!-- Scrollable Form Content -->
             <div class="flex-1 overflow-y-auto">
                 <form 
                     @submit.prevent="submitForm"
@@ -164,8 +162,22 @@
             </div>            
         </div>
 
+        <!-- Divider for resizing -->
+        <div id="divider" class="w-2 bg-gray-300 relative flex flex-col justify-center items-center cursor-col-resize">
+            <button @click="minimizeLeft" class="mb-2 p-1 bg-gray-200 hover:bg-gray-300 rounded-md text-sm shadow">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 12h16M4 12l8-8m0 16L4 12" />
+                </svg>
+            </button>
+            <button @click="maximizeRight" class="p-1 bg-gray-200 hover:bg-gray-300 rounded-md text-sm shadow">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4m16 0l-8 8m0-16l8 8" />
+                </svg>
+            </button>
+        </div>
+
         <!-- Right Panel - Document Preview -->
-        <div class="w-full md:w-1/2 h-full flex flex-col bg-gray-50">
+        <div id="right-panel" class="w-full md:w-1/2 h-full flex flex-col bg-gray-50 resizeable-panel">
             <div class="flex-none bg-white border-b border-gray-200">
                 <div class="px-6 py-4 flex items-center justify-between">
                     <div>
@@ -257,6 +269,15 @@ document.addEventListener('alpine:init', () => {
                 commentPlaceholder: 'Provide comments explaining the rejection'
             }
         },
+        // Logic for panel resizing
+        minimizeLeft() {
+            document.getElementById('left-panel').style.width = '0';
+            document.getElementById('right-panel').style.width = '100%';
+        },
+        maximizeRight() {
+            document.getElementById('left-panel').style.width = '100%';
+            document.getElementById('right-panel').style.width = '0';
+        },
         selectedCorrection: null,
         correctionComments: '',
         submitting: false,
@@ -335,7 +356,38 @@ document.addEventListener('alpine:init', () => {
                 .join(' ');
         }
     }));
+
+    // Resize panel logic
+    const leftPanel = document.getElementById('left-panel');
+    const rightPanel = document.getElementById('right-panel');
+    const divider = document.getElementById('divider');
+
+    let isResizing = false;
+
+    divider.addEventListener('mousedown', (e) => {
+        isResizing = true;
+        document.body.style.cursor = 'col-resize';
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (!isResizing) return;
+
+        let leftWidth = e.clientX;
+        let totalWidth = window.innerWidth;
+
+        // Adjust the width of left panel
+        if (leftWidth > 150 && leftWidth < totalWidth - 150) {
+            leftPanel.style.width = leftWidth + 'px';
+            rightPanel.style.width = (totalWidth - leftWidth - divider.offsetWidth) + 'px';
+        }
+    });
+
+    document.addEventListener('mouseup', () => {
+        isResizing = false;
+        document.body.style.cursor = '';
+    });
 });
 </script>
 <?php $__env->stopSection(); ?>
+
 <?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH D:\MSS\mss-project\resources\views/reviewer/partials/proposalAssessment.blade.php ENDPATH**/ ?>

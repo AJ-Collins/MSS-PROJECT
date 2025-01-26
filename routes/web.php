@@ -211,7 +211,9 @@ Route::middleware(['preventBackHistory', 'auth'])->group(function () {
 
     //Abstarct download routes
     Route::get('/abstracts/{serial_number}/pdf', [AbstractsController::class, 'downloadPdf'])->name('research.abstract.download');
+    Route::get('/abstracts/reviewer/{serial_number}/pdf', [AbstractsController::class, 'reviwerDownloadPdf'])->name('research.areviewerAbstract.download');
     Route::get('/abstracts/{serial_number}/word', [AbstractsController::class, 'downloadWord'])->name('abstract.abstractWord.download');
+    Route::get('/abstracts/reviewer/{serial_number}/word', [AbstractsController::class, 'reviwerDownloadWord'])->name('abstract.reviwerAbstractWord.download');
 
     //Download all Abstarct routes
     Route::get('/abstracts/download-all', [AbstractsController::class, 'downloadAllAbstracts'])->name('abstract.downloadAll');
@@ -219,7 +221,9 @@ Route::middleware(['preventBackHistory', 'auth'])->group(function () {
 
     //Proposal download routes
     Route::get('/proposals/{serial_number}/pdf', [ProposalController::class, 'downloadPdf'])->name('proposal.abstract.download');
+    Route::get('/proposals/reviewer/{serial_number}/pdf', [ProposalController::class, 'reviewerDownloadPdf'])->name('proposal.reviewerAbstract.download');
     Route::get('/proposals/{serial_number}/word', [ProposalController::class, 'downloadProposalWord'])->name('proposal.abstractWord.download');
+    Route::get('/proposals/reviewer/{serial_number}/word', [ProposalController::class, 'downloadReviewerProposalWord'])->name('proposal.reviewerAbstractWord.download');
     //Download all Proposal Abstarct routes
     Route::get('/proposals/download-all', [ProposalController::class, 'downloadAllProposalAbstracts'])->name('proposal.downloadAll');
     Route::get('/proposals/download-word', [ProposalController::class, 'downloadAllProposalAbstractsWord'])->name('proposal.downloadAllWord');
