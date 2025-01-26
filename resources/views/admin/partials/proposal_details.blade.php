@@ -86,9 +86,8 @@
             </ul>
         </div>
     </div>
-
     <!-- Document Preview -->
-    <div class="bg-white shadow-md overflow-hidden relative">
+<div class="bg-white shadow-md overflow-hidden relative">
     <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
         <h3 class="text-lg leading-6 font-semibold text-gray-900">Document Preview</h3>
     </div>
@@ -126,7 +125,16 @@
                 @endif
             </div>
 
-            <div class="w-full sm:w-auto">
+            <div class="flex space-x-4 w-full sm:w-auto">
+                <form action="{{ route('unapprove.proposal', ['serial_number' => $researchSubmission->serial_number]) }}" method="POST" class="w-full sm:w-auto">
+                    @csrf
+                    <button type="submit" class="w-full sm:w-auto px-4 py-2 rounded-md bg-red-500 text-white font-semibold hover:bg-red-600 transition-colors flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                        Decline
+                    </button>
+                </form>
                 <form action="{{ route('approve.proposal', ['serial_number' => $researchSubmission->serial_number]) }}" method="POST" class="w-full sm:w-auto">
                     @csrf
                     <button type="submit" class="w-full sm:w-auto px-4 py-2 rounded-md bg-green-500 text-white font-semibold hover:bg-green-600 transition-colors flex items-center justify-center">

@@ -7,6 +7,8 @@ use App\Listeners\AssignRoleToNewUser;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use App\Models\ProposalAssessment;
 use App\Observers\ProposalAssessmentObserver;
+use App\Models\ResearchAssessment;
+use App\Observers\ResearchAssessmentObserver;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -27,6 +29,9 @@ class EventServiceProvider extends ServiceProvider
     public function boot(): void
     {
         parent::boot();
+
+        // Register the observers
+        ResearchAssessment::observe(ResearchAssessmentObserver::class);
         ProposalAssessment::observe(ProposalAssessmentObserver::class);
         
 

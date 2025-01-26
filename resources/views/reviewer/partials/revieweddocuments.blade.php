@@ -77,15 +77,15 @@
                             </td>
                             <td class="px-4 py-3 text-sm text-gray-700">{{ $submission->sub_theme }}</td>
                             <td class="px-4 py-3 text-center text-sm text-gray-700 group relative">
-                                {{ $submission->score ?? 'Assess file' }}
+                                {{ $submission->reviewer_total_score ?? 'Assess file' }}
                                 <span class="absolute bottom-full left-1/2 transform -translate-x-1/2 w-max px-3 py-1 text-xs text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                                    {{ $submission->score ? "{$submission->score} marks assigned after assessment" : "Assess the document and assign marks" }}
+                                    {{ $submission->reviewer_total_score ? "{$submission->reviewer_total_score} marks assigned after assessment" : "Assess the document and assign marks" }}
                                 </span>
                             </td>
                             <td class="px-4 py-3 text-center text-sm text-gray-700">Good (Remarks)</td>
                             <td class="px-4 py-3 text-center text-sm text-gray-700">
                                 <div class="flex justify-center p-2">
-                                    @if ($submission->score && $submission->score > 30)
+                                    @if ($submission->reviewer_total_score && $submission->reviewer_total_score > 30)
                                         <!-- Display message if score is above 30 -->
                                         <span class="text-green-600">Score passed minimum</span>
                                         <span class="ml-2 relative group">
@@ -267,15 +267,15 @@
                         </td>
                         <td class="px-4 py-3 text-sm text-gray-700">{{ $researchSubmission->sub_theme }}</td>
                         <td class="px-4 py-3 text-center text-sm text-gray-700 group relative">
-                            {{ $researchSubmission->score ?? 'Assess file' }}
+                            {{ $researchSubmission->reviewer_total_score ?? 'Assess file' }}
                             <span class="absolute bottom-full left-1/2 transform -translate-x-1/2 w-max px-3 py-1 text-xs text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                                {{ $researchSubmission->score ? "{$researchSubmission->score} marks assigned after assessment" : "Assess the document and assign marks" }}
+                                {{ $researchSubmission->reviewer_total_score ? "{$researchSubmission->reviewer_total_score} marks assigned after assessment" : "Assess the document and assign marks" }}
                             </span>
                         </td>
                         <td class="px-4 py-3 text-center text-sm text-gray-700">Good (Remarks)</td>
                         <td class="px-4 py-3 text-center text-sm text-gray-700">
                             <div class="flex justify-center p-2">
-                            @if ($researchSubmission->score && $researchSubmission->score > 30)
+                            @if ($researchSubmission->reviewer_total_score && $researchSubmission->reviewer_total_score > 30)
                                 <!-- Display message if score is above 30 -->
                                 <span class="text-green-600">This article has passed the review!</span>
                             @else

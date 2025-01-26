@@ -77,10 +77,10 @@
                             </td>
                             <td class="px-4 py-3 text-sm text-gray-700"><?php echo e($submission->sub_theme); ?></td>
                             <td class="px-4 py-3 text-center text-sm text-gray-700 group relative">
-                                <?php echo e($submission->score ?? 'Assess file'); ?>
+                                <?php echo e($submission->reviewer_total_score ?? 'Assess file'); ?>
 
                                 <span class="absolute bottom-full left-1/2 transform -translate-x-1/2 w-max px-3 py-1 text-xs text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                                    <?php echo e($submission->score ? "{$submission->score} marks assigned after assessment" : "Assess the document and assign marks"); ?>
+                                    <?php echo e($submission->reviewer_total_score ? "{$submission->reviewer_total_score } marks assigned after assessment" : "Assess the document and assign marks"); ?>
 
                                 </span>
                             </td>
@@ -98,12 +98,12 @@
                             </td>
                             <td class="px-4 py-3 text-center">
                                 <div class="flex justify-center space-x-2">
-                                        <a href="<?php echo e(route('reviewer.abstract.reject', ['serial_number' => $submission->serial_number])); ?>">
+                                        <!--<a href="<?php echo e(route('reviewer.abstract.reject', ['serial_number' => $submission->serial_number])); ?>">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                                           </svg>
                                             <span class="absolute bottom-full left-1/2 transform -translate-x-1/2 px-2 py-1 text-xs text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200">Reject</span>
-                                        </a>
+                                        </a>-->
                                     <a href="<?php echo e(route('research.abstract.download', $submission->serial_number)); ?>" class="group relative p-2 text-gray-600 hover:text-indigo-600 rounded-full hover:bg-indigo-100 transition-colors duration-200">
                                         <!-- PDF icon -->
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -260,10 +260,10 @@
                         </td>
                         <td class="px-4 py-3 text-sm text-gray-700"><?php echo e($researchSubmission->sub_theme); ?></td>
                         <td class="px-4 py-3 text-center text-sm text-gray-700 group relative">
-                            <?php echo e($researchSubmission->score ?? 'Assess file'); ?>
+                            <?php echo e($researchSubmission->reviewer_total_score ?? 'Assess file'); ?>
 
                             <span class="absolute bottom-full left-1/2 transform -translate-x-1/2 w-max px-3 py-1 text-xs text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                                <?php echo e($researchSubmission->score ? "{$researchSubmission->score} marks assigned after assessment" : "Assess the document and assign marks"); ?>
+                                <?php echo e($researchSubmission->reviewer_total_score ? "{$researchSubmission->reviewer_total_score} marks assigned after assessment" : "Assess the document and assign marks"); ?>
 
                             </span>
                         </td>

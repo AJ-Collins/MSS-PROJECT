@@ -77,9 +77,9 @@
                             </td>
                             <td class="px-4 py-3 text-sm text-gray-700">{{ $submission->sub_theme }}</td>
                             <td class="px-4 py-3 text-center text-sm text-gray-700 group relative">
-                                {{ $submission->score ?? 'Assess file' }}
+                                {{ $submission->reviewer_total_score ?? 'Assess file' }}
                                 <span class="absolute bottom-full left-1/2 transform -translate-x-1/2 w-max px-3 py-1 text-xs text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                                    {{ $submission->score ? "{$submission->score} marks assigned after assessment" : "Assess the document and assign marks" }}
+                                    {{ $submission->reviewer_total_score ? "{$submission->reviewer_total_score } marks assigned after assessment" : "Assess the document and assign marks" }}
                                 </span>
                             </td>
                             <td class="px-4 py-3 text-center text-sm text-gray-700">Good (Remarks)</td>
@@ -96,12 +96,12 @@
                             </td>
                             <td class="px-4 py-3 text-center">
                                 <div class="flex justify-center space-x-2">
-                                        <a href="{{ route('reviewer.abstract.reject', ['serial_number' => $submission->serial_number]) }}">
+                                        <!--<a href="{{ route('reviewer.abstract.reject', ['serial_number' => $submission->serial_number]) }}">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                                           </svg>
                                             <span class="absolute bottom-full left-1/2 transform -translate-x-1/2 px-2 py-1 text-xs text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200">Reject</span>
-                                        </a>
+                                        </a>-->
                                     <a href="{{ route('research.abstract.download', $submission->serial_number) }}" class="group relative p-2 text-gray-600 hover:text-indigo-600 rounded-full hover:bg-indigo-100 transition-colors duration-200">
                                         <!-- PDF icon -->
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -256,9 +256,9 @@
                         </td>
                         <td class="px-4 py-3 text-sm text-gray-700">{{ $researchSubmission->sub_theme }}</td>
                         <td class="px-4 py-3 text-center text-sm text-gray-700 group relative">
-                            {{ $researchSubmission->score ?? 'Assess file' }}
+                            {{ $researchSubmission->reviewer_total_score ?? 'Assess file' }}
                             <span class="absolute bottom-full left-1/2 transform -translate-x-1/2 w-max px-3 py-1 text-xs text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                                {{ $researchSubmission->score ? "{$researchSubmission->score} marks assigned after assessment" : "Assess the document and assign marks" }}
+                                {{ $researchSubmission->reviewer_total_score ? "{$researchSubmission->reviewer_total_score} marks assigned after assessment" : "Assess the document and assign marks" }}
                             </span>
                         </td>
                         <td class="px-4 py-3 text-center text-sm text-gray-700">Good (Remarks)</td>

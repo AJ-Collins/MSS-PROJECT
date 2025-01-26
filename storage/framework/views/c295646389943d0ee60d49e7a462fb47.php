@@ -227,11 +227,11 @@
 document.addEventListener('alpine:init', () => {
     Alpine.data('assessmentForm', () => ({
         scores: {
-            thematic: 0,
-            title: 0,
-            methodology: 0,
-            output: 0,
-            objectives: 0
+            thematic: null,
+            title: null,
+            methodology: null,
+            output: null,
+            objectives: null
         },
         sections: {
             thematic: { label: 'Research Thematic Area', maxScore: 5 },

@@ -100,7 +100,7 @@
     </div>
 
     <!-- Document Preview -->
-    <div class="bg-white shadow-md rounded-lg overflow-hidden relative">
+<div class="bg-white shadow-md rounded-lg overflow-hidden relative">
     <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
         <h3 class="text-lg leading-6 font-semibold text-gray-900">Document Preview</h3>
         <div class="mt-4 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 items-center">
@@ -133,7 +133,16 @@
         </div>
     </div>
     
-    <div class="p-4 sm:p-6 flex justify-end">
+    <div class="p-4 sm:p-6 flex space-x-4 justify-end">
+        <form action="<?php echo e(route('unapprove.abstract', ['serial_number' => $submission->serial_number])); ?>" method="POST" class="w-full sm:w-auto">
+            <?php echo csrf_field(); ?>
+            <button type="submit" class="w-full sm:w-auto px-4 sm:px-6 py-2 rounded-md bg-red-500 text-white font-semibold hover:bg-red-600 transition-colors flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                </svg>
+                Decline
+            </button>
+        </form>
         <form action="<?php echo e(route('approve.abstract', ['serial_number' => $submission->serial_number])); ?>" method="POST" class="w-full sm:w-auto">
             <?php echo csrf_field(); ?>
             <button type="submit" class="w-full sm:w-auto px-4 sm:px-6 py-2 rounded-md bg-green-500 text-white font-semibold hover:bg-green-600 transition-colors flex items-center justify-center">

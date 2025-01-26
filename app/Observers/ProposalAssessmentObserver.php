@@ -3,38 +3,38 @@
 namespace App\Observers;
 
 use App\Models\ProposalAssessment;
-use App\Models\ResearchSubmission;
+use App\Services\ProposalAssessmentService;
 
 class ProposalAssessmentObserver
 {
+    protected $assessmentService;
+
+    public function __construct()
+    {
+        $this->assessmentService = new ProposalAssessmentService();
+    }
+
+    /**
+     * Handle the ResearchAssessment "created" event.
+     */
     public function created(ProposalAssessment $assessment)
     {
-        \Log::info("ProposalAssessmentObserver: created event triggered for serial number: {$assessment->abstract_submission_id}");
-        dd("Observer triggered for serial number: {$assessment->abstract_submission_id}");
-        $this->updateSubmissionScore($assessment->abstract_submission_id);
+        $this->assessmentService->calculateAverageScore($assessment->abstract_submission_id);
     }
 
+    /**
+     * Handle the ResearchAssessment "updated" event.
+     */
     public function updated(ProposalAssessment $assessment)
     {
-        $this->updateSubmissionScore($assessment->abstract_submission_id);
+        $this->assessmentService->calculateAverageScore($assessment->abstract_submission_id);
     }
 
+    /**
+     * Handle the ResearchAssessment "deleted" event.
+     */
     public function deleted(ProposalAssessment $assessment)
     {
-        $this->updateSubmissionScore($assessment->abstract_submission_id);
-    }
-
-    protected function updateSubmissionScore($serialNumber)
-    {
-        $submission = ResearchSubmission::where('serial_number', $serialNumber)->first();
-
-        if ($submission) {
-            $averageScore = ProposalAssessment::where('abstract_submission_id', $serialNumber)
-                ->avg('total_score');
-            
-            $submission->update([
-                'score' => $averageScore ? round($averageScore, 2) : null
-            ]);
-        }
+        $this->assessmentService->calculateAverageScore($assessment->abstract_submission_id);
     }
 }

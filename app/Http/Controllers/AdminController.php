@@ -264,15 +264,20 @@ class AdminController extends Controller
     public function reports()
     {
         $perPage = request()->input('per_page', 10);
-        $submissions = AbstractSubmission::with('user')
-            ->where('score', '!=', null)
-            ->paginate($perPage);
-        $researchSubmissions = ResearchSubmission::with('user')
-            ->where('score', '!=', null)
-            ->paginate($perPage);
-        $researchAssessments = ResearchAssessment::all();
-
-        return view('admin.partials.reports', compact('submissions', 'researchSubmissions', 'researchAssessments'));
+        $data = [
+            'submissions' => AbstractSubmission::with('user')
+                ->whereNotNull('score')
+                ->orWhere('score', '!=', '')
+                ->paginate($perPage),
+            'researchSubmissions' => ResearchSubmission::with('user')
+                ->whereNotNull('score')
+                ->orWhere('score', '!=', '')
+                ->paginate($perPage),
+            'researchAssessments' => ResearchAssessment::with('abstractSubmission')->get(),
+            'proposalAssessments' => ProposalAssessment::with('proposalSubmission')->get()
+        ];
+    
+        return view('admin.partials.reports', $data);
     }
 
     public function showAssessments($serial_number)

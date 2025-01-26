@@ -154,29 +154,45 @@ class ReviewerController extends Controller
         return back()->with('success', 'Reviewer status updated and reviewer unassigned successfully!');
     }
     public function documentsReview()
-{
-    $reviewer = Auth::user();
+    {
+        $reviewer = Auth::user();
 
-    // Fetch abstracts assigned to the reviewer with pending status
-    $submissions = $reviewer->abstractSubmissions()
-        ->wherePivot('status', 'accepted')  // Get only pending assignments
-        ->paginate(10);
+        // Fetch abstracts assigned to the reviewer with pending status
+        $submissions = $reviewer->abstractSubmissions()
+            ->wherePivot('status', 'accepted')
+            ->leftJoin('research_assessments', function ($join) use ($reviewer) {
+                $join->on('abstract_submissions.serial_number', '=', 'research_assessments.abstract_submission_id')
+                    ->where('research_assessments.reviewer_reg_no', $reviewer->reg_no);
+            })
+            ->select(
+                'abstract_submissions.*', 
+                'research_assessments.total_score as reviewer_total_score'
+            )
+            ->paginate(10);
 
-    // Fetch research submissions with pending status
-    $researchSubmissions = $reviewer->researchSubmissions()
-        ->wherePivot('status', 'accepted')  // Get only pending assignments
-        ->paginate(10);
+        // Fetch research submissions with pending status
+        $researchSubmissions = $reviewer->researchSubmissions()
+            ->wherePivot('status', 'accepted')
+            ->leftJoin('proposal_assessments', function ($join) use ($reviewer) {
+                $join->on('research_submissions.serial_number', '=', 'proposal_assessments.abstract_submission_id')
+                    ->where('proposal_assessments.reviewer_reg_no', $reviewer->reg_no);
+            })
+            ->select(
+                'research_submissions.*', 
+                'proposal_assessments.total_score as reviewer_total_score'
+            )
+            ->paginate(10);
 
-    $abstractCount = $submissions->total();  // Use total() instead of count() for paginated results
-    $proposalCount = $researchSubmissions->total();
+        $abstractCount = $submissions->total();
+        $proposalCount = $researchSubmissions->total();
 
-    return view('reviewer.partials.documents', compact(
-        'submissions', 
-        'researchSubmissions', 
-        'abstractCount', 
-        'proposalCount'
-    ));
-}
+        return view('reviewer.partials.documents', compact(
+            'submissions', 
+            'researchSubmissions', 
+            'abstractCount', 
+            'proposalCount'
+        ));
+    }
     public function assignedAbstracts()
     {
         $reviewer = Auth::user(); // Assuming the reviewer is logged in
@@ -253,16 +269,34 @@ class ReviewerController extends Controller
     {
         $reviewer = Auth::user(); // Assuming the reviewer is logged in
 
-        // Fetch abstracts assigned to the logged-in reviewer
+        // Fetch abstracts reviewed by the logged-in reviewer
         $submissions = $reviewer->abstractSubmissions()
-                ->whereNotNull('score')
-                ->paginate(20);
-        $researchSubmissions = $reviewer->researchSubmissions()
-                ->whereNotNull('score')
-                ->paginate(20);
+            ->leftJoin('research_assessments', function ($join) use ($reviewer) {
+                $join->on('abstract_submissions.serial_number', '=', 'research_assessments.abstract_submission_id')
+                    ->where('research_assessments.reviewer_reg_no', $reviewer->reg_no);
+            })
+            ->select(
+                'abstract_submissions.*', 
+                'research_assessments.total_score as reviewer_total_score'
+            )
+            ->whereNotNull('research_assessments.total_score')
+            ->paginate(20);
 
-        $abstractCount = $submissions->count();
-        $proposalCount = $researchSubmissions->count();
+        // Fetch research submissions reviewed by the logged-in reviewer
+        $researchSubmissions = $reviewer->researchSubmissions()
+            ->leftJoin('proposal_assessments', function ($join) use ($reviewer) {
+                $join->on('research_submissions.serial_number', '=', 'proposal_assessments.abstract_submission_id')
+                    ->where('proposal_assessments.reviewer_reg_no', $reviewer->reg_no);
+            })
+            ->select(
+                'research_submissions.*', 
+                'proposal_assessments.total_score as reviewer_total_score'
+            )
+            ->whereNotNull('proposal_assessments.total_score')
+            ->paginate(20);
+
+        $abstractCount = $submissions->total();
+        $proposalCount = $researchSubmissions->total();
 
         return view('reviewer.partials.revieweddocuments', compact('submissions', 'researchSubmissions', 'abstractCount', 'proposalCount'));
     }
