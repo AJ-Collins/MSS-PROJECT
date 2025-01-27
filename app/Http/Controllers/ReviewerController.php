@@ -389,7 +389,7 @@ class ReviewerController extends Controller
         return response()->json([
             'title' => $abstract->title,
             'content' => $abstract->abstract,
-            'keywords' => json_decode($abstract->keywords, true) ?? [],
+            'keywords' => array_map('trim', json_decode($abstract->keywords, true) ?? []),
             'sub_theme' => $abstract->sub_theme,
             'authors' => $abstract->authors->map(function ($author) {
                 return [
@@ -415,7 +415,7 @@ class ReviewerController extends Controller
         return response()->json([
             'title' => $abstract->article_title,
             'content' => $abstract->abstract,
-            'keywords' => json_decode($abstract->keywords, true) ?? [],
+            'keywords' => array_map('trim', json_decode($abstract->keywords, true) ?? []),
             'sub_theme' => $abstract->sub_theme,
             'authors' => $abstract->authors->map(function ($author) {
                 return [

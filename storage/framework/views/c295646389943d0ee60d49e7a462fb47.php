@@ -1,6 +1,6 @@
-@extends('layouts.app')
 
-@section('content')
+
+<?php $__env->startSection('content'); ?>
 <div class="min-h-screen bg-gray-50" x-data="assessmentForm">
     <!-- Main Content -->
     <div class="flex flex-col md:flex-row h-screen">
@@ -27,30 +27,31 @@
             <div class="flex-1 overflow-y-auto">
                 <form 
                     @submit.prevent="submitForm"
-                    action="{{ route('reviewer.abstracts.assessment.store', $submission->serial_number) }}" 
+                    action="<?php echo e(route('reviewer.proposal.assessment.store', $researchSubmission->serial_number)); ?>" 
                     method="POST" 
                     class="p-6 space-y-6"
                     id="assessmentForm">
-                    @csrf
+                    <?php echo csrf_field(); ?>
 
                     <!-- Error Alert -->
-                    @if ($errors->any())
+                    <?php if($errors->any()): ?>
                         <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative" role="alert">
                             <strong class="font-bold">Please check the following errors:</strong>
                             <ul class="mt-2 list-disc list-inside">
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
+                                <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <li><?php echo e($error); ?></li>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </ul>
                         </div>
-                    @endif
+                    <?php endif; ?>
 
                     <!-- Success Message -->
-                    @if(session('success'))
+                    <?php if(session('success')): ?>
                         <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded relative" role="alert">
-                            {{ session('success') }}
+                            <?php echo e(session('success')); ?>
+
                         </div>
-                    @endif
+                    <?php endif; ?>
 
                     <!-- Assessment Sections -->
                     <template x-for="(section, key) in sections" :key="key">
@@ -187,7 +188,7 @@
             </div>
 
             <div 
-                x-data="documentPreview('{{ route('reviewer.assessment.abstractpreview', $serial_number) }}')"
+                x-data="documentPreview('<?php echo e(route('reviewer.assessment.proposalpreview', $serial_number)); ?>')"
                 x-init="loadAbstract()"
                 class="flex-1 overflow-y-auto p-6"
             >
@@ -201,11 +202,7 @@
                     <div class="max-w-3xl mx-auto bg-white shadow p-8">
                         <h1 x-text="abstract.title" class="text-2xl font-bold text-center text-gray-900 mb-6"></h1>
                         
-                        {{--<div class="mb-8 text-center">
-                            <template x-for="(author, index) in abstract.authors" :key="index">
-                                <p class="text-sm text-gray-700" x-text="formatAuthorName(author)"></p>
-                            </template>
-                        </div>--}}
+                        
 
                         <h2 class="text-lg font-bold text-gray-900 mb-4">ABSTRACT</h2>
                         <p x-text="abstract.content" class="text-gray-700 leading-relaxed text-justify mb-6"></p>
@@ -387,4 +384,6 @@ document.addEventListener('alpine:init', () => {
     });
 });
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH D:\MSS\mss-project\resources\views/reviewer/partials/proposalAssessment.blade.php ENDPATH**/ ?>

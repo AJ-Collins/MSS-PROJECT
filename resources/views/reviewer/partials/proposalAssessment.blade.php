@@ -201,11 +201,11 @@
                     <div class="max-w-3xl mx-auto bg-white shadow p-8">
                         <h1 x-text="abstract.title" class="text-2xl font-bold text-center text-gray-900 mb-6"></h1>
                         
-                        <div class="mb-8 text-center">
+                        {{--<div class="mb-8 text-center">
                             <template x-for="(author, index) in abstract.authors" :key="index">
                                 <p class="text-sm text-gray-700" x-text="formatAuthorName(author)"></p>
                             </template>
-                        </div>
+                        </div>--}}
 
                         <h2 class="text-lg font-bold text-gray-900 mb-4">ABSTRACT</h2>
                         <p x-text="abstract.content" class="text-gray-700 leading-relaxed text-justify mb-6"></p>
@@ -213,7 +213,7 @@
                         <div class="space-y-4">
                             <div>
                                 <h3 class="font-bold text-gray-900">Keywords</h3>
-                                <p x-text="abstract.keywords || 'Not available'" class="text-gray-700"></p>
+                                <p x-text="abstract.keywords ? abstract.keywords.join(', ') : 'Not available'" class="text-gray-700"></p>
                             </div>
                             <div>
                                 <h3 class="font-bold text-gray-900">Sub-Theme</h3>
