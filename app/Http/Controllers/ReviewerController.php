@@ -177,6 +177,7 @@ class ReviewerController extends Controller
                 $join->on('abstract_submissions.serial_number', '=', 'research_assessments.abstract_submission_id')
                     ->where('research_assessments.reviewer_reg_no', $reviewer->reg_no);
             })
+            ->whereNull('research_assessments.total_score')
             ->select(
                 'abstract_submissions.*', 
                 'research_assessments.total_score as reviewer_total_score'
@@ -195,6 +196,7 @@ class ReviewerController extends Controller
                 $join->on('research_submissions.serial_number', '=', 'proposal_assessments.abstract_submission_id')
                     ->where('proposal_assessments.reviewer_reg_no', $reviewer->reg_no);
             })
+            ->whereNull('proposal_assessments.total_score')
             ->select(
                 'research_submissions.*', 
                 'proposal_assessments.total_score as reviewer_total_score'

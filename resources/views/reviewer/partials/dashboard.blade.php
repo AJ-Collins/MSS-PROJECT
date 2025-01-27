@@ -14,7 +14,8 @@
                         <div class="flex items-center">
                             <div class="p-3 rounded-full bg-indigo-100 text-indigo-500">
                                 <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 20h9m-9 0H7a2 2 0 01-2-2V6a2 2 0 012-2h8l5 5v9a2 2 0 01-2 2h-6z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 10h-4m0 4h4m-8 4h8"/>
                                 </svg>
                             </div>
                             <div class="ml-4">
@@ -28,7 +29,8 @@
                         <div class="flex items-center">
                             <div class="p-3 rounded-full bg-green-100 text-green-500">
                                 <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7 2h10a2 2 0 012 2v16a2 2 0 01-2 2H7a2 2 0 01-2-2V4a2 2 0 012-2z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v2m0 4h.01"/>
                                 </svg>
                             </div>
                             <div class="ml-4">
@@ -42,9 +44,9 @@
                     <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-400">
                         <div class="flex items-center">
                             <div class="p-3 rounded-full bg-blue-100 text-blue-500">
-                                <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
-                                </svg>
+                            <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-7a9 9 0 11-6.219-8.785"/>
+                            </svg>
                             </div>
                             <div class="ml-4">
                                 <p class="text-sm text-gray-500">Pending</p>
@@ -57,9 +59,9 @@
                     <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-400">
                         <div class="flex items-center">
                             <div class="p-3 rounded-full bg-red-100 text-red-500">
-                                <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-                                </svg>
+                            <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4h9m-2 2l2-2-2-2M7 9l4 4-3 1-1-3 3-2zM3 16v3h3l9-9-3-3-9 9z"/>
+                            </svg>
                             </div>
                             <div class="ml-4">
                                 <p class="text-sm text-gray-500">Revisions</p>

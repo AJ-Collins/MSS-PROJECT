@@ -286,6 +286,8 @@ class AdminController extends Controller
         'submissions' => AbstractSubmission::with('user')
             ->whereNotNull('score')
             ->where('score', '!=', '')
+            ->whereNotNull('admin_comments')
+            ->where('admin_comments', '!=', '')
             ->where(function ($query) use ($searchQuery) {
                 $query->where('title', 'like', "%{$searchQuery}%")
                     ->orWhere('serial_number', 'like', "%{$searchQuery}%")
@@ -919,6 +921,7 @@ public function getReviewers()
         if ($submission) {
             // Approve the abstract by setting the 'approved' field to true
             $submission->approved = true;
+            $submission->admin_comments = "Approved";
             $submission->save();
     
             return redirect()->back()->with('success', 'Abstract approved successfully.');
@@ -937,6 +940,7 @@ public function getReviewers()
         if ($submission) {
             // Approve the abstract by setting the 'approved' field to true
             $submission->approved = false;
+            $submission->admin_comments = "Not Approved";
             $submission->save();
     
             return redirect()->back()->with('success', 'Abstract declined successfully.');
@@ -955,6 +959,7 @@ public function getReviewers()
         if ($researchSubmission) {
             // Approve the proposal by setting the 'approved' field to true
             $researchSubmission->approved = true;
+            $researchSubmission->admin_comments = "Approved";
             $researchSubmission->save();
     
             return redirect()->back()->with('success', 'Proposal approved successfully.');
@@ -973,6 +978,8 @@ public function getReviewers()
         if ($researchSubmission) {
             // Approve the abstract by setting the 'approved' field to false
             $researchSubmission->approved = false;
+            $researchSubmission->admin_comments = "Not Approved";
+            $researchSubmission->save();
             $researchSubmission->save();
     
             return redirect()->back()->with('success', 'Proposal declined successfully.');

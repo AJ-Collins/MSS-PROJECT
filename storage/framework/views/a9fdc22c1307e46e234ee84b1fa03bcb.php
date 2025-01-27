@@ -9,9 +9,10 @@
                     <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-400">
                         <div class="flex items-center">
                             <div class="p-3 rounded-full bg-indigo-100 text-indigo-500">
-                                <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
-                                </svg>
+                            <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 20h9m-9 0H7a2 2 0 01-2-2V6a2 2 0 012-2h8l5 5v9a2 2 0 01-2 2h-6z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 10h-4m0 4h4m-8 4h8"/>
+                            </svg>
                             </div>
                             <div class="ml-4">
                                 <p class="text-sm text-gray-500">Articles</p>
@@ -23,9 +24,10 @@
                     <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-400">
                         <div class="flex items-center">
                             <div class="p-3 rounded-full bg-green-100 text-green-500">
-                                <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
-                                </svg>
+                            <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7 2h10a2 2 0 012 2v16a2 2 0 01-2 2H7a2 2 0 01-2-2V4a2 2 0 012-2z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v2m0 4h.01"/>
+                            </svg>
                             </div>
                             <div class="ml-4">
                                 <p class="text-sm text-gray-500">Proposals</p>
@@ -38,9 +40,9 @@
                     <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-400">
                         <div class="flex items-center">
                             <div class="p-3 rounded-full bg-blue-100 text-blue-500">
-                                <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
-                                </svg>
+                            <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-1a4 4 0 00-4-4h-4a4 4 0 00-4 4v1h5m-7-8a4 4 0 110-8 4 4 0 010 8zm14 0a4 4 0 110-8 4 4 0 010 8z"/>
+                            </svg>
                             </div>
                             <div class="ml-4">
                                 <p class="text-sm text-gray-500">Users</p>
@@ -53,9 +55,10 @@
                     <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-400">
                         <div class="flex items-center">
                             <div class="p-3 rounded-full bg-red-100 text-red-500">
-                                <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-                                </svg>
+                            <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.5l2.09 4.26L19 10.27l-3.18 3.1.75 4.37L12 15.6l-3.57 2.14.75-4.37L6 10.27l4.91-.51L12 4.5z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 17h5m-5 4h3"/>
+                            </svg>
                             </div>
                             <div class="ml-4">
                                 <p class="text-sm text-gray-500">Reviewers</p>
@@ -304,10 +307,10 @@
                                                 
                                             <div class="min-h-screen px-4 text-center">
                                                 <!-- Modal Panel -->
-                                                <div class="inline-block w-full max-w-4xl p-6 my-8 text-left align-middle bg-white rounded-lg shadow-xl transform transition-all">
+                                                <div class="inline-block w-full max-w-4xl p-6 my-8 text-left align-middle bg-white shadow-xl transform transition-all">
                                                     <!-- Header -->
                                                     <div class="flex justify-between items-center pb-3 border-b">
-                                                        <h3 class="text-lg font-medium text-gray-900">Research Abstract Preview</h3>
+                                                        <h3 class="text-lg font-medium text-gray-900">Preview</h3>
                                                         <button @click="isOpen = false" class="text-gray-400 hover:text-gray-500 focus:outline-none">
                                                             <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -325,30 +328,52 @@
 
                                                         <!-- Authors -->
                                                         <div class="text-center mb-8">
-                                                            <?php
-                                                                $authors = json_decode($submission->authors, true);
-                                                            ?>
-                                                            <?php if($authors && is_array($authors)): ?>
-                                                                <div class="flex flex-wrap justify-center gap-1 mb-2">
-                                                                    <?php $__currentLoopData = $authors; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $author): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                                                        <span class="font-serif text-sm">
-                                                                            <?php echo e($author['first_name']); ?> <?php echo e($author['middle_name'] ?? ''); ?> <?php echo e($author['surname']); ?>
+                                                        <?php
+                                                            $authors = json_decode($submission->authors, true);
+                                                        ?>
+                                                        <?php if($authors && is_array($authors)): ?>
+                                                            <!-- Authors names in one line -->
+                                                            <div class="flex flex-wrap justify-center gap-1 mb-2">
+                                                                <?php $__currentLoopData = $authors; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $author): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                                    <span class="font-serif text-sm">
+                                                                        <?php echo e($author['first_name']); ?> <?php echo e($author['middle_name'] ?? ''); ?> <?php echo e($author['surname']); ?>
 
-                                                                            <?php if($author['is_correspondent']): ?>
-                                                                                <span class="text-black-600">*</span>
-                                                                            <?php endif; ?>
-                                                                            <?php if(!$loop->last): ?>, <?php endif; ?>
-                                                                        </span>
-                                                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                                                </div>
-                                                                <!-- Affiliation -->
-                                                                <div class="space-y-1 text-gray-600">
-                                                                    <p class="font-serif text-xs"><?php echo e($authors[0]['university']); ?></p>
-                                                                    <p class="font-serif text-xs"><?php echo e($authors[0]['department']); ?></p>
-                                                                </div>
-                                                            <?php else: ?>
-                                                                <p class="text-gray-500 italic text-sm">No authors available</p>
-                                                            <?php endif; ?>
+                                                                        <?php if($author['is_correspondent']): ?>
+                                                                            <span class="text-black-600">*</span>
+                                                                        <?php endif; ?>
+                                                                        <?php if(!$loop->last): ?>, <?php endif; ?>
+                                                                    </span>
+                                                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                                            </div>
+                                                            
+                                                            <!-- All institutions in one line -->
+                                                            <div class="text-gray-800 mb-2">
+                                                                <p class="font-serif text-xs">
+                                                                    <?php
+                                                                        $universities = array_unique(array_map(function($author) {
+                                                                            return $author['university'];
+                                                                        }, $authors));
+                                                                    ?>
+                                                                    <?php echo e(implode(', ', $universities)); ?>
+
+                                                                </p>
+                                                            </div>
+                                                            
+                                                            <!-- All departments in one line -->
+                                                            <div class="text-gray-800">
+                                                                <p class="font-serif text-xs">
+                                                                    <?php
+                                                                        $departments = array_unique(array_map(function($author) {
+                                                                            return $author['department'];
+                                                                        }, $authors));
+                                                                    ?>
+                                                                    <?php echo e(implode(', ', $departments)); ?>
+
+                                                                </p>
+                                                            </div>
+                                                        <?php else: ?>
+                                                            <p class="text-gray-500 italic text-sm">No authors available</p>
+                                                        <?php endif; ?>
                                                         </div>
 
                                                         <!-- Abstract -->
@@ -688,10 +713,10 @@
                                                 
                                             <div class="min-h-screen px-4 text-center">
                                                 <!-- Modal Panel -->
-                                                <div class="inline-block w-full max-w-4xl p-6 my-8 text-left align-middle bg-white rounded-lg shadow-xl transform transition-all">
+                                                <div class="inline-block w-full max-w-4xl p-6 my-8 text-left align-middle bg-white shadow-xl transform transition-all">
                                                     <!-- Header -->
                                                     <div class="flex justify-between items-center pb-3 border-b">
-                                                        <h3 class="text-lg font-medium text-gray-900">Research Abstract Preview</h3>
+                                                        <h3 class="text-lg font-medium text-gray-900">Preview</h3>
                                                         <button @click="isOpen = false" class="text-gray-400 hover:text-gray-500 focus:outline-none">
                                                             <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -709,30 +734,52 @@
 
                                                         <!-- Authors -->
                                                         <div class="text-center mb-8">
-                                                            <?php
-                                                                $authors = json_decode($researchSubmission->authors, true);
-                                                            ?>
-                                                            <?php if($authors && is_array($authors)): ?>
-                                                                <div class="flex flex-wrap justify-center gap-1 mb-2">
-                                                                    <?php $__currentLoopData = $authors; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $author): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                                                        <span class="font-serif text-sm">
-                                                                            <?php echo e($author['first_name']); ?> <?php echo e($author['middle_name'] ?? ''); ?> <?php echo e($author['surname']); ?>
+                                                        <?php
+                                                            $authors = json_decode($researchSubmission->authors, true);
+                                                        ?>
+                                                        <?php if($authors && is_array($authors)): ?>
+                                                            <!-- Authors names in one line -->
+                                                            <div class="flex flex-wrap justify-center gap-1 mb-2">
+                                                                <?php $__currentLoopData = $authors; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $author): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                                    <span class="font-serif text-sm">
+                                                                        <?php echo e($author['first_name']); ?> <?php echo e($author['middle_name'] ?? ''); ?> <?php echo e($author['surname']); ?>
 
-                                                                            <?php if($author['is_correspondent']): ?>
-                                                                                <span class="text-black-600">*</span>
-                                                                            <?php endif; ?>
-                                                                            <?php if(!$loop->last): ?>, <?php endif; ?>
-                                                                        </span>
-                                                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                                                </div>
-                                                                <!-- Affiliation -->
-                                                                <div class="space-y-1 text-gray-600">
-                                                                    <p class="font-serif text-xs"><?php echo e($authors[0]['university']); ?></p>
-                                                                    <p class="font-serif text-xs"><?php echo e($authors[0]['department']); ?></p>
-                                                                </div>
-                                                            <?php else: ?>
-                                                                <p class="text-gray-500 italic text-sm">No authors available</p>
-                                                            <?php endif; ?>
+                                                                        <?php if($author['is_correspondent']): ?>
+                                                                            <span class="text-black-600">*</span>
+                                                                        <?php endif; ?>
+                                                                        <?php if(!$loop->last): ?>, <?php endif; ?>
+                                                                    </span>
+                                                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                                            </div>
+                                                            
+                                                            <!-- All institutions in one line -->
+                                                            <div class="text-gray-800 mb-2">
+                                                                <p class="font-serif text-xs">
+                                                                    <?php
+                                                                        $universities = array_unique(array_map(function($author) {
+                                                                            return $author['university'];
+                                                                        }, $authors));
+                                                                    ?>
+                                                                    <?php echo e(implode(', ', $universities)); ?>
+
+                                                                </p>
+                                                            </div>
+                                                            
+                                                            <!-- All departments in one line -->
+                                                            <div class="text-gray-800">
+                                                                <p class="font-serif text-xs">
+                                                                    <?php
+                                                                        $departments = array_unique(array_map(function($author) {
+                                                                            return $author['department'];
+                                                                        }, $authors));
+                                                                    ?>
+                                                                    <?php echo e(implode(', ', $departments)); ?>
+
+                                                                </p>
+                                                            </div>
+                                                        <?php else: ?>
+                                                            <p class="text-gray-500 italic text-sm">No authors available</p>
+                                                        <?php endif; ?>
                                                         </div>
 
                                                         <!-- Abstract -->

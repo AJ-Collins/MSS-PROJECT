@@ -55,6 +55,7 @@ class UserController extends Controller
 
         $submissions = AbstractSubmission::where('user_reg_no', $user->reg_no)
             ->where('pdf_path',  null)
+            ->where('score',  null)
             ->where(function ($query) use ($searchQuery) {
                 $query->where('title', 'like', "%{$searchQuery}%")
                     ->orWhere('serial_number', 'like', "%{$searchQuery}%")
@@ -62,6 +63,7 @@ class UserController extends Controller
             })
             ->paginate(10);
         $researchSubmissions = ResearchSubmission::where('user_reg_no', $user->reg_no)
+            ->where('score',  null)
             ->where(function ($query) use ($searchQuery) {
                 $query->where('article_title', 'like', "%{$searchQuery}%")
                     ->orWhere('serial_number', 'like', "%{$searchQuery}%")

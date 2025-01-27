@@ -20,6 +20,12 @@
     <link href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.css" rel="stylesheet">
 
    
+    <link rel="icon" type="image/png" href="{{ asset('logo/logo.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('logo/logo-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('logo/logo-16x16.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('logo/logo-180x180.png') }}">
+
+   
     <script src="https://unpkg.com/alpinejs" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/alpinejs" defer></script>
     
