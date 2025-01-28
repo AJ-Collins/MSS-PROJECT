@@ -362,7 +362,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Handle delete user via AJAX
     window.deleteUser = function (userId) {
         if (confirm("Are you sure you want to delete this user?")) {
-            fetch("/delete/users/" + userId, {
+            fetch("/admin/delete/users/" + userId, {
                 method: "DELETE",
                 headers: {
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),

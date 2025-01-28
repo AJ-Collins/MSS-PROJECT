@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" x-data="{ sidebarOpen: false, isLoading: true }">
+<html lang="en" x-data="{ sidebarOpen: true, isLoading: true }">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -378,8 +378,21 @@
     <div class="flex h-screen pt-16">
         <!-- Enhanced Sidebar -->
         <aside x-cloak
-            :class="{'translate-x-0': sidebarOpen, '-translate-x-full': !sidebarOpen}"
-            class="fixed inset-y-0 left-0 z-40 w-64 shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0" style="background-color: rgb(0, 128, 55);">
+        :class="{
+            'translate-x-0': sidebarOpen,
+            '-translate-x-full': !sidebarOpen,
+            'w-64': true,
+            'fixed': true,
+            'inset-y-0': true,
+            'left-0': true,
+            'z-40': true,
+            'shadow-lg': true,
+            'transform': true,
+            'transition-transform': true,
+            'duration-300': true,
+            'ease-in-out': true
+        }"
+        style="background-color: rgb(0, 128, 55);">
             <nav class="mt-16 lg:mt-4 p-4 space-y-4">
 
                 <!-- Author Section for Admins -->
@@ -389,7 +402,7 @@
                         Home
                     </div>-->
                     <!-- Enhanced Navigation Items with Icons -->
-                    <a href="{{ route('admin.dashboard') }}" class="flex items-center text-gray-100 font-medium hover:text-gray-400 group hover:bg-green-800 rounded-md px-3 py-2 transition-colors duration-200">
+                    <a href="{{ route('admin.dashboard') }}" class="flex items-center text-gray-100 font-medium hover:text-gray-400 group hover:bg-green-800 rounded-md px-3 py-2 transition-colors duration-200 mt-10">
                         <svg class="w-5 h-5 mr-2 text-green-500 group-hover:text-gray-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
                         </svg>
@@ -500,7 +513,7 @@
                         Home
                     </div>-->
                     <!-- Enhanced Navigation Items with Icons -->
-                    <a href="{{ route('reviewer.dashboard') }}" class="flex items-center text-gray-100 font-medium hover:text-gray-400 group hover:bg-green-800 rounded-md px-3 py-2 transition-colors duration-200">
+                    <a href="{{ route('reviewer.dashboard') }}" class="flex items-center text-gray-100 font-medium hover:text-gray-400 group hover:bg-green-800 rounded-md px-3 py-2 transition-colors duration-200 mt-10">
                         <svg class="w-5 h-5 mr-2 text-green-500 group-hover:text-gray-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
                         </svg>
@@ -517,7 +530,7 @@
                         <svg class="w-5 h-5 mr-2 text-green-500 group-hover:text-gray-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
                         </svg>
-                        Reviewed
+                        Completed
                     </a>
                     <a href="{{ route('reviewer.profile') }}" class="flex items-center text-gray-100 hover:text-gray-400 group font-medium hover:bg-green-800 rounded-md px-3 py-2 transition-colors duration-200">
                         <svg class="w-5 h-5 mr-2 text-green-500 group-hover:text-gray-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -599,7 +612,7 @@
                         Home
                     </div>-->
                     <!-- Enhanced Navigation Items with Icons -->
-                    <a href="{{route('user.dashboard')}}" class="flex items-center text-gray-100 font-medium hover:text-gray-400 group hover:bg-green-800 rounded-md px-3 py-2 transition-colors duration-200">
+                    <a href="{{route('user.dashboard')}}" class="flex items-center text-gray-100 font-medium hover:text-gray-400 group hover:bg-green-800 rounded-md px-3 py-2 transition-colors duration-200 mt-10">
                         <svg class="w-5 h-5 mr-2 text-green-500 group-hover:text-gray-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
                         </svg>
@@ -723,7 +736,8 @@
         </aside>
 
         <!-- Enhanced Main Content -->
-        <main class="flex-1 overflow-x-hidden bg-gray-50">
+        <main class="flex-1 overflow-x-hidden bg-gray-50 transition-all duration-300"
+            :class="{ 'ml-0': !sidebarOpen, 'ml-64': sidebarOpen }">
             <div class="container mx-auto px-4 py-6">
                 <!-- Enhanced Alert Messages -->
                 @if (session('success'))
@@ -761,10 +775,10 @@
         </main>
     </div>
 
-    <!-- Mobile Sidebar Overlay -->
+    <!-- Overlay -->
     <div x-show="sidebarOpen" 
          @click="sidebarOpen = false"
-         class="fixed inset-0 z-30 bg-black bg-opacity-50 backdrop-blur-sm transition-opacity lg:hidden">
+        class="lg:hidden fixed inset-0 z-30 bg-black bg-opacity-50 backdrop-blur-sm transition-opacity">
     </div>
 
     <!-- Enhanced Scripts -->

@@ -65,7 +65,6 @@
                         <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600">Title</th>
                         <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600">Sub_Theme</th>
                         <th class="px-4 py-2 text-center text-sm font-semibold text-gray-600">Score</th>
-                        <th class="px-4 py-2 text-center text-sm font-semibold text-gray-600">Remarks</th>
                         <th class="px-4 py-2 text-center text-sm font-semibold text-gray-600">Status</th>
                         <th class="px-4 py-2 text-center text-sm font-semibold text-gray-600">Actions</th>
                     </tr>
@@ -89,7 +88,6 @@
 
                                 </span>
                             </td>
-                            <td class="px-4 py-3 text-center text-sm text-gray-700">Good (Remarks)</td>
                             <td class="px-4 py-3 text-center text-sm text-gray-700">
                                 <div class="flex flex-col items-center space-y-2">
                                         <a href="<?php echo e(route('reviewer.abstract.assessment', ['serial_number' => $submission->serial_number])); ?>" 
@@ -109,7 +107,7 @@
                                           </svg>
                                             <span class="absolute bottom-full left-1/2 transform -translate-x-1/2 px-2 py-1 text-xs text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200">Reject</span>
                                         </a>-->
-                                    <a href="<?php echo e(route('research.abstract.download', $submission->serial_number)); ?>" class="group relative p-2 text-gray-600 hover:text-indigo-600 rounded-full hover:bg-indigo-100 transition-colors duration-200">
+                                    <a href="<?php echo e(route('research.reviewerAbstract.download', $submission->serial_number)); ?>" class="group relative p-2 text-gray-600 hover:text-indigo-600 rounded-full hover:bg-indigo-100 transition-colors duration-200">
                                         <!-- PDF icon -->
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
@@ -251,7 +249,6 @@
                     <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600">Title</th>
                     <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600">Sub_Theme</th>
                     <th class="px-4 py-2 text-center text-sm font-semibold text-gray-600">Score</th>
-                    <th class="px-4 py-2 text-center text-sm font-semibold text-gray-600">Remarks</th>
                     <th class="px-4 py-2 text-center text-sm font-semibold text-gray-600">Status</th>
                     <th class="px-4 py-2 text-center text-sm font-semibold text-gray-600">Actions</th>
                 </tr>
@@ -275,7 +272,6 @@
 
                             </span>
                         </td>
-                        <td class="px-4 py-3 text-center text-sm text-gray-700">Good (Remarks)</td>
                         <td class="px-4 py-3 text-center text-sm text-gray-700">
                             <div class="flex justify-center p-2">
                                 <a href="<?php echo e(route('reviewer.proposal.assessment', ['serial_number' => $researchSubmission->serial_number])); ?>" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-all">

@@ -460,7 +460,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const reviewersList = researchSubmission.reviewers.map(reviewer => {
                 return `<li class="text-sm text-gray-700">${reviewer.first_name}</li>`;
             }).join('');
-            const avgScore = researchSubmission.average_score ? parseFloat(researchSubmission.average_score).toFixed(1) : '<span class="text-gray-500">Not reviewed</span>';
+            const avgScore = researchSubmission.average_score ? parseFloat(researchSubmission.average_score).toFixed(0) + '%': '<span class="text-gray-500">Not reviewed</span>';
             return`
             <tr class="hover:bg-gray-50">
                 <td class="px-6 py-4 whitespace-nowrap" onclick="event.stopPropagation()">

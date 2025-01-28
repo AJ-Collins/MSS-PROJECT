@@ -180,7 +180,7 @@ class ReviewerController extends Controller
             ->whereNull('research_assessments.total_score')
             ->select(
                 'abstract_submissions.*', 
-                'research_assessments.total_score as reviewer_total_score'
+                DB::raw('ROUND(((research_assessments.total_score * 2) / 100) * 100) as reviewer_total_score')
             )
             ->where(function ($query) use ($searchQuery) {
                 $query->where('abstract_submissions.title', 'like', "%{$searchQuery}%")
@@ -199,7 +199,7 @@ class ReviewerController extends Controller
             ->whereNull('proposal_assessments.total_score')
             ->select(
                 'research_submissions.*', 
-                'proposal_assessments.total_score as reviewer_total_score'
+                DB::raw('ROUND(((proposal_assessments.total_score * 2) / 100) * 100, 2) as reviewer_total_score')
             )
             ->where(function ($query) use ($searchQuery) {
                 $query->where('research_submissions.article_title', 'like', "%{$searchQuery}%")
@@ -304,7 +304,7 @@ class ReviewerController extends Controller
             })
             ->select(
                 'abstract_submissions.*', 
-                'research_assessments.total_score as reviewer_total_score'
+                DB::raw('ROUND(((research_assessments.total_score * 2) / 100) * 100) as reviewer_total_score')
             )
             ->whereNotNull('research_assessments.total_score')
             ->where(function ($query) use ($searchQuery) {
@@ -322,7 +322,7 @@ class ReviewerController extends Controller
             })
             ->select(
                 'research_submissions.*', 
-                'proposal_assessments.total_score as reviewer_total_score'
+                DB::raw('ROUND(((proposal_assessments.total_score * 2) / 100) * 100) as reviewer_total_score')
             )
             ->whereNotNull('proposal_assessments.total_score')
             ->where(function ($query) use ($searchQuery) {
@@ -334,7 +334,7 @@ class ReviewerController extends Controller
 
         $abstractCount = $submissions->total();
         $proposalCount = $researchSubmissions->total();
-
+            
         return view('reviewer.partials.revieweddocuments', compact(
             'submissions', 
             'researchSubmissions', 

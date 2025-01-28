@@ -65,7 +65,7 @@
                         <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600">Title</th>
                         <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600">Sub_Theme</th>
                         <th class="px-4 py-2 text-center text-sm font-semibold text-gray-600">Score</th>
-                        <th class="px-4 py-2 text-center text-sm font-semibold text-gray-600">Remarks</th>
+                        <th class="px-4 py-2 text-center text-sm font-semibold text-gray-600">Assessment form</th>
                         <th class="px-4 py-2 text-center text-sm font-semibold text-gray-600">Status</th>
                         <th class="px-4 py-2 text-center text-sm font-semibold text-gray-600">Actions</th>
                     </tr>
@@ -82,27 +82,28 @@
                             </td>
                             <td class="px-4 py-3 text-sm text-gray-700"><?php echo e($submission->sub_theme); ?></td>
                             <td class="px-4 py-3 text-center text-sm text-gray-700 group relative">
-                                <?php echo e($submission->reviewer_total_score ?? 'Assess file'); ?>
+                                <?php echo e($submission->reviewer_total_score . '%' ?? 'Assess file'); ?>
 
                                 <span class="absolute bottom-full left-1/2 transform -translate-x-1/2 w-max px-3 py-1 text-xs text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                                     <?php echo e($submission->reviewer_total_score ? "{$submission->reviewer_total_score} marks assigned after assessment" : "Assess the document and assign marks"); ?>
 
                                 </span>
                             </td>
-                            <td class="px-4 py-3 text-center text-sm text-gray-700">Good (Remarks)</td>
+                            <td class="px-4 py-3 text-center text-sm text-gray-700">
+                            <a href="<?php echo e(route('abstract.asessment.download', ['serial_number' => $submission->serial_number])); ?>" 
+                                class="flex items-center text-blue-600 hover:text-blue-800 w-full sm:w-auto">
+                                    <svg class="mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                    </svg>
+                                    <span class="whitespace-nowrap">Download (PDF)</span>
+                            </a>
+                            </td>
                             <td class="px-4 py-3 text-center text-sm text-gray-700">
                                 <div class="flex justify-center p-2">
                                     <?php if($submission->reviewer_total_score && $submission->reviewer_total_score > 30): ?>
                                         <!-- Display message if score is above 30 -->
                                         <span class="text-green-600">Score passed minimum</span>
                                         <span class="ml-2 relative group">
-                                            <svg class="w-5 h-5 text-gray-600 group-hover:text-blue-500 cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-                                            </svg>
-                                            <!-- Tooltip text -->
-                                            <span class="absolute bottom-full mb-1 left-1/2 transform -translate-x-1/2 text-sm bg-gray-800 text-white rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                                Request Revision
-                                            </span>
                                         </span>
                                     <?php else: ?>
                                         <!-- Display button to request revision if score is below 30 -->
@@ -120,7 +121,7 @@
                             </td>
                             <td class="px-4 py-3 text-center">
                                 <div class="flex justify-center space-x-2">
-                                    <a href="<?php echo e(route('research.areviewerAbstract.download', $submission->serial_number)); ?>" class="group relative p-2 text-gray-600 hover:text-indigo-600 rounded-full hover:bg-indigo-100 transition-colors duration-200">
+                                    <a href="<?php echo e(route('research.reviewerAbstract.download', $submission->serial_number)); ?>" class="group relative p-2 text-gray-600 hover:text-indigo-600 rounded-full hover:bg-indigo-100 transition-colors duration-200">
                                         <!-- PDF icon -->
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
@@ -262,7 +263,7 @@
                     <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600">Title</th>
                     <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600">Sub_Theme</th>
                     <th class="px-4 py-2 text-center text-sm font-semibold text-gray-600">Score</th>
-                    <th class="px-4 py-2 text-center text-sm font-semibold text-gray-600">Remarks</th>
+                    <th class="px-4 py-2 text-center text-sm font-semibold text-gray-600">Assessment form</th>
                     <th class="px-4 py-2 text-center text-sm font-semibold text-gray-600">Status</th>
                     <th class="px-4 py-2 text-center text-sm font-semibold text-gray-600">Actions</th>
                 </tr>
@@ -279,19 +280,27 @@
                         </td>
                         <td class="px-4 py-3 text-sm text-gray-700"><?php echo e($researchSubmission->sub_theme); ?></td>
                         <td class="px-4 py-3 text-center text-sm text-gray-700 group relative">
-                            <?php echo e($researchSubmission->reviewer_total_score ?? 'Assess file'); ?>
+                            <?php echo e($researchSubmission->reviewer_total_score . '%' ?? 'Assess file'); ?>
 
                             <span class="absolute bottom-full left-1/2 transform -translate-x-1/2 w-max px-3 py-1 text-xs text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                                 <?php echo e($researchSubmission->reviewer_total_score ? "{$researchSubmission->reviewer_total_score} marks assigned after assessment" : "Assess the document and assign marks"); ?>
 
                             </span>
                         </td>
-                        <td class="px-4 py-3 text-center text-sm text-gray-700">Good (Remarks)</td>
+                        <td class="px-4 py-3 text-center text-sm text-gray-700">
+                            <a href="<?php echo e(route('abstract.proposalAssessment.download', ['serial_number' => $researchSubmission->serial_number])); ?>" 
+                                class="flex items-center text-blue-600 hover:text-blue-800 w-full sm:w-auto">
+                                    <svg class="mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                    </svg>
+                                    <span class="whitespace-nowrap">Download (PDF)</span>
+                            </a>
+                        </td>
                         <td class="px-4 py-3 text-center text-sm text-gray-700">
                             <div class="flex justify-center p-2">
                             <?php if($researchSubmission->reviewer_total_score && $researchSubmission->reviewer_total_score > 30): ?>
                                 <!-- Display message if score is above 30 -->
-                                <span class="text-green-600">This article has passed the review!</span>
+                                <span class="text-green-600">Score passed minimum</span>
                             <?php else: ?>
                                 <!-- Display button to request revision if score is below 30 -->
                                 <a href="" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-all">

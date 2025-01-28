@@ -319,82 +319,83 @@
                                                         </button>
                                                     </div>
 
-                                                    <!-- Content -->
-                                                    <div class="mt-4 max-h-[70vh] overflow-y-auto">
-                                                        <!-- Title -->
-                                                        <h1 class="text-2xl font-serif text-center font-bold mb-6">
-                                                            {{ $submission->title }}
-                                                        </h1>
+                                                    <!-- Modal Content -->
+<div class="mt-4 max-h-[70vh] overflow-y-auto px-6 py-4 bg-white rounded-lg shadow-lg">
+    <!-- Title -->
+    <h1 class="text-2xl font-serif text-center font-bold mb-6">
+        {{ $submission->title }}
+    </h1>
 
-                                                        <!-- Authors -->
-                                                        <div class="text-center mb-8">
-                                                        @php
-                                                            $authors = json_decode($submission->authors, true);
-                                                        @endphp
-                                                        @if($authors && is_array($authors))
-                                                            <!-- Authors names in one line -->
-                                                            <div class="flex flex-wrap justify-center gap-1 mb-2">
-                                                                @foreach($authors as $author)
-                                                                    <span class="font-serif text-sm">
-                                                                        {{ $author['first_name'] }} {{ $author['middle_name'] ?? '' }} {{ $author['surname'] }}
-                                                                        @if($author['is_correspondent'])
-                                                                            <span class="text-black-600">*</span>
-                                                                        @endif
-                                                                        @if(!$loop->last), @endif
-                                                                    </span>
-                                                                @endforeach
-                                                            </div>
-                                                            
-                                                            <!-- All institutions in one line -->
-                                                            <div class="text-gray-800 mb-2">
-                                                                <p class="font-serif text-xs">
-                                                                    @php
-                                                                        $universities = array_unique(array_map(function($author) {
-                                                                            return $author['university'];
-                                                                        }, $authors));
-                                                                    @endphp
-                                                                    {{ implode(', ', $universities) }}
-                                                                </p>
-                                                            </div>
-                                                            
-                                                            <!-- All departments in one line -->
-                                                            <div class="text-gray-800">
-                                                                <p class="font-serif text-xs">
-                                                                    @php
-                                                                        $departments = array_unique(array_map(function($author) {
-                                                                            return $author['department'];
-                                                                        }, $authors));
-                                                                    @endphp
-                                                                    {{ implode(', ', $departments) }}
-                                                                </p>
-                                                            </div>
-                                                        @else
-                                                            <p class="text-gray-500 italic text-sm">No authors available</p>
-                                                        @endif
-                                                        </div>
+    <!-- Authors Section -->
+    <div class="text-center mb-8">
+        @php
+            $authors = json_decode($submission->authors, true);
+        @endphp
+        @if($authors && is_array($authors))
+            <!-- Authors Names with Affiliations -->
+            <div class="flex flex-wrap justify-center gap-1 mb-4">
+                @foreach($authors as $index => $author)
+                    <span class="font-serif text-sm">
+                        {{ $author['first_name'] }} {{ $author['middle_name'] ?? '' }} {{ $author['surname'] }}
+                        <sup class="text-gray-600">{{ $index + 1 }}</sup>
+                        @if($author['is_correspondent'])
+                            <span class="text-black-600">*</span>
+                        @endif
+                        @if(!$loop->last), @endif
+                    </span>
+                @endforeach
+            </div>
 
-                                                        <!-- Abstract -->
-                                                        <div class="space-y-4">
-                                                            <h2 class="text-lg font-bold text-gray-900">Abstract</h2>
-                                                            <p class="text-sm text-gray-700 leading-relaxed text-justify">
-                                                                {{ $submission->abstract }}
-                                                            </p>
-                                                        </div>
+            <!-- Affiliations with Superscript Numbers -->
+            <div class="text-gray-800 mb-2">
+                <p class="font-serif text-xs font-medium">
+                    @foreach($authors as $index => $author)
+                        <span class="block">
+                            <sup class="text-gray-600">{{ $index + 1 }}</sup> 
+                            {{ $author['department'] }}, {{ $author['university'] }}
+                        </span>
+                    @endforeach
+                </p>
+            </div>
 
-                                                        <!-- Keywords -->
-                                                        <div class="mt-6">
-                                                            <h3 class="text-sm font-bold text-gray-900">Keywords</h3>
-                                                            <p class="text-sm text-gray-700">
-                                                                {{ implode(', ', json_decode($submission->keywords)) }}
-                                                            </p>
-                                                        </div>
+            <!-- Emails -->
+            <div class="text-gray-800 mb-4">
+                <p class="font-serif text-xs font-medium">
+                    <strong>Emails:</strong>
+                    @foreach($authors as $author)
+                        <span>{{ $author['email'] }}</span>
+                        @if(!$loop->last), @endif
+                    @endforeach
+                </p>
+            </div>
+        @else
+            <p class="text-gray-500 italic text-sm">No authors available</p>
+        @endif
+    </div>
 
-                                                        <!-- Sub-Theme -->
-                                                        <div class="mt-4">
-                                                            <h3 class="text-sm font-bold text-gray-900">Sub-Theme</h3>
-                                                            <p class="text-sm text-gray-700">{{ $submission->sub_theme }}</p>
-                                                        </div>
-                                                    </div>
+    <!-- Abstract Section -->
+    <div class="space-y-4 mb-6">
+        <h2 class="text-lg font-bold text-gray-900 pb-2">Abstract</h2>
+        <p class="text-sm text-gray-700 leading-relaxed text-justify">
+            {{ $submission->abstract }}
+        </p>
+    </div>
+
+    <!-- Keywords Section -->
+    <div class="mb-6">
+        <h3 class="text-sm font-bold text-gray-900 pb-2">Keywords</h3>
+        <p class="text-sm text-gray-700">
+            {{ implode(', ', json_decode($submission->keywords)) }}
+        </p>
+    </div>
+
+    <!-- Sub-Theme Section -->
+    <div class="mb-6">
+        <h3 class="text-sm font-bold text-gray-900 pb-2">Sub-Theme</h3>
+        <p class="text-sm text-gray-700">{{ $submission->sub_theme }}</p>
+    </div>
+</div>
+
                                                 </div>
                                             </div>
                                         </div>
@@ -716,82 +717,82 @@
                                                         </button>
                                                     </div>
 
-                                                    <!-- Content -->
-                                                    <div class="mt-4 max-h-[70vh] overflow-y-auto">
-                                                        <!-- Title -->
-                                                        <h1 class="text-2xl font-serif text-center font-bold mb-6">
-                                                            {{ $researchSubmission->article_title }}
-                                                        </h1>
+                                                    <!-- Modal Content -->
+<div class="mt-4 max-h-[70vh] overflow-y-auto px-6 py-4 bg-white rounded-lg shadow-lg">
+    <!-- Title -->
+    <h1 class="text-2xl font-serif text-center font-bold mb-6">
+        {{ $researchSubmission->article_title }}
+    </h1>
 
-                                                        <!-- Authors -->
-                                                        <div class="text-center mb-8">
-                                                        @php
-                                                            $authors = json_decode($researchSubmission->authors, true);
-                                                        @endphp
-                                                        @if($authors && is_array($authors))
-                                                            <!-- Authors names in one line -->
-                                                            <div class="flex flex-wrap justify-center gap-1 mb-2">
-                                                                @foreach($authors as $author)
-                                                                    <span class="font-serif text-sm">
-                                                                        {{ $author['first_name'] }} {{ $author['middle_name'] ?? '' }} {{ $author['surname'] }}
-                                                                        @if($author['is_correspondent'])
-                                                                            <span class="text-black-600">*</span>
-                                                                        @endif
-                                                                        @if(!$loop->last), @endif
-                                                                    </span>
-                                                                @endforeach
-                                                            </div>
-                                                            
-                                                            <!-- All institutions in one line -->
-                                                            <div class="text-gray-800 mb-2">
-                                                                <p class="font-serif text-xs">
-                                                                    @php
-                                                                        $universities = array_unique(array_map(function($author) {
-                                                                            return $author['university'];
-                                                                        }, $authors));
-                                                                    @endphp
-                                                                    {{ implode(', ', $universities) }}
-                                                                </p>
-                                                            </div>
-                                                            
-                                                            <!-- All departments in one line -->
-                                                            <div class="text-gray-800">
-                                                                <p class="font-serif text-xs">
-                                                                    @php
-                                                                        $departments = array_unique(array_map(function($author) {
-                                                                            return $author['department'];
-                                                                        }, $authors));
-                                                                    @endphp
-                                                                    {{ implode(', ', $departments) }}
-                                                                </p>
-                                                            </div>
-                                                        @else
-                                                            <p class="text-gray-500 italic text-sm">No authors available</p>
-                                                        @endif
-                                                        </div>
+    <!-- Authors Section -->
+    <div class="text-center mb-8">
+        @php
+            $authors = json_decode($researchSubmission->authors, true);
+        @endphp
+        @if($authors && is_array($authors))
+            <!-- Authors Names with Affiliations -->
+            <div class="flex flex-wrap justify-center gap-1 mb-4">
+                @foreach($authors as $index => $author)
+                    <span class="font-serif text-sm">
+                        {{ $author['first_name'] }} {{ $author['middle_name'] ?? '' }} {{ $author['surname'] }}
+                        <sup class="text-gray-600">{{ $index + 1 }}</sup>
+                        @if($author['is_correspondent'])
+                            <span class="text-black-600">*</span>
+                        @endif
+                        @if(!$loop->last), @endif
+                    </span>
+                @endforeach
+            </div>
 
-                                                        <!-- Abstract -->
-                                                        <div class="space-y-4">
-                                                            <h2 class="text-lg font-bold text-gray-900">Abstract</h2>
-                                                            <p class="text-sm text-gray-700 leading-relaxed text-justify">
-                                                                {{ $researchSubmission->abstract }}
-                                                            </p>
-                                                        </div>
+            <!-- Affiliations with Superscript Numbers -->
+            <div class="text-gray-800 mb-2">
+                <p class="font-serif text-xs font-medium">
+                    @foreach($authors as $index => $author)
+                        <span class="block">
+                            <sup class="text-gray-600">{{ $index + 1 }}</sup> 
+                            {{ $author['department'] }}, {{ $author['university'] }}
+                        </span>
+                    @endforeach
+                </p>
+            </div>
 
-                                                        <!-- Keywords -->
-                                                        <div class="mt-6">
-                                                            <h3 class="text-sm font-bold text-gray-900">Keywords</h3>
-                                                            <p class="text-sm text-gray-700">
-                                                                {{ implode(', ', json_decode($researchSubmission->keywords)) }}
-                                                            </p>
-                                                        </div>
+            <!-- Emails -->
+            <div class="text-gray-800 mb-4">
+                <p class="font-serif text-xs font-medium">
+                    <strong>Emails:</strong>
+                    @foreach($authors as $author)
+                        <span>{{ $author['email'] }}</span>
+                        @if(!$loop->last), @endif
+                    @endforeach
+                </p>
+            </div>
+        @else
+            <p class="text-gray-500 italic text-sm">No authors available</p>
+        @endif
+    </div>
 
-                                                        <!-- Sub-Theme -->
-                                                        <div class="mt-4">
-                                                            <h3 class="text-sm font-bold text-gray-900">Sub-Theme</h3>
-                                                            <p class="text-sm text-gray-700">{{ $researchSubmission->sub_theme }}</p>
-                                                        </div>
-                                                    </div>
+    <!-- Abstract Section -->
+    <div class="space-y-4 mb-6">
+        <h2 class="text-lg font-bold text-gray-900 pb-2">Abstract</h2>
+        <p class="text-sm text-gray-700 leading-relaxed text-justify">
+            {{ $researchSubmission->abstract }}
+        </p>
+    </div>
+
+    <!-- Keywords Section -->
+    <div class="mb-6">
+        <h3 class="text-sm font-bold text-gray-900 pb-2">Keywords</h3>
+        <p class="text-sm text-gray-700">
+            {{ implode(', ', json_decode($researchSubmission->keywords)) }}
+        </p>
+    </div>
+
+    <!-- Sub-Theme Section -->
+    <div class="mb-6">
+        <h3 class="text-sm font-bold text-gray-900 pb-2">Sub-Theme</h3>
+        <p class="text-sm text-gray-700">{{ $researchSubmission->sub_theme }}</p>
+    </div>
+</div>
                                                 </div>
                                             </div>
                                         </div>

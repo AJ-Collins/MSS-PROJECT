@@ -191,7 +191,7 @@
     const authorsContainer = document.getElementById('authorsContainer');
     const addAuthorBtn = document.getElementById('addAuthorBtn');
     const form = document.getElementById('authorForm');
-    const MAX_AUTHORS = 5;
+    
     let authorTemplate = null;
 
     // Initialize template from first author section
@@ -281,17 +281,7 @@
             });
         });
     }
-
-    // Function to check authors limit
-    function checkAuthorsLimit() {
-        const authorCount = document.querySelectorAll('.author-section').length;
-        addAuthorBtn.disabled = authorCount >= MAX_AUTHORS;
-        addAuthorBtn.classList.toggle('opacity-50', authorCount >= MAX_AUTHORS);
-        
-        if (authorCount >= MAX_AUTHORS) {
-            showNotification('Maximum number of authors reached (5)', 'warning');
-        }
-    }
+    
 
     // Function to show notifications
     function showNotification(message, type = 'info') {
@@ -448,7 +438,7 @@
     if (addAuthorBtn) {
         addAuthorBtn.addEventListener('click', function() {
             const currentCount = document.querySelectorAll('.author-section').length;
-            if (currentCount < MAX_AUTHORS) {
+            
                 const newSection = createAuthorSection(currentCount);
                 newSection.style.opacity = '0';
                 newSection.style.transform = 'scale(0.95)';
@@ -460,7 +450,6 @@
                 });
                 
                 checkAuthorsLimit();
-            }
         });
     }
 

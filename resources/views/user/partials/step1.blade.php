@@ -191,7 +191,7 @@
     const authorsContainer = document.getElementById('authorsContainer');
     const addAuthorBtn = document.getElementById('addAuthorBtn');
     const form = document.getElementById('authorForm');
-    const MAX_AUTHORS = 5;
+   
     let authorTemplate = null;
 
     // Initialize template from first author section
@@ -259,7 +259,6 @@
         setTimeout(() => {
             section.remove();
             updateAuthorNumbers();
-            checkAuthorsLimit();
         }, 300);
     }
 
@@ -280,17 +279,6 @@
                 input.name = newName;
             });
         });
-    }
-
-    // Function to check authors limit
-    function checkAuthorsLimit() {
-        const authorCount = document.querySelectorAll('.author-section').length;
-        addAuthorBtn.disabled = authorCount >= MAX_AUTHORS;
-        addAuthorBtn.classList.toggle('opacity-50', authorCount >= MAX_AUTHORS);
-        
-        if (authorCount >= MAX_AUTHORS) {
-            showNotification('Maximum number of authors reached (5)', 'warning');
-        }
     }
 
     // Function to show notifications
@@ -448,7 +436,7 @@
     if (addAuthorBtn) {
         addAuthorBtn.addEventListener('click', function() {
             const currentCount = document.querySelectorAll('.author-section').length;
-            if (currentCount < MAX_AUTHORS) {
+            
                 const newSection = createAuthorSection(currentCount);
                 newSection.style.opacity = '0';
                 newSection.style.transform = 'scale(0.95)';
@@ -458,9 +446,6 @@
                     newSection.style.opacity = '1';
                     newSection.style.transform = 'scale(1)';
                 });
-                
-                checkAuthorsLimit();
-            }
         });
     }
 
@@ -482,8 +467,6 @@
         }
     });
 
-    // Initialize form state
-    checkAuthorsLimit();
 
     // Encapsulate saveDraft function within a namespace
     window.MyApp = window.MyApp || {};

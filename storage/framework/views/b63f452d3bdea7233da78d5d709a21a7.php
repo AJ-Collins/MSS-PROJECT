@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
     <title>TUM-MSS - Login</title>
     <link rel="icon" type="image/png" href="<?php echo e(asset('logo/logo.png')); ?>">
     <link rel="icon" type="image/png" sizes="32x32" href="<?php echo e(asset('logo/logo-32x32.png')); ?>">

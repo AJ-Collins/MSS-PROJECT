@@ -231,5 +231,9 @@ class User extends Authenticatable implements MustVerifyEmail
         // or default to the first role if not set
         return session('current_role') ?? $this->roles->first()->name;
     }
+    public function assessments()
+{
+    return $this->hasMany(ResearchAssessment::class); // or use belongsToMany depending on your data structure
+}
 
 }

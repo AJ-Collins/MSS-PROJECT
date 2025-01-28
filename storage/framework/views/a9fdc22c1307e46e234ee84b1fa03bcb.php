@@ -318,88 +318,88 @@
                                                         </button>
                                                     </div>
 
-                                                    <!-- Content -->
-                                                    <div class="mt-4 max-h-[70vh] overflow-y-auto">
-                                                        <!-- Title -->
-                                                        <h1 class="text-2xl font-serif text-center font-bold mb-6">
-                                                            <?php echo e($submission->title); ?>
+                                                    <!-- Modal Content -->
+<div class="mt-4 max-h-[70vh] overflow-y-auto px-6 py-4 bg-white rounded-lg shadow-lg">
+    <!-- Title -->
+    <h1 class="text-2xl font-serif text-center font-bold mb-6">
+        <?php echo e($submission->title); ?>
 
-                                                        </h1>
+    </h1>
 
-                                                        <!-- Authors -->
-                                                        <div class="text-center mb-8">
-                                                        <?php
-                                                            $authors = json_decode($submission->authors, true);
-                                                        ?>
-                                                        <?php if($authors && is_array($authors)): ?>
-                                                            <!-- Authors names in one line -->
-                                                            <div class="flex flex-wrap justify-center gap-1 mb-2">
-                                                                <?php $__currentLoopData = $authors; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $author): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                                                    <span class="font-serif text-sm">
-                                                                        <?php echo e($author['first_name']); ?> <?php echo e($author['middle_name'] ?? ''); ?> <?php echo e($author['surname']); ?>
+    <!-- Authors Section -->
+    <div class="text-center mb-8">
+        <?php
+            $authors = json_decode($submission->authors, true);
+        ?>
+        <?php if($authors && is_array($authors)): ?>
+            <!-- Authors Names with Affiliations -->
+            <div class="flex flex-wrap justify-center gap-1 mb-4">
+                <?php $__currentLoopData = $authors; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $author): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <span class="font-serif text-sm">
+                        <?php echo e($author['first_name']); ?> <?php echo e($author['middle_name'] ?? ''); ?> <?php echo e($author['surname']); ?>
 
-                                                                        <?php if($author['is_correspondent']): ?>
-                                                                            <span class="text-black-600">*</span>
-                                                                        <?php endif; ?>
-                                                                        <?php if(!$loop->last): ?>, <?php endif; ?>
-                                                                    </span>
-                                                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                                            </div>
-                                                            
-                                                            <!-- All institutions in one line -->
-                                                            <div class="text-gray-800 mb-2">
-                                                                <p class="font-serif text-xs">
-                                                                    <?php
-                                                                        $universities = array_unique(array_map(function($author) {
-                                                                            return $author['university'];
-                                                                        }, $authors));
-                                                                    ?>
-                                                                    <?php echo e(implode(', ', $universities)); ?>
+                        <sup class="text-gray-600"><?php echo e($index + 1); ?></sup>
+                        <?php if($author['is_correspondent']): ?>
+                            <span class="text-black-600">*</span>
+                        <?php endif; ?>
+                        <?php if(!$loop->last): ?>, <?php endif; ?>
+                    </span>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+            </div>
 
-                                                                </p>
-                                                            </div>
-                                                            
-                                                            <!-- All departments in one line -->
-                                                            <div class="text-gray-800">
-                                                                <p class="font-serif text-xs">
-                                                                    <?php
-                                                                        $departments = array_unique(array_map(function($author) {
-                                                                            return $author['department'];
-                                                                        }, $authors));
-                                                                    ?>
-                                                                    <?php echo e(implode(', ', $departments)); ?>
+            <!-- Affiliations with Superscript Numbers -->
+            <div class="text-gray-800 mb-2">
+                <p class="font-serif text-xs font-medium">
+                    <?php $__currentLoopData = $authors; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $author): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <span class="block">
+                            <sup class="text-gray-600"><?php echo e($index + 1); ?></sup> 
+                            <?php echo e($author['department']); ?>, <?php echo e($author['university']); ?>
 
-                                                                </p>
-                                                            </div>
-                                                        <?php else: ?>
-                                                            <p class="text-gray-500 italic text-sm">No authors available</p>
-                                                        <?php endif; ?>
-                                                        </div>
+                        </span>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                </p>
+            </div>
 
-                                                        <!-- Abstract -->
-                                                        <div class="space-y-4">
-                                                            <h2 class="text-lg font-bold text-gray-900">Abstract</h2>
-                                                            <p class="text-sm text-gray-700 leading-relaxed text-justify">
-                                                                <?php echo e($submission->abstract); ?>
+            <!-- Emails -->
+            <div class="text-gray-800 mb-4">
+                <p class="font-serif text-xs font-medium">
+                    <strong>Emails:</strong>
+                    <?php $__currentLoopData = $authors; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $author): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <span><?php echo e($author['email']); ?></span>
+                        <?php if(!$loop->last): ?>, <?php endif; ?>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                </p>
+            </div>
+        <?php else: ?>
+            <p class="text-gray-500 italic text-sm">No authors available</p>
+        <?php endif; ?>
+    </div>
 
-                                                            </p>
-                                                        </div>
+    <!-- Abstract Section -->
+    <div class="space-y-4 mb-6">
+        <h2 class="text-lg font-bold text-gray-900 pb-2">Abstract</h2>
+        <p class="text-sm text-gray-700 leading-relaxed text-justify">
+            <?php echo e($submission->abstract); ?>
 
-                                                        <!-- Keywords -->
-                                                        <div class="mt-6">
-                                                            <h3 class="text-sm font-bold text-gray-900">Keywords</h3>
-                                                            <p class="text-sm text-gray-700">
-                                                                <?php echo e(implode(', ', json_decode($submission->keywords))); ?>
+        </p>
+    </div>
 
-                                                            </p>
-                                                        </div>
+    <!-- Keywords Section -->
+    <div class="mb-6">
+        <h3 class="text-sm font-bold text-gray-900 pb-2">Keywords</h3>
+        <p class="text-sm text-gray-700">
+            <?php echo e(implode(', ', json_decode($submission->keywords))); ?>
 
-                                                        <!-- Sub-Theme -->
-                                                        <div class="mt-4">
-                                                            <h3 class="text-sm font-bold text-gray-900">Sub-Theme</h3>
-                                                            <p class="text-sm text-gray-700"><?php echo e($submission->sub_theme); ?></p>
-                                                        </div>
-                                                    </div>
+        </p>
+    </div>
+
+    <!-- Sub-Theme Section -->
+    <div class="mb-6">
+        <h3 class="text-sm font-bold text-gray-900 pb-2">Sub-Theme</h3>
+        <p class="text-sm text-gray-700"><?php echo e($submission->sub_theme); ?></p>
+    </div>
+</div>
+
                                                 </div>
                                             </div>
                                         </div>
@@ -724,88 +724,87 @@
                                                         </button>
                                                     </div>
 
-                                                    <!-- Content -->
-                                                    <div class="mt-4 max-h-[70vh] overflow-y-auto">
-                                                        <!-- Title -->
-                                                        <h1 class="text-2xl font-serif text-center font-bold mb-6">
-                                                            <?php echo e($researchSubmission->article_title); ?>
+                                                    <!-- Modal Content -->
+<div class="mt-4 max-h-[70vh] overflow-y-auto px-6 py-4 bg-white rounded-lg shadow-lg">
+    <!-- Title -->
+    <h1 class="text-2xl font-serif text-center font-bold mb-6">
+        <?php echo e($researchSubmission->article_title); ?>
 
-                                                        </h1>
+    </h1>
 
-                                                        <!-- Authors -->
-                                                        <div class="text-center mb-8">
-                                                        <?php
-                                                            $authors = json_decode($researchSubmission->authors, true);
-                                                        ?>
-                                                        <?php if($authors && is_array($authors)): ?>
-                                                            <!-- Authors names in one line -->
-                                                            <div class="flex flex-wrap justify-center gap-1 mb-2">
-                                                                <?php $__currentLoopData = $authors; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $author): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                                                    <span class="font-serif text-sm">
-                                                                        <?php echo e($author['first_name']); ?> <?php echo e($author['middle_name'] ?? ''); ?> <?php echo e($author['surname']); ?>
+    <!-- Authors Section -->
+    <div class="text-center mb-8">
+        <?php
+            $authors = json_decode($researchSubmission->authors, true);
+        ?>
+        <?php if($authors && is_array($authors)): ?>
+            <!-- Authors Names with Affiliations -->
+            <div class="flex flex-wrap justify-center gap-1 mb-4">
+                <?php $__currentLoopData = $authors; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $author): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <span class="font-serif text-sm">
+                        <?php echo e($author['first_name']); ?> <?php echo e($author['middle_name'] ?? ''); ?> <?php echo e($author['surname']); ?>
 
-                                                                        <?php if($author['is_correspondent']): ?>
-                                                                            <span class="text-black-600">*</span>
-                                                                        <?php endif; ?>
-                                                                        <?php if(!$loop->last): ?>, <?php endif; ?>
-                                                                    </span>
-                                                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                                            </div>
-                                                            
-                                                            <!-- All institutions in one line -->
-                                                            <div class="text-gray-800 mb-2">
-                                                                <p class="font-serif text-xs">
-                                                                    <?php
-                                                                        $universities = array_unique(array_map(function($author) {
-                                                                            return $author['university'];
-                                                                        }, $authors));
-                                                                    ?>
-                                                                    <?php echo e(implode(', ', $universities)); ?>
+                        <sup class="text-gray-600"><?php echo e($index + 1); ?></sup>
+                        <?php if($author['is_correspondent']): ?>
+                            <span class="text-black-600">*</span>
+                        <?php endif; ?>
+                        <?php if(!$loop->last): ?>, <?php endif; ?>
+                    </span>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+            </div>
 
-                                                                </p>
-                                                            </div>
-                                                            
-                                                            <!-- All departments in one line -->
-                                                            <div class="text-gray-800">
-                                                                <p class="font-serif text-xs">
-                                                                    <?php
-                                                                        $departments = array_unique(array_map(function($author) {
-                                                                            return $author['department'];
-                                                                        }, $authors));
-                                                                    ?>
-                                                                    <?php echo e(implode(', ', $departments)); ?>
+            <!-- Affiliations with Superscript Numbers -->
+            <div class="text-gray-800 mb-2">
+                <p class="font-serif text-xs font-medium">
+                    <?php $__currentLoopData = $authors; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $author): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <span class="block">
+                            <sup class="text-gray-600"><?php echo e($index + 1); ?></sup> 
+                            <?php echo e($author['department']); ?>, <?php echo e($author['university']); ?>
 
-                                                                </p>
-                                                            </div>
-                                                        <?php else: ?>
-                                                            <p class="text-gray-500 italic text-sm">No authors available</p>
-                                                        <?php endif; ?>
-                                                        </div>
+                        </span>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                </p>
+            </div>
 
-                                                        <!-- Abstract -->
-                                                        <div class="space-y-4">
-                                                            <h2 class="text-lg font-bold text-gray-900">Abstract</h2>
-                                                            <p class="text-sm text-gray-700 leading-relaxed text-justify">
-                                                                <?php echo e($researchSubmission->abstract); ?>
+            <!-- Emails -->
+            <div class="text-gray-800 mb-4">
+                <p class="font-serif text-xs font-medium">
+                    <strong>Emails:</strong>
+                    <?php $__currentLoopData = $authors; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $author): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <span><?php echo e($author['email']); ?></span>
+                        <?php if(!$loop->last): ?>, <?php endif; ?>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                </p>
+            </div>
+        <?php else: ?>
+            <p class="text-gray-500 italic text-sm">No authors available</p>
+        <?php endif; ?>
+    </div>
 
-                                                            </p>
-                                                        </div>
+    <!-- Abstract Section -->
+    <div class="space-y-4 mb-6">
+        <h2 class="text-lg font-bold text-gray-900 pb-2">Abstract</h2>
+        <p class="text-sm text-gray-700 leading-relaxed text-justify">
+            <?php echo e($researchSubmission->abstract); ?>
 
-                                                        <!-- Keywords -->
-                                                        <div class="mt-6">
-                                                            <h3 class="text-sm font-bold text-gray-900">Keywords</h3>
-                                                            <p class="text-sm text-gray-700">
-                                                                <?php echo e(implode(', ', json_decode($researchSubmission->keywords))); ?>
+        </p>
+    </div>
 
-                                                            </p>
-                                                        </div>
+    <!-- Keywords Section -->
+    <div class="mb-6">
+        <h3 class="text-sm font-bold text-gray-900 pb-2">Keywords</h3>
+        <p class="text-sm text-gray-700">
+            <?php echo e(implode(', ', json_decode($researchSubmission->keywords))); ?>
 
-                                                        <!-- Sub-Theme -->
-                                                        <div class="mt-4">
-                                                            <h3 class="text-sm font-bold text-gray-900">Sub-Theme</h3>
-                                                            <p class="text-sm text-gray-700"><?php echo e($researchSubmission->sub_theme); ?></p>
-                                                        </div>
-                                                    </div>
+        </p>
+    </div>
+
+    <!-- Sub-Theme Section -->
+    <div class="mb-6">
+        <h3 class="text-sm font-bold text-gray-900 pb-2">Sub-Theme</h3>
+        <p class="text-sm text-gray-700"><?php echo e($researchSubmission->sub_theme); ?></p>
+    </div>
+</div>
                                                 </div>
                                             </div>
                                         </div>

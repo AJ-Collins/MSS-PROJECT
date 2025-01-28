@@ -49,10 +49,9 @@
                 <thead class="bg-gray-50">
                     <tr>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Score</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>                        
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                        <!--<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>-->
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
@@ -63,9 +62,6 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                 {{ \Carbon\Carbon::parse($submission->created_at)->format('d M Y') }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {{ $submission->score ?? 'N/A' }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                             @if ($submission->approved == false)
@@ -126,9 +122,46 @@
                                 @endif
                             @endif
                             </td>
-                            <!--<td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                <a href="#" class="text-indigo-600 hover:text-indigo-900 mr-3">view</a>
-                            </td>-->
+                            <td class="relative px-6 py-4">
+                                <!-- Conditional Upload or Awaiting Button -->
+                                <div class="flex items-center space-x-6">
+                                @if ($submission->pdf_path)
+                                    <!-- Show nothing if pdf_path is not null -->
+                                @else
+                                    @if ($submission->request_made)
+                                        <!-- Show Upload if request_made is true -->
+                                        <a href="{{ route('user.submit.article', ['serial_number' => $submission->serial_number]) }}"
+                                            class="inline-flex items-center text-sm font-medium text-indigo-600 transition-colors duration-200 hover:text-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 rounded-md">
+                                            <svg class="w-4 h-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                                <path d="M5.5 13a3.5 3.5 0 01-.369-6.98 4 4 0 117.753-1.977A4.5 4.5 0 1113.5 13H11V9.413l1.293 1.293a1 1 0 001.414-1.414l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13H5.5z" />
+                                            </svg>
+                                            Upload
+                                        </a>
+                                    @else
+                                        <!-- Show Awaiting if request_made is false -->
+                                        <span class="inline-flex items-center text-sm text-gray-400">
+                                            <svg class="w-4 h-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd"
+                                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z"
+                                                    clip-rule="evenodd" />
+                                            </svg>
+                                            Awaiting
+                                        </span>
+                                    @endif
+                                @endif
+
+
+                                    <!-- View Link -->
+                                    <a href="{{ route('research.abstract.download', ['serial_number' => $submission->serial_number]) }}" class="text-sm font-medium text-indigo-600 hover:text-indigo-900">
+                                        <svg class="mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                        </svg>
+                                    </a>
+                                    @if($submission->pdf_path)
+                                        <a href="{{ asset('storage/' . $submission->pdf_path) }}" class="text-sm font-medium text-indigo-600 hover:text-indigo-900" target="_blank">View</a>
+                                    @endif
+                                </div>
+                            </td>
                         </tr>
                     @empty
                     <tr>
@@ -247,9 +280,8 @@
                     <tr>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Score</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                        <!--<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>-->
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
@@ -260,9 +292,6 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                 {{ \Carbon\Carbon::parse($researchSubmission->created_at)->format('d M Y') }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {{ $researchSubmission->score ?? 'N/A' }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 @if ($researchSubmission->approved == false)
@@ -323,9 +352,19 @@
                                     @endif
                                 @endif
                             </td>
-                            <!--<td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                <a href="#" class="text-indigo-600 hover:text-indigo-900 mr-3">view</a>
-                            </td>-->
+                            <td class="relative px-6 py-4">
+                            <!-- Conditional Upload or Awaiting Button -->
+                            <div class="flex items-center space-x-4">
+                                <a href="{{ route('proposal.abstract.download', ['serial_number' => $researchSubmission->serial_number]) }}" class="text-sm font-medium text-indigo-600 hover:text-indigo-900">
+                                    <svg class="mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                    </svg>
+                                </a>
+                                <a href="{{ asset('storage/' . $researchSubmission->pdf_document_path) }}" target="_blank" class="text-sm font-medium text-indigo-600 hover:text-indigo-900">
+                                    View
+                                </a>
+                            </div>
+                        </td>
                         </tr>
                     @empty
                         <tr>

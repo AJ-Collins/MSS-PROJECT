@@ -43,7 +43,6 @@ class UserController extends Controller
             ->count();
         $abstractsPending = AbstractSubmission::where('user_reg_no', $user->reg_no)
             ->where('final_status', 'submitted')
-            
             ->count();
         
 

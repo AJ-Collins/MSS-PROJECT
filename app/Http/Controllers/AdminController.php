@@ -379,7 +379,7 @@ class AdminController extends Controller
             'research_submissions.final_status', 
             'research_submissions.user_reg_no',
             // Add any other specific columns you need from abstract_submissions
-            DB::raw('AVG(proposal_assessments.total_score) as average_score'),
+            DB::raw('(AVG(proposal_assessments.total_score) * 2) as average_score'),
             DB::raw('COUNT(proposal_assessments.abstract_submission_id) as total_reviews')
         )
         ->groupBy(
@@ -429,7 +429,7 @@ public function fetchAbstractSubmissions(Request $request)
             'abstract_submissions.final_status', 
             'abstract_submissions.user_reg_no',
             // Add any other specific columns you need from abstract_submissions
-            DB::raw('AVG(research_assessments.total_score) as average_score'),
+            DB::raw('(AVG(research_assessments.total_score) * 2) as average_score'),
             DB::raw('COUNT(research_assessments.abstract_submission_id) as total_reviews')
         )
         ->groupBy(
@@ -600,6 +600,9 @@ public function getReviewers()
                 // Track reassigned reviewers
                 $reassignedReviewers = [];
 
+                AbstractSubmission::whereIn('serial_number', $request->submissions)
+                    ->update(['final_status' => 'under_review']);
+
                 // Loop over each submission and assign reviewers
                 foreach ($submissions as $submission) {
                     // Prepare reviewers data for syncing via the pivot table
@@ -706,6 +709,9 @@ public function getReviewers()
                 
                 // Track reassigned reviewers
                 $reassignedReviewers = [];
+
+                ResearchSubmission::whereIn('serial_number', $request->researchSubmissions)
+                    ->update(['final_status' => 'under_review']);
     
                 // Loop over each submission and assign reviewers
                 foreach ($researchSubmissions as $researchSubmission) {
@@ -1165,17 +1171,18 @@ public function getReviewers()
     }
 
     public function abstractDetails($serial_number)
-{
-    // Find the submission with related reviewers
-    $submission = AbstractSubmission::with(['reviewers' => function ($query) {
-        $query->select('reg_no', 'first_name', 'last_name'); // Select necessary user fields
-    }])
-    ->where('serial_number', $serial_number)
-    ->firstOrFail();
+    {
+        // Find the submission with related reviewers
+        $submission = AbstractSubmission::with(['reviewers' => function ($query) {
+            $query->select('reg_no', 'first_name', 'last_name'); // Select necessary user fields
+        }])
+        ->where('serial_number', $serial_number)
+        ->firstOrFail();
 
-    // Pass the submission to the view
-    return view('admin.partials.abstract_details', compact('submission'));
-}
+        // Pass the submission to the view
+        return view('admin.partials.abstract_details', compact('submission'));
+    }
+    
     public function proposalDetails($serial_number)
     {
         // Find the submission with related reviewers

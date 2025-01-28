@@ -43,14 +43,6 @@
                         {{ date('F j, Y', strtotime($researchSubmission->created_at)) }}
                     </dd>
                 </div>
-                <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                    <dt class="text-sm font-medium text-gray-500">Score</dt>
-                    <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                        <span class="{{ $researchSubmission->score === null ? 'bg-yellow-200 text-gray-800 p-2 rounded-md' : 'text-gray-900' }}">
-                            {{ $researchSubmission->score ?? 'Not reviewed yet' }}
-                        </span>
-                    </dd>
-                </div>
             </dl>
         </div>
     </div>
@@ -61,14 +53,32 @@
             <h3 class="text-lg leading-6 font-medium text-gray-900">Assigned Reviewers</h3>
         </div>
         <div class="border-t border-gray-200">
-            <ul class="divide-y divide-gray-200">
+        <ul class="divide-y divide-gray-200">
                 @forelse($researchSubmission->reviewers as $reviewer)
                 <li class="px-4 py-4">
                     <div class="flex items-center justify-between">
                         <div>
-                            <p class="text-sm font-medium text-gray-900">{{ $reviewer->first_name }} {{ $reviewer->last_name }}</p>
+                            <p class="text-sm font-medium text-gray-900">{{ $researchSubmission->first_name }} {{ $reviewer->last_name }}</p>
                             <p class="text-sm text-gray-500">{{ $reviewer->reg_no }}</p>
                         </div>
+
+                        @php
+                            // Fetch the specific assessment for the current reviewer
+                            $assessment = $reviewer->assessments ? $reviewer->assessments->firstWhere('abstract_submission_id', $researchSubmission->serial_number) : null;
+                        @endphp
+
+                        @if($assessment && $assessment->total_score) <!-- Check if total_score exists for the specific assessment -->
+                            <a href="{{ route('proposalAssessment.download.anyone', ['serial_number' => $researchSubmission->serial_number, 'reviewer_reg_no' => $reviewer->reg_no]) }}" 
+                                class="flex items-center text-blue-600 hover:text-blue-800 w-full sm:w-auto">
+                                    <svg class="mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                    </svg>
+                                    <span class="whitespace-nowrap">Assessment (PDF)</span>
+                            </a>
+                        @else
+                            <p class="text-sm text-gray-500 bg-yellow-100 p-2 rounded-md">Not reviewed yet</p> <!-- Message for not reviewed -->
+                        @endif
+
                         <span class="px-3 py-1 rounded-full text-xs {{ 
                             $reviewer->pivot->status === 'accepted' ? 'bg-green-300 text-grey-800' : 'bg-yellow-300 text-grey-800' 
                         }}">

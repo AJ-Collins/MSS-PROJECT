@@ -148,7 +148,7 @@
                             >
                                 Preview
                             </button>
-                            <a href="<?php echo e(route('research.areviewerAbstract.download', $submission->serial_number)); ?>" class="px-2 py-1 text-xs font-medium text-white bg-gray-600 hover:bg-gray-700 rounded-full">
+                            <a href="<?php echo e(route('research.reviewerAbstract.download', $submission->serial_number)); ?>" class="px-2 py-1 text-xs font-medium text-white bg-gray-600 hover:bg-gray-700 rounded-full">
                                 Download
                             </a>
                         </td>
@@ -387,7 +387,7 @@
                             >
                                 Preview
                             </button>
-                            <a href="<?php echo e(route('proposal.abstract.download', $researchSubmission->serial_number)); ?>" class="px-2 py-1 text-xs font-medium text-white bg-gray-600 hover:bg-gray-700 rounded-full">
+                            <a href="<?php echo e(route('proposal.reviewerAbstract.download', $researchSubmission->serial_number)); ?>" class="px-2 py-1 text-xs font-medium text-white bg-gray-600 hover:bg-gray-700 rounded-full">
                                 Download
                             </a>
                         </td>

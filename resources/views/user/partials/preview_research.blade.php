@@ -55,27 +55,50 @@
                                                 {{ $articleTitle ?? 'Untitled' }}
                                             </h1>
                                             <div class="p-4 sm:p-8">
-                                                <!-- Authors -->
-                                                <h1 class="text-lg sm:text-xl font-bold text-gray-900 text-center mb-2">
-                                                    @if(isset($authorData) && is_array($authorData))
-                                                        {{ implode(', ', array_map(fn($author) => $author['first_name'] . ' ' . ($author['middle_name'] ?? '') . ' ' . $author['surname'] . (isset($author['is_correspondent']) && $author['is_correspondent'] ? '*' : ''), $authorData)) }}
-                                                    @endif
-                                                </h1>
-                                                
-                                                <!-- Universities -->
-                                                <h2 class="text-base sm:text-lg font-medium text-gray-700 text-center">
-                                                    @if(isset($authorData) && is_array($authorData))
-                                                        {{ implode(', ', array_map(fn($author) => $author['university'], $authorData)) }}
-                                                    @endif
-                                                </h2>
-                                                
-                                                <!-- Departments -->
-                                                <h3 class="text-sm sm:text-md text-gray-600 text-center">
-                                                    @if(isset($authorData) && is_array($authorData))
-                                                        {{ implode(', ', array_map(fn($author) => $author['department'], $authorData)) }}
-                                                    @endif
-                                                </h3>
+                                            <!-- Authors -->
+                                            <div class="text-base sm:text-lg font-medium text-gray-700 text-center mt-2 break-words">
+                                                @if(isset($authorData) && is_array($authorData))
+                                                    @foreach($authorData as $index => $author)
+                                                        {{ $author['first_name'] }} {{ $author['middle_name'] ?? '' }} {{ $author['surname'] }}
+                                                        <sup>{{ $index + 1 }}{{ isset($author['is_correspondent']) && $author['is_correspondent'] ? '*' : '' }}</sup>
+                                                        @if(!$loop->last), @endif
+                                                    @endforeach
+                                                @endif
                                             </div>
+
+                                            <!-- Universities -->
+                                            <div class="flex flex-col items-center text-sm sm:text-base text-gray-600 mt-2 space-y-1">
+                                                @if(isset($authorData) && is_array($authorData))
+                                                    @foreach($authorData as $index => $author)
+                                                        <div class="w-full text-center" style="text-indent: 2em;">
+                                                            <sup>{{ $index + 1 }}</sup> {{ $author['university'] }}
+                                                        </div>
+                                                    @endforeach
+                                                @endif
+                                            </div>
+
+                                            <!-- Departments -->
+                                            <div class="flex flex-col items-center text-sm sm:text-base text-gray-600 mt-2 space-y-1">
+                                                @if(isset($authorData) && is_array($authorData))
+                                                    @foreach($authorData as $index => $author)
+                                                        <div class="w-full text-center" style="text-indent: 2em;">
+                                                            <sup>{{ $index + 1 }}</sup> {{ $author['department'] }}
+                                                        </div>
+                                                    @endforeach
+                                                @endif
+                                            </div>
+                                            <div class="text-sm sm:text-base text-gray-600 text-center mt-2 italic break-words">
+                                                @if(isset($authorData) && is_array($authorData))
+                                                    * Correspondence: 
+                                                    @foreach($authorData as $author)
+                                                        @if(isset($author['is_correspondent']) && $author['is_correspondent'])
+                                                            {{ $author['email'] ?? '' }}@if(!$loop->last); @endif
+                                                        @endif
+                                                    @endforeach
+                                                @endif
+                                            </div>
+                                        </div>
+
                                         </div>
                                     </div>
 
@@ -151,10 +174,6 @@
                         <a href="{{ route('user.step2_research') }}" 
                            class="w-full sm:w-auto px-6 py-2 border border-gray-300 rounded-md text-center text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-400">
                             Previous
-                        </a>
-                        <a href="{{ route('user.downloadAbstractPdf') }}"
-                           class="w-full sm:w-auto px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 text-center">
-                            Download Abstract as PDF
                         </a>
                         <button type="button" 
                                 onclick="openModal()" 

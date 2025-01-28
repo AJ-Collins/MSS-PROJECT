@@ -132,7 +132,6 @@
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
@@ -184,24 +183,6 @@
                                     {!! $style['icon'] !!}
                                     {{ $currentStatus === 'under_review' ? 'Under review' : str_replace('_', ' ', ucfirst($currentStatus ?: 'Unknown')) }}
                                 </span>
-                            </td>
-                            <td class="relative px-6 py-4">
-                                @if ($submission->request_made)
-                                    <a href="{{ route('user.submit.article', ['serial_number' => $submission->serial_number]) }}"
-                                        class="inline-flex items-center text-sm font-medium text-indigo-600 transition-colors duration-200 hover:text-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 rounded-md">
-                                        <svg class="w-4 h-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                                            <path d="M5.5 13a3.5 3.5 0 01-.369-6.98 4 4 0 117.753-1.977A4.5 4.5 0 1113.5 13H11V9.413l1.293 1.293a1 1 0 001.414-1.414l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13H5.5z"/>
-                                        </svg>
-                                        Upload Article
-                                    </a>
-                                @else
-                                    <span class="inline-flex items-center text-sm text-gray-400">
-                                        <svg class="w-4 h-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd"/>
-                                        </svg>
-                                        Awaiting Request
-                                    </span>
-                                @endif
                             </td>
                         </tr>
                     @empty

@@ -67,7 +67,7 @@ Route::middleware(['preventBackHistory', 'auth'])->group(function () {
         Route::delete('/delete/assessment/{serial_number}', [AdminController::class, 'deleteAssessment'])->name('admin.assessmentDelete');
 
         Route::post('/users/create', [AdminController::class, 'createUser'])->name('admin.users.create');
-        Route::delete('/delete/users/{user}', [UserController::class, 'deleteUser'])->name('users.destroy');
+        Route::delete('/delete/users/{user}', [AdminController::class, 'deleteUser'])->name('users.destroy');
         Route::post('/users/{reg_no}/update', [AdminController::class, 'updateUser'])->name('admin.users.update');
         Route::post('/users/{reg_no}/updateRole', [AdminController::class, 'updateRole'])->name('admin.users.updateRole');
         Route::post('/users/{user}/toggle-status', [AdminController::class, 'toggleStatus'])->name('users.toggle-status');
@@ -211,7 +211,7 @@ Route::middleware(['preventBackHistory', 'auth'])->group(function () {
 
     //Abstarct download routes
     Route::get('/abstracts/{serial_number}/pdf', [AbstractsController::class, 'downloadPdf'])->name('research.abstract.download');
-    Route::get('/abstracts/reviewer/{serial_number}/pdf', [AbstractsController::class, 'reviwerDownloadPdf'])->name('research.areviewerAbstract.download');
+    Route::get('/abstracts/reviewer/{serial_number}/pdf', [AbstractsController::class, 'reviwerDownloadPdf'])->name('research.reviewerAbstract.download');
     Route::get('/abstracts/{serial_number}/word', [AbstractsController::class, 'downloadWord'])->name('abstract.abstractWord.download');
     Route::get('/abstracts/reviewer/{serial_number}/word', [AbstractsController::class, 'reviwerDownloadWord'])->name('abstract.reviwerAbstractWord.download');
 
@@ -235,5 +235,11 @@ Route::middleware(['preventBackHistory', 'auth'])->group(function () {
     Route::get('/research_assessments/{abstract_submission_id}/download-pdf', [AbstractsController::class, 'downloadAssessmentPDF'])->name('assessments.download-pdf');
     Route::get('/proposal/research_assessments/{abstract_submission_id}/download-pdf', [ProposalController::class, 'downloadProposalAssessmentPDF'])->name('assessments.proposal.download-pdf');
     Route::post('/upload-profile-photo', [ProfileController::class, 'uploadPhoto'])->name('upload.profile.photo');
+
+    Route::get('/abstracts/assessment/{serial_number}/pdf', [AbstractsController::class, 'downloadPdfAssessment'])->name('abstract.asessment.download');
+    Route::get('/abstracts/assessment/proposal/{serial_number}/pdf', [AbstractsController::class, 'downloadPdfAssessmentProposal'])->name('abstract.proposalAssessment.download');
+
+    Route::get('/download-assessment/{serial_number}/{reviewer_reg_no}', [AbstractsController::class, 'downloadPdfAssessmentForAnyone'])->name('assessment.download.anyone');
+    Route::get('/download-proposalAssessment/{serial_number}/{reviewer_reg_no}', [AbstractsController::class, 'downloadPdfProposalAssessmentForAnyone'])->name('proposalAssessment.download.anyone');
 
 });

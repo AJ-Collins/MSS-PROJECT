@@ -232,7 +232,7 @@
                 submitText.textContent = 'Upload Successful!';
                 submitSpinner.classList.add('hidden');
                 setTimeout(() => {
-                    window.location.href = '/user/dashboard';
+                    window.location.href = '/user/documents';
                 }, 1000);
             } else {
                 // Check if it's an "already uploaded" message

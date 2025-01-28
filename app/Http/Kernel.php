@@ -22,6 +22,7 @@ class Kernel extends HttpKernel
         \Illuminate\Routing\Middleware\SubstituteBindings::class,
         \App\Http\Middleware\PreventBackHistory::class,  // Example of custom middleware
         \App\Http\Middleware\SecurityHeaders::class, // Registering custom middleware
+        
     ];
 
     /**
@@ -41,6 +42,7 @@ class Kernel extends HttpKernel
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \App\Http\Middleware\PreventBackHistory::class, // Custom middleware example
             \App\Http\Middleware\SecurityHeaders::class, // Registering custom middleware
+            \App\Http\Middleware\VerifyCsrfToken::class,
         ],
 
         'api' => [

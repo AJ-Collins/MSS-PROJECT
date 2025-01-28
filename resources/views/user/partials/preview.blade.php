@@ -45,34 +45,47 @@
                 @csrf
                 <div class="bg-gray-50 p-4 sm:p-6 border border-gray-800">
                     <!-- Title - Responsive text sizing -->
+                    
+
+                    <!-- Authors Section - Responsive padding and text -->
+                    <div class="p-4 sm:p-8">
                     <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 text-center mb-2 break-words">
                         {{ $article_title ?? 'Untitled' }}
                     </h1>
 
-                    <!-- Authors Section - Responsive padding and text -->
-                    <div class="p-4 sm:p-8">
-                        <h1 class="text-base sm:text-lg font-bold text-gray-900 text-center mb-2 break-words">
-                            @if(isset($allAuthors) && is_array($allAuthors))
-                                {{ implode(', ', array_map(fn($author) => $author['first_name'] . ' ' . ($author['middle_name'] ?? '') . ' ' . $author['surname'] . (isset($author['is_correspondent']) && $author['is_correspondent'] ? '*' : ''), $allAuthors)) }}
-                            @endif
-                        </h1>
-                        
-                        <!-- Universities - Responsive text -->
-                        <h2 class="text-base sm:text-lg font-medium text-gray-700 text-center mt-2 break-words">
-                            @if(isset($allAuthors) && is_array($allAuthors))
-                                {{ implode(', ', array_map(fn($author) => $author['university'], $allAuthors)) }}
-                            @endif
-                        </h2>
-                        
-                        <!-- Departments - Responsive text -->
-                        <h3 class="text-sm sm:text-base text-gray-600 text-center mt-2 break-words">
-                            @if(isset($allAuthors) && is_array($allAuthors))
-                                {{ implode(', ', array_map(fn($author) => $author['department'], $allAuthors)) }}
-                            @endif
-                        </h3>
+                    <div class="text-base sm:text-lg font-medium text-gray-700 text-center mt-2 break-words">
+                        @if(isset($allAuthors) && is_array($allAuthors))
+                            @foreach($allAuthors as $index => $author)
+                                {{ $author['first_name'] }} {{ $author['middle_name'] ?? '' }} {{ $author['surname'] }}
+                                <sup>{{ $index + 1 }}{{ isset($author['is_correspondent']) && $author['is_correspondent'] ? '*' : '' }}</sup>
+                                @if(!$loop->last), @endif
+                            @endforeach
+                        @endif
+                    </div>
+                    
+                    <div class="flex flex-col items-center text-sm sm:text-base text-gray-600 mt-2 space-y-1">
+                        @if(isset($allAuthors) && is_array($allAuthors))
+                            @foreach($allAuthors as $index => $author)
+                                <div class="w-full text-center" style="text-indent: 2em;">
+                                    <sup>{{ $index + 1 }}</sup> {{ $author['university'] }}, {{ $author['department'] }}
+                                </div>
+                            @endforeach
+                        @endif
                     </div>
 
-                    <!-- Abstract Section - Responsive spacing -->
+                    <div class="text-sm sm:text-base text-gray-600 text-center mt-2 italic break-words">
+                        @if(isset($allAuthors) && is_array($allAuthors))
+                            * Correspondence: 
+                            @foreach($allAuthors as $author)
+                                @if(isset($author['is_correspondent']) && $author['is_correspondent'])
+                                    {{ $author['email'] ?? '' }}@if(!$loop->last); @endif
+                                @endif
+                            @endforeach
+                        @endif
+                    </div>
+                </div>
+
+                    <!-- Astract Section - Responsive spacing -->
                     <div class="p-4 sm:p-8">
                         <h2 class="text-lg sm:text-xl font-bold text-gray-900 mb-2">Abstract</h2>
                         <p class="text-sm sm:text-base text-gray-700 leading-relaxed break-words">
